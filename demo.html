@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-Fed - Complete App Overview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #f5f5f7;
+            padding: 30px 20px;
+            min-height: 100vh;
+        }
+        
+        h1 { text-align: center; color: #1a1a1a; margin-bottom: 8px; font-size: 2.2rem; font-weight: 700; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 40px; font-size: 1rem; }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 30px 0 15px;
+            padding-left: 16px;
+            border-left: 4px solid #2F6F5E;
+        }
+        
+        .screens-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .screen-card {
+            background: white;
+            border-radius: 24px;
+            padding: 18px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+        }
+        
+        .screen-label {
+            text-align: center;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .iphone-frame {
+            width: 260px;
+            height: 540px;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 10px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .iphone-screen {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Common Components */
+        .status-bar {
+            height: 42px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px 0;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .nav-bar {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+        }
+        
+        .nav-title { font-size: 18px; font-weight: 700; color: #000; }
+        
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 76px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+            border-top: 0.5px solid rgba(0,0,0,0.08);
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            width: 65px;
+            padding-top: 3px;
+        }
+        
+        .tab-icon { font-size: 18px; }
+        .tab-label { font-size: 9px; font-weight: 500; }
+        .tab-item.active { color: #2F6F5E; }
+        .tab-item.inactive { color: #999; }
+        
+        .fab-button {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 38px;
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #2F6F5E 0%, #3d8b75 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 16px rgba(47,111,94,0.35);
+            font-size: 22px;
+            color: white;
+        }
+        
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 8px 16px 80px;
+            height: calc(100% - 82px);
+            overflow-y: auto;
+        }
+        
+        .hero-card {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        /* 3-Option Period Selector */
+        .period-selector-3 {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        
+        .period-btn-3 {
+            flex: 1;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .period-btn-3.active { background: #2F6F5E; color: white; }
+        .period-btn-3.inactive { background: #e9ecef; color: #1a1a1a; }
+        
+        /* Bottle */
+        .bottle-container {
+            display: flex;
+            justify-content: center;
+            padding: 16px 0;
+            position: relative;
+        }
+        
+        .support-message {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            color: #2F6F5E;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            white-space: nowrap;
+        }
+        
+        .stats-grid { display: flex; gap: 8px; }
+        
+        .stat-box {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 12px 6px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+        
+        .stat-icon { font-size: 14px; margin-bottom: 3px; }
+        .stat-value { font-size: 18px; font-weight: 700; color: #1a1a1a; }
+        .stat-label { font-size: 10px; color: #666; margin-top: 2px; }
+        .stat-sublabel { font-size: 9px; color: #2F6F5E; margin-top: 1px; font-weight: 500; }
+        
+        .recent-section { margin-top: 12px; }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .section-title-small { font-size: 11px; font-weight: 600; color: #8E8E93; text-transform: uppercase; letter-spacing: 0.5px; }
+        .view-all { font-size: 12px; color: #2F6F5E; font-weight: 500; }
+        
+        .feed-cell {
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        
+        .feed-time-col { text-align: right; min-width: 40px; }
+        .feed-time-main { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+        .feed-time-sub { font-size: 11px; color: #8E8E93; }
+        .feed-dot { width: 7px; height: 7px; border-radius: 50%; background: #2F6F5E; }
+        .feed-info h4 { font-size: 14px; font-weight: 500; color: #1a1a1a; }
+        .feed-info span { font-size: 12px; color: #8E8E93; }
+        .today-badge {
+            background: rgba(47,111,94,0.1);
+            color: #2F6F5E;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        /* 7 Days Wave */
+        .rhythm-container {
+            padding: 16px;
+            height: calc(100% - 82px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .rhythm-header {
+            text-align: center;
+            margin-top: 8px;
+        }
+        
+        .rhythm-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 3px;
+        }
+        
+        .rhythm-subtitle {
+            font-size: 13px;
+            color: #8E8E93;
+            font-weight: 400;
+        }
+        
+        .wave-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .insights-section { margin-bottom: 16px; }
+        
+        .insight-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .insight-icon {
+            font-size: 10px;
+            color: #2F6F5E;
+            opacity: 0.8;
+        }
+        
+        .insight-text {
+            font-size: 13px;
+            color: #636366;
+            font-weight: 500;
+        }
+        
+        .gentle-stats {
+            display: flex;
+            background: rgba(120,120,128,0.08);
+            border-radius: 16px;
+            padding: 3px;
+        }
+        
+        .gentle-stat {
+            flex: 1;
+            text-align: center;
+            padding: 12px 4px;
+        }
+        
+        .stat-divider {
+            width: 1px;
+            background: rgba(120,120,128,0.2);
+            margin: 8px 0;
+        }
+        
+        /* Month Completion */
+        .month-container {
+            padding: 8px 16px 80px;
+            height: calc(100% - 82px);
+            overflow-y: auto;
+            background: #ffffff;
+        }
+        
+        .month-header {
+            text-align: center;
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
+        
+        .month-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .completion-calendar {
+            padding: 0 4px;
+            margin-top: 12px;
+        }
+        
+        .weekday-labels {
+            display: flex;
+            margin-bottom: 12px;
+            padding: 0 2px;
+        }
+        
+        .weekday-label {
+            flex: 1;
+            text-align: center;
+            font-size: 9px;
+            font-weight: 600;
+            color: #8E8E93;
+            opacity: 0.4;
+            letter-spacing: 0.5px;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        
+        .day-tile {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .day-tile.empty { background: rgba(120,120,128,0.08); }
+        .day-tile.logged { background: rgba(47,111,94,0.12); box-shadow: 0 2px 4px rgba(47,111,94,0.06); }
+        .day-tile.today { border: 2px solid rgba(47,111,94,0.35); }
+        
+        .logged-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(47,111,94,0.5);
+        }
+        
+        .insight-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 28px;
+        }
+        
+        .insight-icon {
+            font-size: 12px;
+            color: #2F6F5E;
+            opacity: 0.6;
+        }
+        
+        .insight-text {
+            font-size: 13px;
+            color: #636366;
+            font-weight: 500;
+        }
+        
+        /* History */
+        .history-content {
+            padding: 8px 16px 80px;
+            height: calc(100% - 82px);
+            overflow-y: auto;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .day-section { margin-bottom: 12px; }
+        
+        .day-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8E8E93;
+            margin-bottom: 6px;
+            padding-left: 4px;
+        }
+        
+        /* Modals */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        .modal-sheet {
+            background: white;
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            padding: 20px;
+            padding-bottom: 30px;
+        }
+        
+        .modal-handle {
+            width: 36px;
+            height: 4px;
+            background: #d1d1d6;
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .amount-section { margin-bottom: 20px; }
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8E8E93;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .amount-display {
+            font-size: 42px;
+            font-weight: 300;
+            text-align: center;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+        
+        .amount-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .amount-btn {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: none;
+            background: #f2f2f7;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+        
+        .amount-btn.primary {
+            background: #2F6F5E;
+            color: white;
+        }
+        
+        .timer-section {
+            background: #f8f9fa;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .timer-display {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-btn {
+            margin-top: 10px;
+            padding: 8px 20px;
+            border-radius: 18px;
+            border: none;
+            background: #2F6F5E;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .save-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            background: #2F6F5E;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .edit-field {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+        
+        .edit-label {
+            font-size: 11px;
+            color: #8E8E93;
+            margin-bottom: 3px;
+        }
+        
+        .edit-value {
+            font-size: 15px;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        
+        .delete-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            background: #ff3b30;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .system-overview {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #444;
+        }
+        
+        .system-overview strong { color: #1a1a1a; }
+        
+        /* MINIMAL AMOUNT INPUT — Ultra Clean */
+        .minimal-modal-sheet {
+            background: white;
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            padding: 20px 24px 40px;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.12);
+        }
+        
+        /* Amount Scrubber — The Only Input */
+        .amount-scrubber {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 0 48px;
+            cursor: ew-resize;
+            user-select: none;
+            touch-action: pan-y;
+        }
+        
+        .amount-value {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .amount-value.updating {
+            transform: scale(1.03);
+        }
+        
+        .amount-number {
+            font-size: 80px;
+            font-weight: 300;
+            color: #1a1a1a;
+            letter-spacing: -3px;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .amount-unit {
+            font-size: 24px;
+            font-weight: 300;
+            color: #8E8E93;
+            margin-left: 2px;
+        }
+        
+        .amount-hint {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #C7C7CC;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            opacity: 0;
+            animation: fadeHint 0.6s ease 0.4s forwards;
+        }
+        
+        @keyframes fadeHint {
+            to { opacity: 1; }
+        }
+        
+        /* Minimal Timer Section */
+        .minimal-timer-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 16px 0;
+        }
+        
+        .minimal-timer-display {
+            font-size: 28px;
+            font-weight: 500;
+            color: #1a1a1a;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .minimal-timer-btn {
+            padding: 6px 16px;
+            border-radius: 16px;
+            border: none;
+            background: #F2F2F7;
+            color: #2F6F5E;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .minimal-save-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            background: #2F6F5E;
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <h1>B-Fed</h1>
+    <p class="subtitle">Complete App Overview — All Screens</p>
+    
+    <!-- FIRST-TIME DASHBOARD -->
+    <div class="section-title">First-Time Dashboard (Empty State)</div>
+    <div class="screens-grid">
+        <div class="screen-card">
+            <div class="screen-label">First Time — Empty State</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen" style="background: #F2F2F7;">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    <div class="nav-bar"><span class="nav-title">Today</span></div>
+                    
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px;">
+                        <!-- Empty bottle outline -->
+                        <div style="width: 120px; height: 180px; position: relative; margin-top: 40px;">
+                            <!-- Soft glow -->
+                            <div style="position: absolute; inset: -20px; background: radial-gradient(circle, rgba(47,111,94,0.08) 0%, transparent 70%); border-radius: 50%;"></div>
+                            
+                            <!-- Bottle outline SVG -->
+                            <svg width="120" height="180" viewBox="0 0 100 180" style="position: relative; z-index: 1;">
+                                <path fill="none" stroke="#2F6F5E" stroke-width="2" stroke-opacity="0.3" stroke-linecap="round" stroke-linejoin="round"
+                                    d="M 50 165 C 35 170 25 165 20 155 C 18 145 14 130 15 115 C 16 105 22 90 25 80 C 28 72 34 65 38 60 L 38 35 C 38 33 34 31 32 30 C 30 28 28 23 28 20 C 32 13 40 7 50 10 C 60 7 68 13 72 20 C 72 23 70 28 68 30 C 66 31 62 33 62 35 L 62 60 C 66 65 72 72 75 80 C 78 90 84 105 85 115 C 86 130 82 145 80 155 C 75 165 65 170 50 165 Z"/>
+                                <!-- Teat -->
+                                <ellipse cx="50" cy="12" rx="10" ry="6" fill="#2F6F5E" fill-opacity="0.2"/>
+                            </svg>
+                        </div>
+                        
+                        <div style="margin-top: 48px; font-size: 28px; font-weight: 700; color: #1a1a1a; text-align: center; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">Let's log your first feed</div>
+                        
+                        <div style="margin-top: 8px; font-size: 20px; color: #666; text-align: center;">You're doing great already</div>
+                        
+                        <!-- Typical feed range from onboarding -->
+                        <div style="margin-top: 32px; padding: 10px 20px; background: rgba(47,111,94,0.1); border-radius: 20px;">
+                            <span style="font-size: 15px; font-weight: 600; color: #2F6F5E;">Typical feed: 80–120 ml</span>
+                        </div>
+                        
+                        <!-- Reassurance -->
+                        <div style="margin-top: 24px; font-size: 15px; color: #8E8E93; text-align: center;">Frequent feeds are completely normal</div>
+                        
+                        <!-- Spacer -->
+                        <div style="flex: 1;"></div>
+                        
+                        <!-- Log Feed Button -->
+                        <button style="width: 100%; height: 60px; background: #2F6F5E; color: white; border: none; border-radius: 18px; font-size: 18px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 6px 20px rgba(47,111,94,0.25);">
+                            <span style="font-size: 22px;">+</span>
+                            Log Feed
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- POST-FIRST-FEED DASHBOARD -->
+    <div class="section-title">Post-First-Feed Dashboard</div>
+    <div class="screens-grid">
+        <div class="screen-card">
+            <div class="screen-label">After First Feed — Bottle Filling</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen" style="background: #F2F2F7;">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    <div class="nav-bar"><span class="nav-title">Today</span></div>
+                    
+                    <div style="padding: 16px;">
+                        <!-- Period selector -->
+                        <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                            <div style="flex: 1; height: 44px; background: #2F6F5E; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 15px; font-weight: 600; color: white;">Today</span>
+                            </div>
+                            <div style="flex: 1; height: 44px; background: rgba(120,120,128,0.12); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 15px; font-weight: 500; color: #1a1a1a;">7 Days</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Hero Card -->
+                        <div style="background: rgba(120,120,128,0.08); border-radius: 20px; padding: 20px; position: relative;">
+                            <!-- Bottle with liquid -->
+                            <div style="display: flex; flex-direction: column; align-items: center; padding: 20px 0;">
+                                <div style="width: 100px; height: 160px; position: relative;">
+                                    <!-- Bottle SVG with liquid fill -->
+                                    <svg width="100" height="160" viewBox="0 0 100 180">
+                                        <defs>
+                                            <linearGradient id="liq2" x1="50%" y1="0%" x2="50%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#4a8f7a"/>
+                                                <stop offset="100%" style="stop-color:#1a4a3d"/>
+                                            </linearGradient>
+                                            <clipPath id="bottleClip2">
+                                                <path d="M 50 165 C 35 170 25 165 20 155 C 18 145 14 130 15 115 C 16 105 22 90 25 80 C 28 72 34 65 38 60 L 38 35 C 38 33 34 31 32 30 C 30 28 28 23 28 20 C 32 13 40 7 50 10 C 60 7 68 13 72 20 C 72 23 70 28 68 30 C 66 31 62 33 62 35 L 62 60 C 66 65 72 72 75 80 C 78 90 84 105 85 115 C 86 130 82 145 80 155 C 75 165 65 170 50 165 Z"/>
+                                            </clipPath>
+                                        </defs>
+                                        
+                                        <!-- Glass background -->
+                                        <path fill="rgba(255,255,255,0.5)" d="M 50 165 C 35 170 25 165 20 155 C 18 145 14 130 15 115 C 16 105 22 90 25 80 C 28 72 34 65 38 60 L 38 35 C 38 33 34 31 32 30 C 30 28 28 23 28 20 C 32 13 40 7 50 10 C 60 7 68 13 72 20 C 72 23 70 28 68 30 C 66 31 62 33 62 35 L 62 60 C 66 65 72 72 75 80 C 78 90 84 105 85 115 C 86 130 82 145 80 155 C 75 165 65 170 50 165 Z"/>
+                                        
+                                        <!-- Liquid with wave -->
+                                        <g clip-path="url(#bottleClip2)">
+                                            <rect fill="url(#liq2)" x="15" y="95" width="70" height="80"/>
+                                            <path fill="#4a8f7a" d="M 15 95 Q 32 92 50 95 Q 68 98 85 95 L 87 102 L 13 102 Z"/>
+                                        </g>
+                                        
+                                        <!-- Glass outline -->
+                                        <path fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" d="M 50 165 C 35 170 25 165 20 155 C 18 145 14 130 15 115 C 16 105 22 90 25 80 C 28 72 34 65 38 60 L 38 35 C 38 33 34 31 32 30 C 30 28 28 23 28 20 C 32 13 40 7 50 10 C 60 7 68 13 72 20 C 72 23 70 28 68 30 C 66 31 62 33 62 35 L 62 60 C 66 65 72 72 75 80 C 78 90 84 105 85 115 C 86 130 82 145 80 155 C 75 165 65 170 50 165 Z"/>
+                                        
+                                        <!-- Teat -->
+                                        <ellipse cx="50" cy="12" rx="10" ry="6" fill="#f0e6df"/>
+                                    </svg>
+                                </div>
+                                
+                                <!-- Intake display -->
+                                <div style="margin-top: 12px; font-size: 20px; font-weight: 600; color: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">90 / 700 ml</div>
+                                
+                                <!-- Reassurance message (floating) -->
+                                <div style="margin-top: 16px; padding: 10px 18px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                                    <span style="font-size: 15px; font-weight: 500; color: #666;">Nice one</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Stats grid -->
+                            <div style="display: flex; gap: 12px; margin-top: 16px;">
+                                <div style="flex: 1; background: rgba(0,122,255,0.06); border-radius: 16px; padding: 14px 8px; text-align: center;">
+                                    <div style="width: 32px; height: 32px; background: rgba(0,122,255,0.12); border-radius: 8px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 12px; color: #007AFF;">●</span>
+                                    </div>
+                                    <div style="font-size: 20px; font-weight: 700; color: #1a1a1a;">1</div>
+                                    <div style="font-size: 12px; color: #666;">Feeds</div>
+                                    <div style="font-size: 11px; color: #007AFF;">today</div>
+                                </div>
+                                <div style="flex: 1; background: rgba(47,111,94,0.06); border-radius: 16px; padding: 14px 8px; text-align: center;">
+                                    <div style="width: 32px; height: 32px; background: rgba(47,111,94,0.12); border-radius: 8px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 12px; color: #2F6F5E;">💧</span>
+                                    </div>
+                                    <div style="font-size: 20px; font-weight: 700; color: #1a1a1a;">90</div>
+                                    <div style="font-size: 12px; color: #666;">Total</div>
+                                    <div style="font-size: 11px; color: #2F6F5E;">ml</div>
+                                </div>
+                                <div style="flex: 1; background: rgba(255,149,0,0.06); border-radius: 16px; padding: 14px 8px; text-align: center;">
+                                    <div style="width: 32px; height: 32px; background: rgba(255,149,0,0.12); border-radius: 8px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 12px; color: #FF9500;">📈</span>
+                                    </div>
+                                    <div style="font-size: 20px; font-weight: 700; color: #1a1a1a;">90</div>
+                                    <div style="font-size: 12px; color: #666;">Average</div>
+                                    <div style="font-size: 11px; color: #FF9500;">per feed</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- DASHBOARD SCREENS (3 views) -->
+    <div class="section-title">Dashboard — 3 Views</div>
+    <div class="screens-grid">
+        <!-- 1. TODAY -->
+        <div class="screen-card">
+            <div class="screen-label">Dashboard — Today</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    <div class="nav-bar"><span class="nav-title">B-Fed</span></div>
+                    
+                    <div class="dashboard-content">
+                        <div class="hero-card">
+                            <div class="period-selector-3">
+                                <button class="period-btn-3 active">Today</button>
+                                <button class="period-btn-3 inactive">7 Days</button>
+                                <button class="period-btn-3 inactive">Month</button>
+                            </div>
+                            
+                            <!-- Contextual Guidance -->
+                            <div style="margin-bottom: 12px; padding: 8px 16px; background: rgba(47,111,94,0.1); border-radius: 16px;">
+                                <span style="font-size: 13px; font-weight: 500; color: #2F6F5E;">Almost there — you're doing great</span>
+                            </div>
+                            
+                            <div class="bottle-container">
+                                <div style="position: absolute; width: 70px; height: 10px; background: radial-gradient(ellipse, rgba(0,0,0,0.15) 0%, transparent 70%); border-radius: 50%; bottom: 12px; filter: blur(6px);"></div>
+                                
+                                <svg width="70" height="120" viewBox="0 0 100 180">
+                                    <defs>
+                                        <linearGradient id="b1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95"/>
+                                            <stop offset="100%" style="stop-color:#e8e8ed;stop-opacity:0.6"/>
+                                        </linearGradient>
+                                        <linearGradient id="l1" x1="0%" y1="50%" x2="100%" y2="50%">
+                                            <stop offset="0%" style="stop-color:#fff;stop-opacity:0.9"/>
+                                            <stop offset="100%" style="stop-color:#fff;stop-opacity:0"/>
+                                        </linearGradient>
+                                        <linearGradient id="liq1" x1="50%" y1="0%" x2="50%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#4a8f7a"/>
+                                            <stop offset="100%" style="stop-color:#1a4a3d"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path fill="url(#b1)" d="M 50 170 C 35 175 25 170 20 160 C 18 150 14 135 15 120 C 16 110 22 95 25 85 C 28 78 34 70 38 65 L 38 40 C 38 38 34 36 32 35 C 30 33 28 28 28 25 C 32 18 40 12 50 15 C 60 12 68 18 72 25 C 72 28 70 33 68 35 C 66 36 62 38 62 40 L 62 65 C 66 70 72 78 75 85 C 78 95 84 110 85 120 C 86 135 82 150 80 160 C 75 170 65 175 50 170 Z"/>
+                                    <path fill="url(#l1)" d="M 50 170 C 35 175 25 170 20 160 C 18 150 14 135 15 120 C 16 110 22 95 25 85 C 28 78 34 70 38 65 L 38 40 C 38 38 34 36 32 35 C 30 33 28 28 28 25 C 32 18 40 12 50 15 C 60 12 68 18 72 25 C 72 28 70 33 68 35 C 66 36 62 38 62 40 L 62 65 C 66 70 72 78 75 85 C 78 95 84 110 85 120 C 86 135 82 150 80 160 C 75 170 65 175 50 170 Z"/>
+                                    <g clip-path="url(#c1)">
+                                        <clipPath id="c1"><path d="M 50 170 C 35 175 25 170 20 160 C 18 150 14 135 15 120 C 16 110 22 95 25 85 C 28 78 34 70 38 65 L 38 40 C 38 38 34 36 32 35 C 30 33 28 28 28 25 C 32 18 40 12 50 15 C 60 12 68 18 72 25 C 72 28 70 33 68 35 C 66 36 62 38 62 40 L 62 65 C 66 70 72 78 75 85 C 78 95 84 110 85 120 C 86 135 82 150 80 160 C 75 170 65 175 50 170 Z"/></clipPath>
+                                        <rect fill="url(#liq1)" x="15" y="108" width="70" height="70"/>
+                                        <path fill="#4a8f7a" d="M 15 108 Q 32 105 50 108 Q 68 111 85 108 L 87 115 L 13 115 Z"/>
+                                    </g>
+                                    <rect x="37" y="35" width="26" height="18" rx="3" fill="url(#b1)"/>
+                                    <path fill="#f0e6df" d="M 37 37 Q 37 20 42 14 Q 46 10 50 8 Q 54 10 58 14 Q 63 20 63 37 Q 63 39 50 39 Q 37 39 37 37 Z"/>
+                                </svg>
+                                
+                                <div class="support-message">Nice one</div>
+                            </div>
+                            
+                            <!-- Daily Intake Display -->
+                            <div style="margin-top: 12px; text-align: center;">
+                                <span style="font-size: 20px; font-weight: 600; color: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">520 / 700 ml</span>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-box">
+                                    <div class="stat-icon">●</div>
+                                    <div class="stat-value">4</div>
+                                    <div class="stat-label">Feeds</div>
+                                    <div class="stat-sublabel">today</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon">◆</div>
+                                    <div class="stat-value">98</div>
+                                    <div class="stat-label">ml</div>
+                                    <div class="stat-sublabel">average</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon">◐</div>
+                                    <div class="stat-value">15</div>
+                                    <div class="stat-label">min</div>
+                                    <div class="stat-sublabel">duration</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-section">
+                            <div class="section-header">
+                                <span class="section-title-small">Recent Feeds</span>
+                                <span class="view-all">See All ›</span>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">9:30</div><div class="feed-time-sub">9:45</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>120 ml</h4><span>15 min</span></div>
+                                <span class="today-badge">Today</span>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">6:15</div><div class="feed-time-sub">6:28</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>90 ml</h4><span>12 min</span></div>
+                                <span class="today-badge">Today</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-bar">
+                        <div class="tab-item active"><div class="tab-icon">⌂</div><span class="tab-label">Dashboard</span></div>
+                        <div class="fab-button">+</div>
+                        <div class="tab-item inactive"><div class="tab-icon">☰</div><span class="tab-label">History</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. 7 DAYS -->
+        <div class="screen-card">
+            <div class="screen-label">Dashboard — 7 Days</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    <div class="nav-bar"><span class="nav-title">B-Fed</span></div>
+                    
+                    <div class="rhythm-container">
+                        <div class="period-selector-3">
+                            <button class="period-btn-3 inactive">Today</button>
+                            <button class="period-btn-3 active">7 Days</button>
+                            <button class="period-btn-3 inactive">Month</button>
+                        </div>
+                        
+                        <div class="rhythm-header">
+                            <div class="rhythm-title">Your week</div>
+                            <div class="rhythm-subtitle">A gentle rhythm of feeding</div>
+                        </div>
+                        
+                        <div class="wave-container">
+                            <div style="position: absolute; width: 200px; height: 140px; background: radial-gradient(circle, rgba(47,111,94,0.06) 0%, transparent 70%); border-radius: 50%;"></div>
+                            
+                            <!-- Scale indicators -->
+                            <div style="position: absolute; right: 8px; top: 20px; font-size: 9px; color: #8E8E93; opacity: 0.5;">150</div>
+                            <div style="position: absolute; left: 0; right: 0; top: 22px; border-top: 1px dotted rgba(142,142,147,0.25);"></div>
+                            <div style="position: absolute; right: 8px; top: 52px; font-size: 9px; color: #8E8E93; opacity: 0.5;">100</div>
+                            <div style="position: absolute; left: 0; right: 0; top: 54px; border-top: 1px dotted rgba(142,142,147,0.25);"></div>
+                            <div style="position: absolute; right: 8px; top: 84px; font-size: 9px; color: #8E8E93; opacity: 0.5;">50</div>
+                            <div style="position: absolute; left: 0; right: 0; top: 86px; border-top: 1px dotted rgba(142,142,147,0.25);"></div>
+                            
+                            <svg width="100%" height="130" viewBox="0 0 240 130" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="wf2" x1="50%" y1="0%" x2="50%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#2F6F5E;stop-opacity:0.1"/>
+                                        <stop offset="100%" style="stop-color:#2F6F5E;stop-opacity:0"/>
+                                    </linearGradient>
+                                </defs>
+                                <path fill="url(#wf2)" d="M 0 95 C 12 95, 22 78, 37 78 C 52 78, 60 60, 78 60 C 96 60, 104 48, 120 48 C 136 48, 144 60, 162 60 C 180 60, 188 40, 205 40 C 222 40, 232 68, 240 68 L 240 130 L 0 130 Z"/>
+                                <path fill="none" stroke="#2F6F5E" stroke-width="3" stroke-linecap="round" d="M 0 95 C 12 95, 22 78, 37 78 C 52 78, 60 60, 78 60 C 96 60, 104 48, 120 48 C 136 48, 144 60, 162 60 C 180 60, 188 40, 205 40 C 222 40, 232 68, 240 68"/>
+                                <circle cx="120" cy="48" r="8" fill="#2F6F5E" opacity="0.12" filter="blur(2px)"/>
+                                <circle cx="120" cy="48" r="3" fill="#2F6F5E" opacity="0.6"/>
+                            </svg>
+                            
+                            <!-- Day indicators -->
+                            <div style="position: absolute; bottom: 16px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 12px;">
+                                <div style="text-align: center; width: 20px;"><div style="font-size: 10px; color: #8E8E93; opacity: 0.5;">M</div></div>
+                                <div style="text-align: center; width: 20px;"><div style="font-size: 10px; color: #8E8E93; opacity: 0.5;">T</div></div>
+                                <div style="text-align: center; width: 20px;"><div style="font-size: 10px; color: #8E8E93; opacity: 0.5;">W</div></div>
+                                <div style="text-align: center; position: relative; width: 20px;">
+                                    <div style="font-size: 10px; color: #2F6F5E; font-weight: 600;">T</div>
+                                    <div style="width: 4px; height: 4px; background: #2F6F5E; border-radius: 50%; margin: 3px auto 0;"></div>
+                                </div>
+                                <div style="text-align: center; width: 20px;"><div style="font-size: 10px; color: #8E8E93; opacity: 0.5;">F</div></div>
+                                <div style="text-align: center; width: 20px;"><div style="font-size: 10px; color: #8E8E93; opacity: 0.5;">S</div></div>
+                                <div style="text-align: center; width: 20px;"><div style="font-size: 10px; color: #8E8E93; opacity: 0.5;">S</div></div>
+                            </div>
+                        </div>
+                        
+                        <div class="insights-section" style="margin-top: 20px;">
+                            <div class="insight-item">
+                                <span class="insight-icon">✦</span>
+                                <span class="insight-text">Feeds are most consistent midweek</span>
+                            </div>
+                            <div class="insight-item">
+                                <span class="insight-icon">☀</span>
+                                <span class="insight-text">Mornings feel gentle and calm</span>
+                            </div>
+                        </div>
+                        
+                        <div class="gentle-stats">
+                            <div class="gentle-stat">
+                                <div class="stat-value">5.2</div>
+                                <div class="stat-label">feeds</div>
+                                <div class="stat-sublabel">per day</div>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="gentle-stat">
+                                <div class="stat-value">108</div>
+                                <div class="stat-label">ml</div>
+                                <div class="stat-sublabel">average</div>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="gentle-stat">
+                                <div class="stat-value">3h</div>
+                                <div class="stat-label">apart</div>
+                                <div class="stat-sublabel">spacing</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Additional scrollable content -->
+                        <div style="margin-top: 20px; padding: 16px; background: rgba(47,111,94,0.04); border-radius: 16px;">
+                            <div style="font-size: 13px; font-weight: 600; color: #2F6F5E; margin-bottom: 10px;">Weekly Summary</div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 12px; color: #666;">Total feeds</span>
+                                <span style="font-size: 12px; font-weight: 600;">36</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 12px; color: #666;">Total volume</span>
+                                <span style="font-size: 12px; font-weight: 600;">3,888 ml</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-size: 12px; color: #666;">Longest stretch</span>
+                                <span style="font-size: 12px; font-weight: 600;">5 hours</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 16px; padding: 16px; background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                            <div style="font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 10px;">Day by Day</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                <span style="font-size: 12px; color: #666;">Monday</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">6 feeds</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                <span style="font-size: 12px; color: #666;">Tuesday</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">5 feeds</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                <span style="font-size: 12px; color: #666;">Wednesday</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">5 feeds</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                <span style="font-size: 12px; color: #666;">Thursday</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">4 feeds</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                <span style="font-size: 12px; color: #666;">Friday</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">5 feeds</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                <span style="font-size: 12px; color: #666;">Saturday</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">6 feeds</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                                <span style="font-size: 12px; color: #666;">Sunday</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">5 feeds</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 16px; padding: 12px; text-align: center;">
+                            <span style="font-size: 11px; color: #8E8E93;">Scroll for more details ↓</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-bar">
+                        <div class="tab-item active"><div class="tab-icon">⌂</div><span class="tab-label">Dashboard</span></div>
+                        <div class="fab-button">+</div>
+                        <div class="tab-item inactive"><div class="tab-icon">☰</div><span class="tab-label">History</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3. MONTH -->
+        <div class="screen-card">
+            <div class="screen-label">Dashboard — Month</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    <div class="nav-bar"><span class="nav-title">B-Fed</span></div>
+                    
+                    <div class="month-container">
+                        <div class="period-selector-3">
+                            <button class="period-btn-3 inactive">Today</button>
+                            <button class="period-btn-3 inactive">7 Days</button>
+                            <button class="period-btn-3 active">Month</button>
+                        </div>
+                        
+                        <div class="month-header">
+                            <div class="month-title">April</div>
+                        </div>
+                        
+                        <div class="completion-calendar">
+                            <div class="weekday-labels">
+                                <div class="weekday-label">S</div>
+                                <div class="weekday-label">M</div>
+                                <div class="weekday-label">T</div>
+                                <div class="weekday-label">W</div>
+                                <div class="weekday-label">T</div>
+                                <div class="weekday-label">F</div>
+                                <div class="weekday-label">S</div>
+                            </div>
+                            
+                            <div class="calendar-grid">
+                                <div class="day-tile empty" style="opacity:0.3;"></div>
+                                <div class="day-tile empty" style="opacity:0.3;"></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile empty"></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile empty"></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged today"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile empty"></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile empty"></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile empty"></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile empty"></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile logged"><div class="logged-dot"></div></div>
+                                <div class="day-tile empty" style="opacity:0.3;"></div>
+                                <div class="day-tile empty" style="opacity:0.3;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-line">
+                            <span class="insight-icon">✓</span>
+                            <span class="insight-text">You logged feeds on 18 days this month</span>
+                        </div>
+                        
+                        <!-- Additional scrollable content -->
+                        <div style="margin-top: 16px; padding: 16px; background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                            <div style="font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px;">Monthly Highlights</div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="font-size: 12px; color: #666;">Most active day</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">April 6th</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="font-size: 12px; color: #666;">Longest streak</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">5 days</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="font-size: 12px; color: #666;">Average feeds/day</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">5.2</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-size: 12px; color: #666;">Consistency score</span>
+                                <span style="font-size: 12px; font-weight: 500; color: #2F6F5E;">85%</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 16px; padding: 16px; background: rgba(47,111,94,0.04); border-radius: 16px;">
+                            <div style="font-size: 13px; font-weight: 600; color: #2F6F5E; margin-bottom: 10px;">Quick Stats</div>
+                            <div style="display: flex; justify-content: space-around; text-align: center;">
+                                <div>
+                                    <div style="font-size: 20px; font-weight: 600; color: #1a1a1a;">94</div>
+                                    <div style="font-size: 10px; color: #8E8E93;">Total feeds</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 20px; font-weight: 600; color: #1a1a1a;">10.1L</div>
+                                    <div style="font-size: 10px; color: #8E8E93;">Total volume</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 20px; font-weight: 600; color: #1a1a1a;">107</div>
+                                    <div style="font-size: 10px; color: #8E8E93;">Avg ml</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 16px; padding: 12px; text-align: center;">
+                            <span style="font-size: 11px; color: #8E8E93;">Scroll for more details ↓</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-bar">
+                        <div class="tab-item active"><div class="tab-icon">⌂</div><span class="tab-label">Dashboard</span></div>
+                        <div class="fab-button">+</div>
+                        <div class="tab-item inactive"><div class="tab-icon">☰</div><span class="tab-label">History</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- HISTORY -->
+    <div class="section-title">History Screen</div>
+    <div class="screens-grid">
+        <div class="screen-card">
+            <div class="screen-label">History</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    <div class="nav-bar"><span class="nav-title">History</span></div>
+                    
+                    <div class="history-content">
+                        <div class="history-header">
+                            <span class="section-title-small">All Feeds</span>
+                            <span class="view-all">Filter</span>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-label">Today</div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">9:30</div><div class="feed-time-sub">9:45</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>120 ml</h4><span>15 min</span></div>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">6:15</div><div class="feed-time-sub">6:28</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>90 ml</h4><span>12 min</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-label">Yesterday</div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">21:30</div><div class="feed-time-sub">21:50</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>110 ml</h4><span>20 min</span></div>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">18:00</div><div class="feed-time-sub">18:15</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>95 ml</h4><span>15 min</span></div>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">14:30</div><div class="feed-time-sub">14:42</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>85 ml</h4><span>12 min</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-label">Wednesday</div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">22:00</div><div class="feed-time-sub">22:18</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>100 ml</h4><span>18 min</span></div>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">18:30</div><div class="feed-time-sub">18:48</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>115 ml</h4><span>18 min</span></div>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">14:00</div><div class="feed-time-sub">14:10</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>80 ml</h4><span>10 min</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-label">Tuesday</div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">21:45</div><div class="feed-time-sub">22:05</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>125 ml</h4><span>20 min</span></div>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">17:30</div><div class="feed-time-sub">17:42</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>90 ml</h4><span>12 min</span></div>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">13:15</div><div class="feed-time-sub">13:30</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>105 ml</h4><span>15 min</span></div>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">9:00</div><div class="feed-time-sub">9:12</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>85 ml</h4><span>12 min</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="day-section">
+                            <div class="day-label">Monday</div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">21:30</div><div class="feed-time-sub">21:48</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>110 ml</h4><span>18 min</span></div>
+                            </div>
+                            <div class="feed-cell">
+                                <div class="feed-time-col"><div class="feed-time-main">17:00</div><div class="feed-time-sub">17:15</div></div>
+                                <div class="feed-dot"></div>
+                                <div class="feed-info"><h4>95 ml</h4><span>15 min</span></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 16px; padding: 12px; text-align: center;">
+                            <span style="font-size: 11px; color: #8E8E93;">Scroll for more history ↓</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-bar">
+                        <div class="tab-item inactive"><div class="tab-icon">⌂</div><span class="tab-label">Dashboard</span></div>
+                        <div class="fab-button">+</div>
+                        <div class="tab-item active"><div class="tab-icon">☰</div><span class="tab-label">History</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL SCREENS -->
+    <div class="section-title">Modal Screens</div>
+    <div class="screens-grid">
+        <!-- LOG FEED -->
+        <div class="screen-card">
+            <div class="screen-label">Log Feed (Modal)</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    <div class="nav-bar"><span class="nav-title">B-Fed</span></div>
+                    
+                    <div class="dashboard-content" style="opacity: 0.15; filter: blur(2px);">
+                        <div class="hero-card">
+                            <div class="bottle-container">
+                                <svg width="70" height="120" viewBox="0 0 100 180">
+                                    <path fill="#e8e8ed" d="M 50 170 C 35 175 25 170 20 160 C 18 150 14 135 15 120 C 16 110 22 95 25 85 C 28 78 34 70 38 65 L 38 40 C 38 38 34 36 32 35 C 30 33 28 28 28 25 C 32 18 40 12 50 15 C 60 12 68 18 72 25 C 72 28 70 33 68 35 C 66 36 62 38 62 40 L 62 65 C 66 70 72 78 75 85 C 78 95 84 110 85 120 C 86 135 82 150 80 160 C 75 170 65 175 50 170 Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-overlay" style="background: rgba(0,0,0,0.35);">
+                        <div class="minimal-modal-sheet">
+                            <div class="modal-handle"></div>
+                            
+                            <!-- Amount Input: Pure Number Scrubber -->
+                            <div class="amount-scrubber" id="amountScrubber">
+                                <div class="amount-value" id="amountValue">
+                                    <span class="amount-number">90</span>
+                                    <span class="amount-unit">ml</span>
+                                </div>
+                                <div class="amount-hint">Swipe to adjust</div>
+                                
+                                <!-- Per-feed guidance -->
+                                <div style="margin-top: 16px; font-size: 14px; font-weight: 500; color: #8E8E93;">
+                                    Typical feed: 80–120 ml
+                                </div>
+                            </div>
+                            
+                            <!-- Timer Section -->
+                            <div class="minimal-timer-section">
+                                <div class="minimal-timer-display">12:45</div>
+                                <button class="minimal-timer-btn">Stop</button>
+                            </div>
+                            
+                            <button class="minimal-save-btn">Save Feed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- EDIT FEED -->
+        <div class="screen-card">
+            <div class="screen-label">Edit Feed (Modal)</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    <div class="nav-bar"><span class="nav-title">History</span></div>
+                    
+                    <div class="history-content" style="opacity: 0.3;">
+                        <div class="feed-cell">
+                            <div class="feed-time-col"><div class="feed-time-main">9:30</div><div class="feed-time-sub">9:45</div></div>
+                            <div class="feed-dot"></div>
+                            <div class="feed-info"><h4>120 ml</h4><span>15 min</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-overlay">
+                        <div class="modal-sheet">
+                            <div class="modal-handle"></div>
+                            <div class="modal-title">Edit Feed</div>
+                            
+                            <div class="edit-field">
+                                <div class="edit-label">Amount</div>
+                                <div class="edit-value">120 ml</div>
+                            </div>
+                            
+                            <div class="edit-field">
+                                <div class="edit-label">Time</div>
+                                <div class="edit-value">9:30 – 9:45 AM</div>
+                            </div>
+                            
+                            <div class="edit-field">
+                                <div class="edit-label">Duration</div>
+                                <div class="edit-value">15 minutes</div>
+                            </div>
+                            
+                            <div class="edit-field">
+                                <div class="edit-label">Notes</div>
+                                <div class="edit-value" style="color:#8E8E93;">Add notes...</div>
+                            </div>
+                            
+                            <button class="save-btn" style="margin-top:6px;">Save Changes</button>
+                            <button class="delete-btn">Delete Feed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ONBOARDING FLOW -->
+    <div class="section-title">Onboarding (3 Screens, &lt;15 seconds)</div>
+    <div class="screens-grid">
+        <!-- Screen 1: Welcome -->
+        <div class="screen-card">
+            <div class="screen-label">Onboarding — Welcome</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen" style="background: #F2F2F7;">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    
+                    <!-- Skip button -->
+                    <div style="position: absolute; top: 50px; right: 16px;">
+                        <span style="font-size: 15px; color: #8E8E93; font-weight: 500;">Skip</span>
+                    </div>
+                    
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px;">
+                        <!-- App logo (rainbow) -->
+                        <div style="width: 140px; height: 140px; margin-bottom: 24px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="120" height="120" viewBox="0 0 200 160">
+                                <!-- Rainbow arcs -->
+                                <path d="M 100 140 A 80 80 0 0 1 100 20" fill="none" stroke="#7FDBDA" stroke-width="18" stroke-linecap="round"/>
+                                <path d="M 100 140 A 60 60 0 0 1 100 40" fill="none" stroke="#FF8CB3" stroke-width="18" stroke-linecap="round"/>
+                                <path d="M 100 140 A 40 40 0 0 1 100 60" fill="none" stroke="#FFE66D" stroke-width="18" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        
+                        <div style="font-size: 28px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; text-align: center;">Welcome to B-Fed</div>
+                        
+                        <div style="font-size: 17px; color: #666; text-align: center; line-height: 1.4;">A calm way to track feeds<br>and know you're doing great</div>
+                    </div>
+                    
+                    <!-- Bottom button -->
+                    <div style="padding: 0 24px 34px;">
+                        <button style="width: 100%; height: 56px; background: #2F6F5E; color: white; border: none; border-radius: 16px; font-size: 17px; font-weight: 600;">Get started</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Screen 2: Baby Details -->
+        <div class="screen-card">
+            <div class="screen-label">Onboarding — Baby Details</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen" style="background: #F2F2F7;">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    
+                    <!-- Skip button -->
+                    <div style="position: absolute; top: 50px; right: 16px;">
+                        <span style="font-size: 15px; color: #8E8E93; font-weight: 500;">Skip</span>
+                    </div>
+                    
+                    <div style="flex: 1; padding: 60px 24px 24px;">
+                        <div style="font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 32px; text-align: center; line-height: 1.3;">Tell us a little about<br>your baby</div>
+                        
+                        <!-- Age -->
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 13px; font-weight: 600; color: #8E8E93; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Age</div>
+                            <div style="height: 100px; background: rgba(120,120,128,0.12); border-radius: 12px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 50%; left: 0; right: 0; height: 40px; background: rgba(255,255,255,0.5); transform: translateY(-50%); border-top: 1px solid rgba(0,0,0,0.1); border-bottom: 1px solid rgba(0,0,0,0.1);"></div>
+                                <span style="font-size: 20px; font-weight: 500; color: #1a1a1a; z-index: 1;">Newborn</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Weight -->
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 13px; font-weight: 600; color: #8E8E93; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Weight (optional)</div>
+                            <div style="display: flex; align-items: center; padding: 14px 16px; background: rgba(120,120,128,0.12); border-radius: 12px;">
+                                <span style="font-size: 17px; color: #8E8E93; flex: 1;">Optional</span>
+                                <span style="font-size: 17px; color: #8E8E93;">kg</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Feeding type -->
+                        <div>
+                            <div style="font-size: 13px; font-weight: 600; color: #8E8E93; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Feeding type</div>
+                            <div style="display: flex; gap: 12px;">
+                                <div style="flex: 1; height: 48px; background: #2F6F5E; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                    <span style="font-size: 15px; font-weight: 500; color: white;">Formula</span>
+                                </div>
+                                <div style="flex: 1; height: 48px; background: rgba(120,120,128,0.12); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                    <span style="font-size: 15px; font-weight: 500; color: #1a1a1a;">Mixed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom button -->
+                    <div style="padding: 0 24px 34px;">
+                        <button style="width: 100%; height: 56px; background: #2F6F5E; color: white; border: none; border-radius: 16px; font-size: 17px; font-weight: 600;">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Screen 3: Ready -->
+        <div class="screen-card">
+            <div class="screen-label">Onboarding — Ready</div>
+            <div class="iphone-frame">
+                <div class="iphone-screen" style="background: #F2F2F7;">
+                    <div class="status-bar"><span>9:41</span><span>📶 5G 🔋</span></div>
+                    
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px;">
+                        <!-- Success icon (rainbow logo) -->
+                        <div style="width: 100px; height: 100px; margin-bottom: 24px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="100" height="100" viewBox="0 0 200 160">
+                                <!-- Rainbow arcs -->
+                                <path d="M 100 140 A 80 80 0 0 1 100 20" fill="none" stroke="#7FDBDA" stroke-width="18" stroke-linecap="round"/>
+                                <path d="M 100 140 A 60 60 0 0 1 100 40" fill="none" stroke="#FF8CB3" stroke-width="18" stroke-linecap="round"/>
+                                <path d="M 100 140 A 40 40 0 0 1 100 60" fill="none" stroke="#FFE66D" stroke-width="18" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        
+                        <div style="font-size: 28px; font-weight: 700; color: #1a1a1a; margin-bottom: 32px; text-align: center;">You're all set</div>
+                        
+                        <!-- Example insight card -->
+                        <div style="width: 100%; background: rgba(47,111,94,0.08); border-radius: 20px; padding: 24px; text-align: center;">
+                            <div style="font-size: 15px; color: #666; margin-bottom: 8px;">Typical feeding range:</div>
+                            <div style="font-size: 26px; font-weight: 600; color: #2F6F5E; margin-bottom: 4px;">80–120 ml</div>
+                            <div style="font-size: 14px; font-weight: 500; color: #2F6F5E; opacity: 0.8; margin-top: 8px;">You're right on track</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom button -->
+                    <div style="padding: 0 24px 34px;">
+                        <button style="width: 100%; height: 56px; background: #2F6F5E; color: white; border: none; border-radius: 16px; font-size: 17px; font-weight: 600;">Start tracking</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SYSTEM OVERVIEW -->
+    <div class="section-title">System Overview</div>
+    <div class="screen-card" style="max-width: 600px; margin: 0 auto 40px;">
+        <div class="system-overview">
+            <strong>Navigation Structure:</strong><br>
+            • <strong>Dashboard Tab</strong> — 3 views: Today (Bottle), 7 Days (Wave), Month (Completion)<br>
+            • <strong>History Tab</strong> — Chronological feed list<br>
+            • <strong>FAB (+)</strong> — Log Feed modal<br><br>
+            
+            <strong>3-Period System:</strong><br>
+            • <strong>Today</strong> — Bottle visual, emotional reassurance<br>
+            • <strong>7 Days</strong> — Rhythm wave, short-term pattern<br>
+            • <strong>Month</strong> — Completion calendar, consistency tracking<br><br>
+            
+            <strong>Modal Flow:</strong><br>
+            • Log Feed — Add new feed with timer<br>
+            • Edit Feed — Modify or delete existing feed<br><br>
+            
+            <strong>Design Principles:</strong><br>
+            • No performance pressure<br>
+            • Emotional, supportive tone<br>
+            • Premium, calm aesthetics<br>
+            • Clear visual hierarchy
+        </div>
+    </div>
+    
+    <script>
+        // MINIMAL AMOUNT SCRUBBER — Pure Number Input
+        (function() {
+            const scrubber = document.getElementById('amountScrubber');
+            const valueEl = document.getElementById('amountValue');
+            const numberEl = valueEl.querySelector('.amount-number');
+            
+            if (!scrubber || !valueEl || !numberEl) return;
+            
+            // Last used amount (from user history)
+            const lastUsedAmount = 156;
+            
+            let isDragging = false;
+            let isHorizontalDrag = false;
+            let startX = 0;
+            let startY = 0;
+            let currentAmount = lastUsedAmount;
+            let lastHapticAmount = 0;
+            let velocity = 0;
+            let lastX = 0;
+            let lastTime = 0;
+            
+            // Magnetic snap points (common feeding amounts)
+            const magneticPoints = [60, 90, 120];
+            const magneticRange = 5; // ml range of "resistance" near magnetic points
+            
+            // Haptic points (for feedback)
+            const hapticInterval = 8;
+            const strongHapticPoints = [60, 90, 120];
+            
+            // Trigger visual haptic feedback
+            function triggerHaptic(intensity = 'light') {
+                if (intensity === 'strong') {
+                    valueEl.style.transform = 'scale(0.97)';
+                    setTimeout(() => valueEl.style.transform = 'scale(1)', 70);
+                } else {
+                    valueEl.style.transform = 'scale(0.985)';
+                    setTimeout(() => valueEl.style.transform = 'scale(1)', 40);
+                }
+            }
+            
+            // Calculate distance to nearest magnetic point
+            function getMagneticEffect(amount) {
+                for (const point of magneticPoints) {
+                    const distance = Math.abs(amount - point);
+                    if (distance < magneticRange) {
+                        // Return resistance factor (0 = full resistance, 1 = no resistance)
+                        return 0.3 + (0.7 * (distance / magneticRange));
+                    }
+                }
+                return 1; // No magnetic effect
+            }
+            
+            // Update displayed amount
+            function updateAmount(amount, fromDrag = false) {
+                // Clamp between 0 and 240
+                amount = Math.max(0, Math.min(240, amount));
+                currentAmount = amount;
+                
+                // Update display
+                numberEl.textContent = Math.round(amount);
+                
+                // Animate on update
+                if (fromDrag) {
+                    valueEl.classList.add('updating');
+                    requestAnimationFrame(() => {
+                        valueEl.classList.remove('updating');
+                    });
+                }
+                
+                // Haptic feedback
+                const rounded = Math.round(amount);
+                if (Math.abs(rounded - lastHapticAmount) >= hapticInterval) {
+                    if (strongHapticPoints.includes(rounded)) {
+                        triggerHaptic('strong');
+                    } else {
+                        triggerHaptic('light');
+                    }
+                    lastHapticAmount = rounded;
+                }
+            }
+            
+            // Calculate sensitivity based on velocity
+            function getSensitivity(velocity) {
+                const absVelocity = Math.abs(velocity);
+                if (absVelocity < 0.4) return 0.15;     // Very slow - 1ml per ~6px
+                if (absVelocity < 1.0) return 0.35;     // Slow - fine control
+                if (absVelocity < 2.5) return 0.7;      // Normal
+                if (absVelocity < 4) return 1.2;        // Fast
+                return 2.0;                              // Very fast swipe
+            }
+            
+            // Event handlers
+            function handleStart(e) {
+                isDragging = true;
+                isHorizontalDrag = false; // Will be determined on first movement
+                startX = (e.touches ? e.touches[0].clientX : e.clientX);
+                startY = (e.touches ? e.touches[0].clientY : e.clientY);
+                lastX = startX;
+                lastTime = Date.now();
+                velocity = 0;
+                scrubber.style.cursor = 'grabbing';
+                document.body.style.userSelect = 'none';
+                
+                // Fade out hint
+                const hint = scrubber.querySelector('.amount-hint');
+                if (hint) {
+                    hint.style.transition = 'opacity 0.3s ease';
+                    hint.style.opacity = '0';
+                }
+            }
+            
+            function handleMove(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const x = (e.touches ? e.touches[0].clientX : e.clientX);
+                const y = (e.touches ? e.touches[0].clientY : e.clientY);
+                const now = Date.now();
+                
+                // On first significant movement, determine direction
+                if (!isHorizontalDrag) {
+                    const absDeltaX = Math.abs(x - startX);
+                    const absDeltaY = Math.abs(y - startY);
+                    
+                    // Only process if movement is primarily horizontal
+                    if (absDeltaY > absDeltaX) {
+                        // Vertical drag - cancel this drag
+                        isDragging = false;
+                        scrubber.style.cursor = 'ew-resize';
+                        document.body.style.userSelect = '';
+                        return;
+                    }
+                    
+                    // Mark as horizontal drag
+                    isHorizontalDrag = true;
+                }
+                
+                const deltaX = x - lastX;
+                const deltaTime = now - lastTime;
+                
+                // Calculate velocity
+                if (deltaTime > 0) {
+                    velocity = deltaX / deltaTime;
+                }
+                
+                // Get base sensitivity from velocity
+                let sensitivity = getSensitivity(velocity);
+                
+                // Apply magnetic resistance near common values
+                const magneticEffect = getMagneticEffect(currentAmount);
+                sensitivity *= magneticEffect;
+                
+                // Update amount (right = increase, left = decrease)
+                const newAmount = currentAmount + (deltaX * sensitivity);
+                updateAmount(newAmount, true);
+                
+                lastX = x;
+                lastTime = now;
+            }
+            
+            function handleEnd() {
+                if (!isDragging) return;
+                isDragging = false;
+                scrubber.style.cursor = 'ew-resize';
+                document.body.style.userSelect = '';
+                
+                // Only process if this was a horizontal drag
+                if (!isHorizontalDrag) {
+                    isHorizontalDrag = false;
+                    return;
+                }
+                
+                isHorizontalDrag = false;
+                
+                // Snap to nearest whole number
+                let finalAmount = Math.round(currentAmount);
+                
+                // If near a magnetic point, snap to it
+                for (const point of magneticPoints) {
+                    if (Math.abs(finalAmount - point) <= 3) {
+                        finalAmount = point;
+                        triggerHaptic('strong');
+                        break;
+                    }
+                }
+                
+                updateAmount(finalAmount);
+            }
+            
+            // Bind events
+            scrubber.addEventListener('mousedown', handleStart);
+            scrubber.addEventListener('touchstart', handleStart, { passive: false });
+            
+            window.addEventListener('mousemove', handleMove);
+            window.addEventListener('touchmove', handleMove, { passive: false });
+            
+            window.addEventListener('mouseup', handleEnd);
+            window.addEventListener('touchend', handleEnd);
+            
+            // Initialize
+            updateAmount(currentAmount);
+        })();
+    </script>
+</body>
+</html>

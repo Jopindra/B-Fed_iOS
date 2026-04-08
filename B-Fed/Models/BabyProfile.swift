@@ -1,0 +1,105 @@
+import Foundation
+import SwiftData
+
+// MARK: - Baby Profile
+/// Stores baby information for intelligent feeding guidance
+@Model
+class BabyProfile {
+    var id: UUID
+    var babyName: String
+    var dateOfBirth: Date
+    var birthWeight: Double? // in grams
+    var currentWeight: Double? // in grams
+    var feedingType: FeedingType
+    var createdAt: Date
+    var updatedAt: Date
+    
+    init(
+        id: UUID = UUID(),
+        babyName: String = "Baby",
+        dateOfBirth: Date = Date(),
+        birthWeight: Double? = nil,
+        currentWeight: Double? = nil,
+        feedingType: FeedingType = .formula
+    ) {
+        self.id = id
+        self.babyName = babyName
+        self.dateOfBirth = dateOfBirth
+        self.birthWeight = birthWeight
+        self.currentWeight = currentWeight
+        self.feedingType = feedingType
+        self.createdAt = Date()
+        self.updatedAt = Date()
+    }
+    
+    /// Age in days
+    var ageInDays: Int {
+        Calendar.current.dateComponents([.day], from: dateOfBirth, to: Date()).day ?? 0
+    }
+    
+    /// Age in weeks
+    var ageInWeeks: Int {
+        Calendar.current.dateComponents([.weekOfYear], from: dateOfBirth, to: Date()).weekOfYear ?? 0
+    }
+    
+    /// Age in months
+    var ageInMonths: Int {
+        Calendar.current.dateComponents([.month], from: dateOfBirth, to: Date()).month ?? 0
+    }
+    
+    /// Formatted age string for display
+    var formattedAge: String {
+        let days = ageInDays
+        if days < 7 {
+            return days == 1 ? "1 day old" : "\(days) days old"
+        } else if days < 30 {
+            let weeks = days / 7
+            return weeks == 1 ? "1 week old" : "\(weeks) weeks old"
+        } else {
+            let months = ageInMonths
+            return months == 1 ? "1 month old" : "\(months) months old"
+        }
+    }
+    
+    /// Weight in kg for display
+    var weightInKg: Double? {
+        guard let weight = currentWeight ?? birthWeight else { return nil }
+        return weight / 1000.0
+    }
+}
+
+// MARK: - Feeding Type
+enum FeedingType: String, Codable, CaseIterable {
+    case breast = "breast"
+    case formula = "formula"
+    case mixed = "mixed"
+    
+    var displayName: String {
+        switch self {
+        case .breast:
+            return "Breast milk"
+        case .formula:
+            return "Formula"
+        case .mixed:
+            return "Mixed feeding"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .breast:
+            return "heart.fill"
+        case .formula:
+            return "drop.fill"
+        case .mixed:
+            return "arrow.left.arrow.right"
+        }
+    }
+}
+
+// MARK: - Profile Status
+enum ProfileSetupStatus {
+    case notStarted
+    case needsOnboarding
+    case complete
+}

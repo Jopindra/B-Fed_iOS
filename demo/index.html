@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-Fed Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+            background: #E5E5E5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1A1A1A;
+        }
+        
+        .subtitle {
+            color: #6B6B6B;
+            margin-bottom: 32px;
+            font-size: 15px;
+        }
+        
+        .phone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            width: 100%;
+        }
+        
+        .phone-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .phone-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6B6B6B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .iphone {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 54px;
+            padding: 12px;
+            box-shadow: 
+                0 0 0 2px #333,
+                0 25px 50px -12px rgba(0,0,0,0.25),
+                0 0 0 1px rgba(255,255,255,0.1) inset;
+        }
+        
+        .iphone-inner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #FCFBF9 0%, #F5F4F1 100%);
+            border-radius: 44px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+            z-index: 100;
+        }
+        
+        /* Background */
+        .calm-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+        
+        .radial-glow {
+            position: absolute;
+            width: 340px;
+            height: 340px;
+            left: 50%;
+            top: 32%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(74, 155, 122, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        /* Logo Lockup: Shapes + B-Fed unified */
+        .logo-lockup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .shapes-container {
+            position: relative;
+            width: 200px;
+            height: 160px;
+        }
+        
+        .organic-shape {
+            position: absolute;
+            animation: shapeBreath 3.8s ease-in-out infinite;
+        }
+        
+        /* Bottom - Emerald (strong anchor) */
+        .organic-shape:nth-child(1) {
+            width: 170px;
+            height: 68px;
+            left: 15px;
+            bottom: 0;
+            background: rgba(74, 155, 122, 0.45);
+            border-radius: 52% 48% 55% 45% / 45% 55% 48% 52%;
+            animation-delay: 0s;
+        }
+        
+        /* Middle - Pink (medium) */
+        .organic-shape:nth-child(2) {
+            width: 130px;
+            height: 58px;
+            left: 35px;
+            bottom: 42px;
+            background: rgba(232, 196, 208, 0.38);
+            border-radius: 45% 55% 50% 50% / 40% 50% 55% 45%;
+            transform: rotate(-2.5deg);
+            animation-delay: -1.2s;
+        }
+        
+        /* Top - Yellow (lightest) */
+        .organic-shape:nth-child(3) {
+            width: 90px;
+            height: 48px;
+            left: 53px;
+            bottom: 92px;
+            background: rgba(240, 224, 184, 0.50);
+            border-radius: 55% 45% 50% 50% / 45% 55% 50% 50%;
+            transform: rotate(3deg);
+            animation-delay: -2.4s;
+        }
+        
+        @keyframes shapeBreath {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-3px) scale(1.02);
+            }
+        }
+        
+        /* B-Fed brand text */
+        .brand-text {
+            font-size: 17px;
+            font-weight: 500;
+            color: #6B6B6B;
+            letter-spacing: normal;
+        }
+        
+        /* Onboarding Content */
+        .onboarding-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 0 32px 34px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Refined Skip button */
+        .skip-btn {
+            position: absolute;
+            top: 12px;
+            right: 24px;
+            color: #8E8E8E;
+            font-size: 15px;
+            font-weight: 500;
+            text-decoration: none;
+            opacity: 0.75;
+        }
+        
+        .hero-section {
+            margin-top: 12vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .welcome-headline {
+            font-size: 26px;
+            font-weight: 600;
+            color: #1A1A1A;
+            text-align: center;
+            line-height: 1.2;
+            margin-top: 52px;
+            margin-bottom: 14px;
+        }
+        
+        .welcome-headline span {
+            display: block;
+        }
+        
+        .welcome-subtitle {
+            font-size: 15px;
+            font-weight: 400;
+            color: #6B6B6B;
+            text-align: center;
+        }
+        
+        .cta-button {
+            margin-top: auto;
+            background: #7AB89A;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 27px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(122, 184, 154, 0.14);
+            transition: transform 0.12s ease, opacity 0.12s ease;
+        }
+        
+        .cta-button:active {
+            transform: scale(0.98);
+            opacity: 0.95;
+        }
+        
+        /* Baby Details Screen */
+        .details-content {
+            padding: 60px 24px 34px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .details-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1A1A1A;
+            text-align: center;
+            margin-bottom: 44px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8E8E8E;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .input-field {
+            background: #F5F5F3;
+            border-radius: 16px;
+            padding: 18px 16px;
+            font-size: 16px;
+            color: #1A1A1A;
+            border: none;
+            width: 100%;
+        }
+        
+        .type-selector {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .type-btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            background: #F5F5F3;
+            color: #1A1A1A;
+        }
+        
+        .type-btn.active {
+            background: #7AB89A;
+            color: white;
+        }
+        
+        /* Ready Screen */
+        .ready-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 24px 34px;
+        }
+        
+        .ready-logo {
+            transform: scale(0.85);
+            margin-bottom: 40px;
+        }
+        
+        .ready-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 32px;
+        }
+        
+        .range-card {
+            background: rgba(122, 184, 154, 0.08);
+            border-radius: 20px;
+            padding: 28px 32px;
+            text-align: center;
+            width: 100%;
+            margin-bottom: auto;
+        }
+        
+        .range-label {
+            font-size: 14px;
+            color: #6B6B6B;
+            margin-bottom: 8px;
+        }
+        
+        .range-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #7AB89A;
+            margin-bottom: 8px;
+        }
+        
+        .range-message {
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(122, 184, 154, 0.8);
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>B-Fed App Demo</h1>
+    <p class="subtitle">Brand Lockup — Unified Logo, Clean Alignment</p>
+    
+    <div class="phone-grid">
+        <!-- 1. Welcome Screen -->
+        <div class="phone-container">
+            <div class="phone-label">1. Welcome</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    
+                    <div class="calm-bg">
+                        <div class="radial-glow"></div>
+                    </div>
+                    
+                    <div class="onboarding-content">
+                        <!-- Refined Skip button -->
+                        <a href="#" class="skip-btn">Skip</a>
+                        
+                        <div class="hero-section">
+                            <!-- Logo Lockup: Shapes + B-Fed unified -->
+                            <div class="logo-lockup">
+                                <div class="shapes-container">
+                                    <div class="organic-shape"></div>
+                                    <div class="organic-shape"></div>
+                                    <div class="organic-shape"></div>
+                                </div>
+                                <div class="brand-text">B-Fed</div>
+                            </div>
+                            
+                            <!-- Headline -->
+                            <h2 class="welcome-headline">
+                                <span>Track feeds.</span>
+                                <span>Stay in flow.</span>
+                            </h2>
+                            <p class="welcome-subtitle">Simple tracking, without the stress.</p>
+                        </div>
+                        
+                        <button class="cta-button">Get started</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. Baby Details -->
+        <div class="phone-container">
+            <div class="phone-label">2. Baby Details</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="details-content">
+                        <h2 class="details-title">Tell us about<br>your baby</h2>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Age</label>
+                            <select class="input-field">
+                                <option>2 weeks old</option>
+                                <option>1 month old</option>
+                                <option>3 months old</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Weight (optional)</label>
+                            <div class="input-field" style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #8E8E8E;">Optional</span>
+                                <span style="color: #8E8E8E;">kg</span>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Feeding type</label>
+                            <div class="type-selector">
+                                <button class="type-btn active">Formula</button>
+                                <button class="type-btn">Mixed</button>
+                            </div>
+                        </div>
+                        
+                        <button class="cta-button" style="width: 100%; margin-top: 40px;">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3. Ready Screen -->
+        <div class="phone-container">
+            <div class="phone-label">3. Ready</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    
+                    <div class="calm-bg">
+                        <div class="radial-glow"></div>
+                    </div>
+                    
+                    <div class="ready-content">
+                        <div class="logo-lockup ready-logo">
+                            <div class="shapes-container">
+                                <div class="organic-shape"></div>
+                                <div class="organic-shape"></div>
+                                <div class="organic-shape"></div>
+                            </div>
+                            <div class="brand-text">B-Fed</div>
+                        </div>
+                        
+                        <h2 class="ready-title">You're all set</h2>
+                        
+                        <div class="range-card">
+                            <p class="range-label">Typical feeding range:</p>
+                            <p class="range-value">70–100 ml</p>
+                            <p class="range-message">You're right on track</p>
+                        </div>
+                        
+                        <button class="cta-button" style="width: 100%;">Start tracking</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
