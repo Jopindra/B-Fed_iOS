@@ -179,43 +179,42 @@ struct WelcomeStep: View {
     }
 }
 
-// MARK: - Flowing Logo (Abstract, organic layers)
+// MARK: - Flowing Logo (Abstract, organic layers - balanced)
 struct FlowingLogo: View {
     var body: some View {
         VStack(spacing: 8) {
-            // Three organic flowing shapes
+            // Three organic flowing shapes - perfectly centered
             ZStack(alignment: .bottom) {
                 // Base layer - Rich emerald (flowing foundation)
                 FlowingShape(
-                    width: 155,
-                    height: 62,
+                    width: 150,
+                    height: 60,
                     color: Color.emeraldPrimary.opacity(0.50),
-                    curveIntensity: 0.4,
+                    curveIntensity: 0.35,
                     breathing: (intensity: 0.012, vertical: 2, delay: 0)
                 )
-                .offset(x: 0, y: 0)
                 
                 // Middle layer - Warm pink (softly overlapping)
                 FlowingShape(
-                    width: 125,
-                    height: 56,
+                    width: 120,
+                    height: 54,
                     color: Color.pinkSoft.opacity(0.45),
-                    curveIntensity: 0.5,
+                    curveIntensity: 0.45,
                     breathing: (intensity: 0.015, vertical: 1.5, delay: 1.2)
                 )
-                .offset(x: 0, y: -32)
+                .offset(y: -30)
                 
                 // Top layer - Clear yellow (airy, visible)
                 FlowingShape(
-                    width: 95,
-                    height: 48,
+                    width: 92,
+                    height: 46,
                     color: Color.yellowSoft.opacity(0.68),
-                    curveIntensity: 0.6,
+                    curveIntensity: 0.55,
                     breathing: (intensity: 0.010, vertical: 1, delay: 2.4)
                 )
-                .offset(x: 0, y: -62)
+                .offset(y: -58)
             }
-            .frame(width: 155, height: 130)
+            .frame(width: 170, height: 125)
             
             // B-Fed label
             Text("B-Fed")
