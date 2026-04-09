@@ -57,7 +57,7 @@ struct LogFeedView: View {
                         TimerView()
                     }
                     
-                    // Save Button
+                    // Save Button with gentle press
                     Button(action: saveFeed) {
                         Text("Save Feed")
                             .font(.headline.weight(.semibold))
@@ -66,7 +66,9 @@ struct LogFeedView: View {
                             .frame(height: 56)
                             .background(Color.emerald)
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .shadow(color: Color.emerald.opacity(0.15), radius: 6, x: 0, y: 2)
                     }
+                    .buttonStyle(GentlePressEffect())
                     .padding(.bottom, 8)
                 }
                 .padding(.horizontal, 20)
@@ -180,8 +182,9 @@ struct AmountScrubber: View {
         amount = max(0, min(240, newAmount))
         
         // Visual feedback
-        withAnimation(.easeInOut(duration: 0.05)) {
-            scale = 1.03
+        // Gentle scale feedback during drag
+        withAnimation(MotionCurve.interaction) {
+            scale = 1.02
         }
     }
     
@@ -206,7 +209,8 @@ struct AmountScrubber: View {
             }
         }
         
-        withAnimation(.spring(response: 0.3)) {
+        // Gentle return to rest
+        withAnimation(MotionCurve.gentleReturn) {
             amount = finalAmount
             scale = 1.0
         }
@@ -241,6 +245,7 @@ struct TimerView: View {
                     .background(isRunning ? Color.red.opacity(0.9) : Color.emerald.opacity(0.1))
                     .clipShape(Circle())
             }
+            .buttonStyle(GentlePressEffect())
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground))

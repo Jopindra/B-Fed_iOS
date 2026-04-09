@@ -16,7 +16,7 @@ struct OnboardingView: View {
             CalmBackground()
             
             VStack(spacing: 0) {
-                // Skip button
+                // Skip button - refined with gentle fade
                 HStack {
                     Spacer()
                     if currentStep < 2 {
@@ -25,21 +25,22 @@ struct OnboardingView: View {
                         }
                         .font(.footnote.weight(.medium))
                         .foregroundStyle(Color.textMuted.opacity(0.55))
-                        .padding(.top, 14)
+                        .padding(.top, 12)
                         .padding(.trailing, 24)
                         .opacity(skipButtonOpacity)
                         .onAppear {
-                            withAnimation(.easeIn(duration: 0.6).delay(0.5)) {
+                            withAnimation(MotionCurve.standard.delay(0.5)) {
                                 skipButtonOpacity = 1
                             }
                         }
                     }
                 }
                 
-                // Content
+                // Content with screen transitions
                 TabView(selection: $currentStep) {
                     WelcomeStep()
                         .tag(0)
+                        .screenTransition(isActive: currentStep == 0, offset: 12)
                     
                     BabyDetailsStep(
                         ageWeeks: $ageWeeks,
@@ -47,17 +48,19 @@ struct OnboardingView: View {
                         feedingType: $feedingType
                     )
                     .tag(1)
+                    .screenTransition(isActive: currentStep == 1, offset: 12)
                     
                     ReadyStep(
                         ageWeeks: ageWeeks,
                         weightKg: Double(weightText)
                     )
                     .tag(2)
+                    .screenTransition(isActive: currentStep == 2, offset: 12)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
-                .animation(.easeInOut(duration: 0.4), value: currentStep)
+                .animation(MotionCurve.standard, value: currentStep)
                 
-                // Bottom button
+                // Bottom button with gentle press
                 VStack(spacing: 0) {
                     Button(action: handlePrimaryAction) {
                         Text(buttonText)
@@ -75,7 +78,7 @@ struct OnboardingView: View {
                             .clipShape(Capsule())
                             .shadow(color: Color.emeraldSoft.opacity(0.20), radius: 8, x: 0, y: 3)
                     }
-                    .buttonStyle(CalmPressButtonStyle())
+                    .buttonStyle(GentlePressEffect())
                     .padding(.horizontal, 24)
                     .padding(.bottom, 34)
                 }
@@ -93,7 +96,7 @@ struct OnboardingView: View {
     
     private func handlePrimaryAction() {
         if currentStep < 2 {
-            withAnimation(.easeInOut(duration: 0.4)) {
+            withAnimation(MotionCurve.standard) {
                 currentStep += 1
             }
         } else {
@@ -129,7 +132,7 @@ struct CalmBackground: View {
             )
             .ignoresSafeArea()
             
-            // Enhanced radial glow with more contrast
+            // Enhanced radial glow
             RadialGradient(
                 colors: [
                     Color.emeraldPrimary.opacity(0.14),
@@ -151,11 +154,11 @@ struct WelcomeStep: View {
             Spacer()
                 .frame(height: UIScreen.main.bounds.height * 0.08)
             
-            // Signature asymmetric logo
+            // Breathing logo with asymmetric design
             AsymmetricLogoLockup()
                 .padding(.bottom, 52)
             
-            // Headline with controlled contrast
+            // Headline
             VStack(spacing: 2) {
                 Text("Track feeds.")
                     .font(.system(size: 26, weight: .semibold, design: .default))
@@ -179,15 +182,13 @@ struct WelcomeStep: View {
     }
 }
 
-// MARK: - Asymmetric Logo Lockup (Signature visual identity)
+// MARK: - Asymmetric Logo Lockup with Breathing Motion
 struct AsymmetricLogoLockup: View {
-    @State private var phase: CGFloat = 0
-    
     var body: some View {
         VStack(spacing: 6) {
-            // Asymmetric stacked shapes with signature imbalance
+            // Stacked organic shapes with breathing animation
             ZStack(alignment: .bottom) {
-                // Bottom layer - Emerald (deeper, richer, wider, shifted right)
+                // Bottom layer - Emerald (breathing with offset)
                 FluidShape(
                     topCurve: 0.28,
                     bottomCurve: 0.58,
@@ -196,10 +197,10 @@ struct AsymmetricLogoLockup: View {
                 )
                 .fill(Color.emeraldPrimary.opacity(0.50))
                 .frame(width: 185, height: 72)
-                .offset(x: 8, y: sin(phase) * 1.5)  // Shifted right
-                .scaleEffect(1.0 + sin(phase * 0.6) * 0.012)
+                .offset(x: 8)
+                .breathing(intensity: 0.015, verticalOffset: 2, delay: 0)
                 
-                // Middle layer - Pink (centered anchor)
+                // Middle layer - Pink (centered, delayed breathing)
                 FluidShape(
                     topCurve: 0.42,
                     bottomCurve: 0.32,
@@ -208,10 +209,10 @@ struct AsymmetricLogoLockup: View {
                 )
                 .fill(Color.pinkSoft.opacity(0.36))
                 .frame(width: 135, height: 60)
-                .offset(x: 0, y: -38 + sin(phase + 1.2) * 1.5)
-                .scaleEffect(1.0 + sin(phase * 0.7 + 0.8) * 0.015)
+                .offset(y: -38)
+                .breathing(intensity: 0.018, verticalOffset: 1.5, delay: 1.2)
                 
-                // Top layer - Yellow (shifted left, lighter)
+                // Top layer - Yellow (shifted left, lighter breathing)
                 FluidShape(
                     topCurve: 0.58,
                     bottomCurve: 0.28,
@@ -220,22 +221,16 @@ struct AsymmetricLogoLockup: View {
                 )
                 .fill(Color.yellowSoft.opacity(0.58))
                 .frame(width: 95, height: 50)
-                .offset(x: -6, y: -78 + sin(phase + 2.4) * 1.2)  // Shifted left
-                .scaleEffect(1.0 + sin(phase * 0.8 + 1.5) * 0.018)
+                .offset(x: -6, y: -78)
+                .breathing(intensity: 0.012, verticalOffset: 1, delay: 2.4)
             }
             .frame(width: 210, height: 155)
-            // Subtle upward bias through slight rotation
             .rotationEffect(.degrees(1.5))
             
-            // B-Fed label - refined signature
+            // B-Fed label
             Text("B-Fed")
                 .font(.system(size: 15, weight: .medium, design: .default))
                 .foregroundStyle(Color.textMuted.opacity(0.80))
-        }
-        .onAppear {
-            withAnimation(.easeInOut(duration: 4.0).repeatForever(autoreverses: true)) {
-                phase = .pi * 2
-            }
         }
     }
 }
@@ -302,6 +297,7 @@ struct BabyDetailsStep: View {
             Spacer().frame(height: 44)
             
             VStack(spacing: 20) {
+                // Age picker with staggered appearance
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Age")
                         .font(.subheadline.weight(.semibold))
@@ -318,7 +314,9 @@ struct BabyDetailsStep: View {
                     .background(Color.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
+                .staggered(index: 0, baseDelay: 0.1)
                 
+                // Weight input with staggered appearance
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Weight (optional)")
                         .font(.subheadline.weight(.semibold))
@@ -337,7 +335,9 @@ struct BabyDetailsStep: View {
                     .background(Color.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
+                .staggered(index: 1, baseDelay: 0.1)
                 
+                // Feeding type with staggered appearance
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Feeding type")
                         .font(.subheadline.weight(.semibold))
@@ -346,7 +346,7 @@ struct BabyDetailsStep: View {
                     HStack(spacing: 12) {
                         ForEach([FeedingType.formula, .mixed], id: \.self) { type in
                             Button {
-                                withAnimation(.spring(response: 0.3)) {
+                                withAnimation(MotionCurve.interaction) {
                                     feedingType = type
                                 }
                             } label: {
@@ -362,6 +362,7 @@ struct BabyDetailsStep: View {
                         }
                     }
                 }
+                .staggered(index: 2, baseDelay: 0.1)
             }
             
             Spacer()
@@ -408,6 +409,7 @@ struct ReadyStep: View {
                 .font(.system(size: 26, weight: .bold, design: .default))
                 .foregroundStyle(Color.textPrimary)
             
+            // Range preview with staggered appearance
             VStack(spacing: 12) {
                 Text("Typical feeding range:")
                     .font(.subheadline)
@@ -426,32 +428,22 @@ struct ReadyStep: View {
             .background(Color.emeraldSoft.opacity(0.08))
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             .padding(.horizontal, 24)
+            .staggered(index: 0, baseDelay: 0.2)
             
             Spacer()
         }
     }
 }
 
-// MARK: - Button Press Style
-struct CalmPressButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .opacity(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.easeInOut(duration: 0.12), value: configuration.isPressed)
-    }
-}
-
 // MARK: - Color Extensions
 private extension Color {
-    // Deeper, richer brand colors
-    static var emeraldPrimary: Color { Color(hex: "#2D7A5E") }  // Deeper green anchor
+    static var emeraldPrimary: Color { Color(hex: "#2D7A5E") }
     static var emeraldSoft: Color { Color(hex: "#5BA88A") }
     static var pinkSoft: Color { Color(hex: "#E6C0CC") }
     static var yellowSoft: Color { Color(hex: "#ECD8A8") }
     
     static var textPrimary: Color { Color(hex: "#1A1A1A") }
-    static var textSecondary: Color { Color(hex: "#5A5A5A") }  // Slightly deeper for contrast
+    static var textSecondary: Color { Color(hex: "#5A5A5A") }
     static var textMuted: Color { Color(hex: "#7A7A7A") }
     
     static var cardBackground: Color { Color(hex: "#F5F5F3") }

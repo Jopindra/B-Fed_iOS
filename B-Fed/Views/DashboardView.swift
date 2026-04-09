@@ -76,8 +76,9 @@ struct FirstTimeDashboardView: View {
                     .frame(height: 60)
                     .background(Color.emerald)
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                    .shadow(color: Color.emerald.opacity(0.25), radius: 12, x: 0, y: 6)
+                    .shadow(color: Color.emerald.opacity(0.20), radius: 8, x: 0, y: 3)
                 }
+                .buttonStyle(GentlePressEffect())
                 .padding(.horizontal, 24)
                 
                 Spacer(minLength: 100)
@@ -235,62 +236,48 @@ struct PopulatedDashboardView: View {
     }
     
     private func triggerFirstFeedExperience() {
-        // Small delay to let view settle
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            // Animate bottle filling
-            withAnimation(.easeOut(duration: 0.4)) {
-                bottleFillLevel = targetFillLevel * 1.1 // Overshoot slightly
+        // Liquid rise animation - smooth upward fill
+        withAnimation(MotionCurve.liquid) {
+            bottleFillLevel = targetFillLevel
+        }
+        
+        // Show reassurance message
+        reassuranceMessage = ReassuranceEngine.postFeedEncouragement()
+        
+        withAnimation(MotionCurve.standard.delay(0.3)) {
+            showReassurance = true
+        }
+        
+        // Fade out gently after 2.5 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            withAnimation(MotionCurve.standard) {
+                showReassurance = false
             }
-            
-            // Settle back
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    bottleFillLevel = targetFillLevel
-                }
-            }
-            
-            // Show reassurance message
-            reassuranceMessage = ReassuranceEngine.postFeedEncouragement()
-            
-            withAnimation(.easeIn(duration: 0.4)) {
-                showReassurance = true
-            }
-            
-            // Fade out after 2 seconds
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                withAnimation(.easeOut(duration: 0.4)) {
-                    showReassurance = false
-                }
-            }
-            
-            // Animate stats appearing
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                    animateStats = true
-                }
+        }
+        
+        // Animate stats appearing with stagger
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            withAnimation(MotionCurve.gentleReturn) {
+                animateStats = true
             }
         }
     }
     
     private func animateBottleFill(to newLevel: CGFloat) {
-        withAnimation(.easeOut(duration: 0.4)) {
-            bottleFillLevel = newLevel * 1.08 // Subtle overshoot
+        // Liquid rise - smooth upward fill
+        withAnimation(MotionCurve.liquid) {
+            bottleFillLevel = newLevel
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                bottleFillLevel = newLevel
-            }
-        }
-        
-        // Show reassurance
+        // Show reassurance with gentle fade
         reassuranceMessage = ReassuranceEngine.postFeedEncouragement()
-        withAnimation(.easeIn(duration: 0.3)) {
+        withAnimation(MotionCurve.standard) {
             showReassurance = true
         }
         
+        // Fade out gently
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-            withAnimation(.easeOut(duration: 0.3)) {
+            withAnimation(MotionCurve.standard) {
                 showReassurance = false
             }
         }
@@ -379,8 +366,8 @@ struct FillingBottleView: View {
                 .stroke(Color.white.opacity(0.6), lineWidth: 2)
         }
         .onAppear {
-            // Continuous wave animation
-            withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+            // Continuous gentle wave animation
+            withAnimation(.linear(duration: 2.5).repeatForever(autoreverses: false)) {
                 wavePhase = .pi * 2
             }
         }
@@ -520,7 +507,7 @@ struct PeriodSelector: View {
         HStack(spacing: 8) {
             ForEach([TimePeriod.today, .last7Days], id: \.self) { period in
                 Button {
-                    withAnimation(.spring(response: 0.3)) {
+                    withAnimation(MotionCurve.interaction) {
                         selectedPeriod = period
                     }
                 } label: {
