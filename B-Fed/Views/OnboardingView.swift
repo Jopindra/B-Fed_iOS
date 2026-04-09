@@ -16,7 +16,7 @@ struct OnboardingView: View {
             CalmBackground()
             
             VStack(spacing: 0) {
-                // Skip button - refined with gentle fade
+                // Skip button
                 HStack {
                     Spacer()
                     if currentStep < 2 {
@@ -25,7 +25,7 @@ struct OnboardingView: View {
                         }
                         .font(.footnote.weight(.medium))
                         .foregroundStyle(Color.textMuted.opacity(0.55))
-                        .padding(.top, 12)
+                        .padding(.top, 14)
                         .padding(.trailing, 24)
                         .opacity(skipButtonOpacity)
                         .onAppear {
@@ -36,11 +36,10 @@ struct OnboardingView: View {
                     }
                 }
                 
-                // Content with screen transitions
+                // Content
                 TabView(selection: $currentStep) {
                     WelcomeStep()
                         .tag(0)
-                        .screenTransition(isActive: currentStep == 0, offset: 12)
                     
                     BabyDetailsStep(
                         ageWeeks: $ageWeeks,
@@ -48,19 +47,17 @@ struct OnboardingView: View {
                         feedingType: $feedingType
                     )
                     .tag(1)
-                    .screenTransition(isActive: currentStep == 1, offset: 12)
                     
                     ReadyStep(
                         ageWeeks: ageWeeks,
                         weightKg: Double(weightText)
                     )
                     .tag(2)
-                    .screenTransition(isActive: currentStep == 2, offset: 12)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(MotionCurve.standard, value: currentStep)
                 
-                // Bottom button with gentle press
+                // Bottom button
                 VStack(spacing: 0) {
                     Button(action: handlePrimaryAction) {
                         Text(buttonText)
@@ -121,26 +118,26 @@ struct OnboardingView: View {
 struct CalmBackground: View {
     var body: some View {
         ZStack {
-            // Warm gradient
+            // Warm cream gradient
             LinearGradient(
                 colors: [
-                    Color(hex: "#FCFBF9"),
-                    Color(hex: "#F5F4F1")
+                    Color(hex: "#FDFCFA"),
+                    Color(hex: "#F8F6F3")
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
             
-            // Enhanced radial glow
+            // Soft radial glow
             RadialGradient(
                 colors: [
-                    Color.emeraldPrimary.opacity(0.14),
+                    Color.emeraldPrimary.opacity(0.10),
                     Color.clear
                 ],
                 center: .init(x: 0.5, y: 0.34),
                 startRadius: 50,
-                endRadius: 220
+                endRadius: 200
             )
             .ignoresSafeArea()
         }
@@ -154,8 +151,8 @@ struct WelcomeStep: View {
             Spacer()
                 .frame(height: UIScreen.main.bounds.height * 0.08)
             
-            // Breathing logo with asymmetric design
-            AsymmetricLogoLockup()
+            // Fluid logo with liquid feel
+            FluidLogoLockup()
                 .padding(.bottom, 52)
             
             // Headline
@@ -182,96 +179,124 @@ struct WelcomeStep: View {
     }
 }
 
-// MARK: - Asymmetric Logo Lockup with Breathing Motion
-struct AsymmetricLogoLockup: View {
+// MARK: - Fluid Logo Lockup (Liquid, flowing shapes)
+struct FluidLogoLockup: View {
     var body: some View {
-        VStack(spacing: 6) {
-            // Stacked organic shapes with breathing animation
+        VStack(spacing: 8) {
+            // Flowing liquid shapes with interaction
             ZStack(alignment: .bottom) {
-                // Bottom layer - Emerald (breathing with offset)
-                FluidShape(
-                    topCurve: 0.28,
-                    bottomCurve: 0.58,
-                    leftCurve: 0.18,
-                    rightCurve: 0.38
+                // Base layer - Rich emerald (wider, flowing)
+                LiquidLayer(
+                    width: 175,
+                    height: 58,
+                    color: Color.emeraldPrimary.opacity(0.48),
+                    curveFactor: 0.35,
+                    offsetX: 6,
+                    offsetY: 0,
+                    breathing: (intensity: 0.012, vertical: 1.5, delay: 0)
                 )
-                .fill(Color.emeraldPrimary.opacity(0.50))
-                .frame(width: 185, height: 72)
-                .offset(x: 8)
-                .breathing(intensity: 0.015, verticalOffset: 2, delay: 0)
                 
-                // Middle layer - Pink (centered, delayed breathing)
-                FluidShape(
-                    topCurve: 0.42,
-                    bottomCurve: 0.32,
-                    leftCurve: 0.47,
-                    rightCurve: 0.22
+                // Middle layer - Warm pink (overlapping, fluid)
+                LiquidLayer(
+                    width: 125,
+                    height: 52,
+                    color: Color.pinkSoft.opacity(0.42),
+                    curveFactor: 0.45,
+                    offsetX: -4,
+                    offsetY: -34,
+                    breathing: (intensity: 0.015, vertical: 2, delay: 1.2)
                 )
-                .fill(Color.pinkSoft.opacity(0.36))
-                .frame(width: 135, height: 60)
-                .offset(y: -38)
-                .breathing(intensity: 0.018, verticalOffset: 1.5, delay: 1.2)
                 
-                // Top layer - Yellow (shifted left, lighter breathing)
-                FluidShape(
-                    topCurve: 0.58,
-                    bottomCurve: 0.28,
-                    leftCurve: 0.32,
-                    rightCurve: 0.42
+                // Top layer - Warm yellow (visible, airy)
+                LiquidLayer(
+                    width: 88,
+                    height: 46,
+                    color: Color.yellowSoft.opacity(0.65),
+                    curveFactor: 0.55,
+                    offsetX: 2,
+                    offsetY: -68,
+                    breathing: (intensity: 0.010, vertical: 1.5, delay: 2.4)
                 )
-                .fill(Color.yellowSoft.opacity(0.58))
-                .frame(width: 95, height: 50)
-                .offset(x: -6, y: -78)
-                .breathing(intensity: 0.012, verticalOffset: 1, delay: 2.4)
             }
-            .frame(width: 210, height: 155)
-            .rotationEffect(.degrees(1.5))
+            .frame(width: 195, height: 140)
             
             // B-Fed label
             Text("B-Fed")
                 .font(.system(size: 15, weight: .medium, design: .default))
-                .foregroundStyle(Color.textMuted.opacity(0.80))
+                .foregroundStyle(Color.textMuted.opacity(0.82))
         }
     }
 }
 
-// MARK: - Fluid Shape
-struct FluidShape: Shape {
-    let topCurve: CGFloat
-    let bottomCurve: CGFloat
-    let leftCurve: CGFloat
-    let rightCurve: CGFloat
+// MARK: - Liquid Layer (Fluid, organic shape)
+struct LiquidLayer: View {
+    let width: CGFloat
+    let height: CGFloat
+    let color: Color
+    let curveFactor: CGFloat
+    let offsetX: CGFloat
+    let offsetY: CGFloat
+    let breathing: (intensity: Double, vertical: Double, delay: Double)
+    
+    @State private var phase: CGFloat = 0
+    
+    var body: some View {
+        LiquidBlobShape(curveFactor: curveFactor)
+            .fill(color)
+            .frame(width: width, height: height)
+            .offset(
+                x: offsetX,
+                y: offsetY + sin(phase + breathing.delay) * breathing.vertical
+            )
+            .scaleEffect(1.0 + sin(phase + breathing.delay) * breathing.intensity)
+            .onAppear {
+                withAnimation(MotionCurve.breathing.repeatForever(autoreverses: true)) {
+                    phase = .pi * 2
+                }
+            }
+    }
+}
+
+// MARK: - Liquid Blob Shape (Irregular, fluid form)
+struct LiquidBlobShape: Shape {
+    let curveFactor: CGFloat
     
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
         let w = rect.width
         let h = rect.height
+        let cf = curveFactor
         
-        path.move(to: CGPoint(x: w * 0.08, y: h * 0.15))
+        // Start at left with irregular curve
+        path.move(to: CGPoint(x: w * 0.12, y: h * 0.35))
         
+        // Top edge - organic wave with irregularity
         path.addCurve(
-            to: CGPoint(x: w * 0.92, y: h * 0.12),
-            control1: CGPoint(x: w * (0.25 + topCurve * 0.1), y: -h * 0.08),
-            control2: CGPoint(x: w * (0.65 + topCurve * 0.15), y: h * 0.18)
+            to: CGPoint(x: w * 0.88, y: h * 0.28),
+            control1: CGPoint(x: w * (0.30 + cf * 0.15), y: -h * 0.12),
+            control2: CGPoint(x: w * (0.65 - cf * 0.08), y: h * 0.22)
         )
         
+        // Right edge - soft flowing curve
         path.addCurve(
-            to: CGPoint(x: w * 0.88, y: h * 0.88),
-            control1: CGPoint(x: w * (1.02 + rightCurve * 0.05), y: h * 0.35),
-            control2: CGPoint(x: w * (0.95 - rightCurve * 0.08), y: h * 0.72)
+            to: CGPoint(x: w * 0.82, y: h * 0.78),
+            control1: CGPoint(x: w * (1.05 + cf * 0.08), y: h * 0.42),
+            control2: CGPoint(x: w * (0.88 - cf * 0.12), y: h * 0.68)
         )
         
+        // Bottom edge - gentle accumulation with irregularity
         path.addCurve(
-            to: CGPoint(x: w * 0.12, y: h * 0.92),
-            control1: CGPoint(x: w * (0.70 + bottomCurve * 0.12), y: h * 1.06),
-            control2: CGPoint(x: w * (0.30 - bottomCurve * 0.08), y: h * 0.98)
+            to: CGPoint(x: w * 0.18, y: h * 0.85),
+            control1: CGPoint(x: w * (0.72 - cf * 0.10), y: h * 1.08),
+            control2: CGPoint(x: w * (0.28 + cf * 0.15), y: h * 0.95)
         )
         
+        // Left edge - flowing return
         path.addCurve(
-            to: CGPoint(x: w * 0.08, y: h * 0.15),
-            control1: CGPoint(x: w * (-0.02 - leftCurve * 0.05), y: h * 0.68),
-            control2: CGPoint(x: w * (0.08 + leftCurve * 0.10), y: h * 0.38)
+            to: CGPoint(x: w * 0.12, y: h * 0.35),
+            control1: CGPoint(x: w * (-0.05 - cf * 0.08), y: h * 0.72),
+            control2: CGPoint(x: w * (0.05 + cf * 0.12), y: h * 0.48)
         )
         
         path.closeSubpath()
@@ -297,7 +322,6 @@ struct BabyDetailsStep: View {
             Spacer().frame(height: 44)
             
             VStack(spacing: 20) {
-                // Age picker with staggered appearance
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Age")
                         .font(.subheadline.weight(.semibold))
@@ -316,7 +340,6 @@ struct BabyDetailsStep: View {
                 }
                 .staggered(index: 0, baseDelay: 0.1)
                 
-                // Weight input with staggered appearance
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Weight (optional)")
                         .font(.subheadline.weight(.semibold))
@@ -337,7 +360,6 @@ struct BabyDetailsStep: View {
                 }
                 .staggered(index: 1, baseDelay: 0.1)
                 
-                // Feeding type with staggered appearance
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Feeding type")
                         .font(.subheadline.weight(.semibold))
@@ -402,14 +424,13 @@ struct ReadyStep: View {
         VStack(spacing: 24) {
             Spacer()
             
-            AsymmetricLogoLockup()
-                .frame(width: 170, height: 130)
+            FluidLogoLockup()
+                .frame(width: 165, height: 125)
             
             Text("You're all set")
                 .font(.system(size: 26, weight: .bold, design: .default))
                 .foregroundStyle(Color.textPrimary)
             
-            // Range preview with staggered appearance
             VStack(spacing: 12) {
                 Text("Typical feeding range:")
                     .font(.subheadline)
@@ -437,10 +458,11 @@ struct ReadyStep: View {
 
 // MARK: - Color Extensions
 private extension Color {
-    static var emeraldPrimary: Color { Color(hex: "#2D7A5E") }
-    static var emeraldSoft: Color { Color(hex: "#5BA88A") }
-    static var pinkSoft: Color { Color(hex: "#E6C0CC") }
-    static var yellowSoft: Color { Color(hex: "#ECD8A8") }
+    // Warm, rich brand colors
+    static var emeraldPrimary: Color { Color(hex: "#3A7A60") }  // Richer, warmer green
+    static var emeraldSoft: Color { Color(hex: "#6BA892") }
+    static var pinkSoft: Color { Color(hex: "#E8B8C4") }       // Warmer pink
+    static var yellowSoft: Color { Color(hex: "#EED4A0") }     // Warmer, more visible yellow
     
     static var textPrimary: Color { Color(hex: "#1A1A1A") }
     static var textSecondary: Color { Color(hex: "#5A5A5A") }

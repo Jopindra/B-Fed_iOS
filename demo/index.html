@@ -73,7 +73,7 @@
         .iphone-inner {
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, #FCFBF9 0%, #F5F4F1 100%);
+            background: linear-gradient(180deg, #FDFCFA 0%, #F8F6F3 100%);
             border-radius: 44px;
             overflow: hidden;
             position: relative;
@@ -92,7 +92,7 @@
             z-index: 100;
         }
         
-        /* Background */
+        /* Warm cream background */
         .calm-bg {
             position: absolute;
             top: 0;
@@ -102,88 +102,86 @@
             z-index: 0;
         }
         
-        /* Enhanced radial glow */
+        /* Soft radial glow */
         .radial-glow {
             position: absolute;
-            width: 380px;
-            height: 380px;
+            width: 360px;
+            height: 360px;
             left: 50%;
             top: 32%;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(45, 122, 94, 0.14) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(58, 122, 96, 0.10) 0%, transparent 70%);
             pointer-events: none;
         }
         
-        /* Asymmetric Logo Lockup */
+        /* Fluid Logo Lockup */
         .logo-lockup {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
         
         .shapes-container {
             position: relative;
-            width: 210px;
-            height: 155px;
-            /* Subtle upward bias */
-            transform: rotate(1.5deg);
+            width: 195px;
+            height: 140px;
         }
         
-        .organic-shape {
+        .liquid-layer {
             position: absolute;
-            animation: shapeBreath 4s ease-in-out infinite;
+            animation: liquidBreath 3.5s ease-in-out infinite;
         }
         
-        /* Bottom - Emerald (deeper, wider, shifted right) */
-        .organic-shape:nth-child(1) {
-            width: 185px;
-            height: 72px;
-            left: 18px;
+        /* Base - Rich emerald (wider, flowing) */
+        .liquid-layer:nth-child(1) {
+            width: 175px;
+            height: 58px;
+            left: 10px;
             bottom: 0;
-            background: rgba(45, 122, 94, 0.50);
-            border-radius: 55% 45% 58% 42% / 48% 55% 45% 52%;
+            background: rgba(58, 122, 96, 0.48);
+            border-radius: 48% 52% 55% 45% / 42% 55% 48% 52%;
             animation-delay: 0s;
         }
         
-        /* Middle - Pink (centered anchor) */
-        .organic-shape:nth-child(2) {
-            width: 135px;
-            height: 60px;
-            left: 37px;
-            bottom: 38px;
-            background: rgba(230, 192, 204, 0.36);
-            border-radius: 47% 53% 52% 48% / 42% 52% 58% 48%;
-            animation-delay: -1.3s;
+        /* Middle - Warm pink (overlapping) */
+        .liquid-layer:nth-child(2) {
+            width: 125px;
+            height: 52px;
+            left: 35px;
+            bottom: 34px;
+            background: rgba(232, 184, 196, 0.42);
+            border-radius: 52% 48% 50% 50% / 45% 52% 55% 48%;
+            animation-delay: -1.2s;
         }
         
-        /* Top - Yellow (shifted left, lighter) */
-        .organic-shape:nth-child(3) {
-            width: 95px;
-            height: 50px;
-            left: 42px;
-            bottom: 78px;
-            background: rgba(236, 216, 168, 0.58);
-            border-radius: 58% 42% 52% 48% / 47% 53% 52% 48%;
-            animation-delay: -2.6s;
+        /* Top - Warm yellow (visible, airy) */
+        .liquid-layer:nth-child(3) {
+            width: 88px;
+            height: 46px;
+            left: 53px;
+            bottom: 68px;
+            background: rgba(238, 212, 160, 0.65);
+            border-radius: 50% 50% 52% 48% / 48% 52% 50% 50%;
+            animation-delay: -2.4s;
         }
         
-        @keyframes shapeBreath {
+        @keyframes liquidBreath {
             0%, 100% {
                 transform: translateY(0) scale(1);
             }
             50% {
-                transform: translateY(-3px) scale(1.02);
+                transform: translateY(-2px) scale(1.015);
             }
         }
         
-        /* Refined B-Fed label */
+        /* Brand text */
         .brand-text {
             font-size: 15px;
             font-weight: 500;
             color: #7A7A7A;
             letter-spacing: normal;
-            opacity: 0.80;
+            opacity: 0.82;
         }
         
         /* Onboarding Content */
@@ -196,7 +194,6 @@
             z-index: 1;
         }
         
-        /* Skip button */
         .skip-btn {
             position: absolute;
             top: 14px;
@@ -241,10 +238,9 @@
             text-align: center;
         }
         
-        /* Refined CTA button */
         .cta-button {
             margin-top: auto;
-            background: linear-gradient(180deg, #5BA88A 0%, #5BA88A 100%);
+            background: linear-gradient(180deg, #6BA892 0%, #6BA892 100%);
             color: white;
             border: none;
             padding: 16px;
@@ -252,7 +248,7 @@
             font-size: 17px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 3px 8px rgba(91, 168, 138, 0.20);
+            box-shadow: 0 3px 8px rgba(107, 168, 146, 0.20);
             transition: transform 0.12s ease, opacity 0.12s ease;
         }
         
@@ -316,7 +312,7 @@
         }
         
         .type-btn.active {
-            background: #5BA88A;
+            background: #6BA892;
             color: white;
         }
         
@@ -331,7 +327,7 @@
         }
         
         .ready-logo {
-            transform: scale(0.85);
+            transform: scale(0.90);
             margin-bottom: 40px;
         }
         
@@ -343,7 +339,7 @@
         }
         
         .range-card {
-            background: rgba(91, 168, 138, 0.08);
+            background: rgba(107, 168, 146, 0.08);
             border-radius: 20px;
             padding: 28px 32px;
             text-align: center;
@@ -360,14 +356,14 @@
         .range-value {
             font-size: 24px;
             font-weight: 600;
-            color: #5BA88A;
+            color: #6BA892;
             margin-bottom: 8px;
         }
         
         .range-message {
             font-size: 15px;
             font-weight: 500;
-            color: rgba(91, 168, 138, 0.8);
+            color: rgba(107, 168, 146, 0.8);
         }
         
         /* Scrollbar */
@@ -387,7 +383,7 @@
 </head>
 <body>
     <h1>B-Fed App Demo</h1>
-    <p class="subtitle">World-Class — Signature Asymmetry, Distinctive Identity</p>
+    <p class="subtitle">Fluid Visual — Meaningful, Warm, Distinctive</p>
     
     <div class="phone-grid">
         <!-- 1. Welcome Screen -->
@@ -405,12 +401,12 @@
                         <a href="#" class="skip-btn">Skip</a>
                         
                         <div class="hero-section">
-                            <!-- Asymmetric Logo Lockup -->
+                            <!-- Fluid Logo Lockup -->
                             <div class="logo-lockup">
                                 <div class="shapes-container">
-                                    <div class="organic-shape"></div>
-                                    <div class="organic-shape"></div>
-                                    <div class="organic-shape"></div>
+                                    <div class="liquid-layer"></div>
+                                    <div class="liquid-layer"></div>
+                                    <div class="liquid-layer"></div>
                                 </div>
                                 <div class="brand-text">B-Fed</div>
                             </div>
@@ -483,9 +479,9 @@
                     <div class="ready-content">
                         <div class="logo-lockup ready-logo">
                             <div class="shapes-container">
-                                <div class="organic-shape"></div>
-                                <div class="organic-shape"></div>
-                                <div class="organic-shape"></div>
+                                <div class="liquid-layer"></div>
+                                <div class="liquid-layer"></div>
+                                <div class="liquid-layer"></div>
                             </div>
                             <div class="brand-text">B-Fed</div>
                         </div>
