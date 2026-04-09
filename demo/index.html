@@ -110,59 +110,79 @@
             left: 50%;
             top: 32%;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(58, 122, 96, 0.10) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(58, 122, 94, 0.10) 0%, transparent 70%);
             pointer-events: none;
         }
         
-        /* Fluid Logo Lockup */
+        /* Contained Logo Lockup */
         .logo-lockup {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         
-        .shapes-container {
+        .container-wrapper {
             position: relative;
-            width: 195px;
-            height: 140px;
+            width: 140px;
+            height: 160px;
         }
         
-        .liquid-layer {
+        /* Soft container outline */
+        .container-outline {
             position: absolute;
+            top: 0;
+            left: 0;
+            width: 140px;
+            height: 160px;
+            border: 1.5px solid rgba(154, 168, 158, 0.25);
+            border-radius: 28px;
+        }
+        
+        /* Liquid layers */
+        .liquid-layers {
+            position: absolute;
+            top: 20px;
+            left: 10px;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: -8px;
+        }
+        
+        .liquid-drop {
             animation: liquidBreath 3.5s ease-in-out infinite;
         }
         
-        /* Base - Rich emerald (wider, flowing) */
-        .liquid-layer:nth-child(1) {
-            width: 175px;
-            height: 58px;
-            left: 10px;
-            bottom: 0;
-            background: rgba(58, 122, 96, 0.48);
-            border-radius: 48% 52% 55% 45% / 42% 55% 48% 52%;
+        /* Top - Yellow (airy, visible) */
+        .liquid-drop:nth-child(1) {
+            width: 85px;
+            height: 42px;
+            background: rgba(236, 210, 152, 0.70);
+            border-radius: 50% 50% 52% 48% / 48% 52% 50% 50%;
             animation-delay: 0s;
         }
         
-        /* Middle - Warm pink (overlapping) */
-        .liquid-layer:nth-child(2) {
-            width: 125px;
-            height: 52px;
-            left: 35px;
-            bottom: 34px;
-            background: rgba(232, 184, 196, 0.42);
-            border-radius: 52% 48% 50% 50% / 45% 52% 55% 48%;
+        /* Middle - Pink (warm, flowing) */
+        .liquid-drop:nth-child(2) {
+            width: 105px;
+            height: 48px;
+            background: rgba(232, 176, 192, 0.45);
+            border-radius: 48% 52% 50% 50% / 52% 48% 52% 48%;
+            margin-top: -8px;
             animation-delay: -1.2s;
         }
         
-        /* Top - Warm yellow (visible, airy) */
-        .liquid-layer:nth-child(3) {
-            width: 88px;
-            height: 46px;
-            left: 53px;
-            bottom: 68px;
-            background: rgba(238, 212, 160, 0.65);
-            border-radius: 50% 50% 52% 48% / 48% 52% 50% 50%;
+        /* Base - Emerald (rich anchor) */
+        .liquid-drop:nth-child(3) {
+            width: 120px;
+            height: 52px;
+            background: rgba(58, 122, 94, 0.50);
+            border-radius: 52% 48% 50% 50% / 45% 55% 50% 50%;
+            margin-top: -8px;
             animation-delay: -2.4s;
         }
         
@@ -171,7 +191,7 @@
                 transform: translateY(0) scale(1);
             }
             50% {
-                transform: translateY(-2px) scale(1.015);
+                transform: translateY(-2px) scale(1.01);
             }
         }
         
@@ -383,7 +403,7 @@
 </head>
 <body>
     <h1>B-Fed App Demo</h1>
-    <p class="subtitle">Fluid Visual — Meaningful, Warm, Distinctive</p>
+    <p class="subtitle">Contained Logo — Liquid in Vessel Concept</p>
     
     <div class="phone-grid">
         <!-- 1. Welcome Screen -->
@@ -401,12 +421,15 @@
                         <a href="#" class="skip-btn">Skip</a>
                         
                         <div class="hero-section">
-                            <!-- Fluid Logo Lockup -->
+                            <!-- Contained Logo Lockup -->
                             <div class="logo-lockup">
-                                <div class="shapes-container">
-                                    <div class="liquid-layer"></div>
-                                    <div class="liquid-layer"></div>
-                                    <div class="liquid-layer"></div>
+                                <div class="container-wrapper">
+                                    <div class="container-outline"></div>
+                                    <div class="liquid-layers">
+                                        <div class="liquid-drop"></div>
+                                        <div class="liquid-drop"></div>
+                                        <div class="liquid-drop"></div>
+                                    </div>
                                 </div>
                                 <div class="brand-text">B-Fed</div>
                             </div>
@@ -478,10 +501,13 @@
                     
                     <div class="ready-content">
                         <div class="logo-lockup ready-logo">
-                            <div class="shapes-container">
-                                <div class="liquid-layer"></div>
-                                <div class="liquid-layer"></div>
-                                <div class="liquid-layer"></div>
+                            <div class="container-wrapper">
+                                <div class="container-outline"></div>
+                                <div class="liquid-layers">
+                                    <div class="liquid-drop"></div>
+                                    <div class="liquid-drop"></div>
+                                    <div class="liquid-drop"></div>
+                                </div>
                             </div>
                             <div class="brand-text">B-Fed</div>
                         </div>

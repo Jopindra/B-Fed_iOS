@@ -151,8 +151,8 @@ struct WelcomeStep: View {
             Spacer()
                 .frame(height: UIScreen.main.bounds.height * 0.08)
             
-            // Fluid logo with liquid feel
-            FluidLogoLockup()
+            // Logo with subtle container concept
+            ContainedLogoLockup()
                 .padding(.bottom, 52)
             
             // Headline
@@ -179,46 +179,48 @@ struct WelcomeStep: View {
     }
 }
 
-// MARK: - Fluid Logo Lockup (Liquid, flowing shapes)
-struct FluidLogoLockup: View {
+// MARK: - Contained Logo Lockup (Liquid in vessel concept)
+struct ContainedLogoLockup: View {
     var body: some View {
-        VStack(spacing: 8) {
-            // Flowing liquid shapes with interaction
-            ZStack(alignment: .bottom) {
-                // Base layer - Rich emerald (wider, flowing)
-                LiquidLayer(
-                    width: 175,
-                    height: 58,
-                    color: Color.emeraldPrimary.opacity(0.48),
-                    curveFactor: 0.35,
-                    offsetX: 6,
-                    offsetY: 0,
-                    breathing: (intensity: 0.012, vertical: 1.5, delay: 0)
-                )
+        VStack(spacing: 10) {
+            ZStack {
+                // Subtle container outline (implied vessel)
+                SoftContainerShape()
+                    .stroke(Color.containerOutline.opacity(0.25), lineWidth: 1.5)
+                    .frame(width: 140, height: 160)
                 
-                // Middle layer - Warm pink (overlapping, fluid)
-                LiquidLayer(
-                    width: 125,
-                    height: 52,
-                    color: Color.pinkSoft.opacity(0.42),
-                    curveFactor: 0.45,
-                    offsetX: -4,
-                    offsetY: -34,
-                    breathing: (intensity: 0.015, vertical: 2, delay: 1.2)
-                )
-                
-                // Top layer - Warm yellow (visible, airy)
-                LiquidLayer(
-                    width: 88,
-                    height: 46,
-                    color: Color.yellowSoft.opacity(0.65),
-                    curveFactor: 0.55,
-                    offsetX: 2,
-                    offsetY: -68,
-                    breathing: (intensity: 0.010, vertical: 1.5, delay: 2.4)
-                )
+                // Liquid layers inside container
+                VStack(spacing: -8) {
+                    // Top layer - Yellow (airy, visible)
+                    LiquidDroplet(
+                        width: 85,
+                        height: 42,
+                        color: Color.yellowSoft.opacity(0.70),
+                        curveIntensity: 0.4,
+                        breathing: (intensity: 0.008, vertical: 1, delay: 0)
+                    )
+                    
+                    // Middle layer - Pink (warm, flowing)
+                    LiquidDroplet(
+                        width: 105,
+                        height: 48,
+                        color: Color.pinkSoft.opacity(0.45),
+                        curveIntensity: 0.35,
+                        breathing: (intensity: 0.012, vertical: 1.5, delay: 1.2)
+                    )
+                    
+                    // Base layer - Emerald (rich anchor)
+                    LiquidDroplet(
+                        width: 120,
+                        height: 52,
+                        color: Color.emeraldPrimary.opacity(0.50),
+                        curveIntensity: 0.3,
+                        breathing: (intensity: 0.010, vertical: 2, delay: 2.4)
+                    )
+                }
+                .padding(.top, 20)
             }
-            .frame(width: 195, height: 140)
+            .frame(width: 140, height: 160)
             
             // B-Fed label
             Text("B-Fed")
@@ -228,26 +230,73 @@ struct FluidLogoLockup: View {
     }
 }
 
-// MARK: - Liquid Layer (Fluid, organic shape)
-struct LiquidLayer: View {
+// MARK: - Soft Container Shape (Implied vessel)
+struct SoftContainerShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        let w = rect.width
+        let h = rect.height
+        let cornerRadius: CGFloat = 28
+        
+        // Soft rounded rectangle with gentle curves
+        path.move(to: CGPoint(x: w * 0.5, y: 0))
+        
+        // Top edge
+        path.addCurve(
+            to: CGPoint(x: w, y: cornerRadius),
+            control1: CGPoint(x: w - cornerRadius * 0.3, y: 0),
+            control2: CGPoint(x: w, y: cornerRadius * 0.3)
+        )
+        
+        // Right edge
+        path.addCurve(
+            to: CGPoint(x: w, y: h - cornerRadius),
+            control1: CGPoint(x: w + 2, y: h * 0.3),
+            control2: CGPoint(x: w + 2, y: h * 0.7)
+        )
+        
+        // Bottom curve (slightly wider for stability)
+        path.addCurve(
+            to: CGPoint(x: 0, y: h - cornerRadius),
+            control1: CGPoint(x: w * 0.75, y: h + 4),
+            control2: CGPoint(x: w * 0.25, y: h + 4)
+        )
+        
+        // Left edge
+        path.addCurve(
+            to: CGPoint(x: 0, y: cornerRadius),
+            control1: CGPoint(x: -2, y: h * 0.7),
+            control2: CGPoint(x: -2, y: h * 0.3)
+        )
+        
+        // Top left curve
+        path.addCurve(
+            to: CGPoint(x: w * 0.5, y: 0),
+            control1: CGPoint(x: 0, y: cornerRadius * 0.3),
+            control2: CGPoint(x: cornerRadius * 0.3, y: 0)
+        )
+        
+        path.closeSubpath()
+        return path
+    }
+}
+
+// MARK: - Liquid Droplet (Organic flowing shape)
+struct LiquidDroplet: View {
     let width: CGFloat
     let height: CGFloat
     let color: Color
-    let curveFactor: CGFloat
-    let offsetX: CGFloat
-    let offsetY: CGFloat
+    let curveIntensity: CGFloat
     let breathing: (intensity: Double, vertical: Double, delay: Double)
     
     @State private var phase: CGFloat = 0
     
     var body: some View {
-        LiquidBlobShape(curveFactor: curveFactor)
+        LiquidDropletShape(curveIntensity: curveIntensity)
             .fill(color)
             .frame(width: width, height: height)
-            .offset(
-                x: offsetX,
-                y: offsetY + sin(phase + breathing.delay) * breathing.vertical
-            )
+            .offset(y: sin(phase + breathing.delay) * breathing.vertical)
             .scaleEffect(1.0 + sin(phase + breathing.delay) * breathing.intensity)
             .onAppear {
                 withAnimation(MotionCurve.breathing.repeatForever(autoreverses: true)) {
@@ -257,46 +306,53 @@ struct LiquidLayer: View {
     }
 }
 
-// MARK: - Liquid Blob Shape (Irregular, fluid form)
-struct LiquidBlobShape: Shape {
-    let curveFactor: CGFloat
+// MARK: - Liquid Droplet Shape
+struct LiquidDropletShape: Shape {
+    let curveIntensity: CGFloat
     
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
         let w = rect.width
         let h = rect.height
-        let cf = curveFactor
+        let ci = curveIntensity
         
-        // Start at left with irregular curve
-        path.move(to: CGPoint(x: w * 0.12, y: h * 0.35))
+        // Start at top center
+        path.move(to: CGPoint(x: w * 0.5, y: 0))
         
-        // Top edge - organic wave with irregularity
+        // Top right curve (soft)
         path.addCurve(
-            to: CGPoint(x: w * 0.88, y: h * 0.28),
-            control1: CGPoint(x: w * (0.30 + cf * 0.15), y: -h * 0.12),
-            control2: CGPoint(x: w * (0.65 - cf * 0.08), y: h * 0.22)
+            to: CGPoint(x: w, y: h * 0.4),
+            control1: CGPoint(x: w * (0.75 + ci * 0.2), y: 0),
+            control2: CGPoint(x: w, y: h * 0.2)
         )
         
-        // Right edge - soft flowing curve
+        // Right side down
         path.addCurve(
-            to: CGPoint(x: w * 0.82, y: h * 0.78),
-            control1: CGPoint(x: w * (1.05 + cf * 0.08), y: h * 0.42),
-            control2: CGPoint(x: w * (0.88 - cf * 0.12), y: h * 0.68)
+            to: CGPoint(x: w * 0.85, y: h * 0.85),
+            control1: CGPoint(x: w + ci * 4, y: h * 0.6),
+            control2: CGPoint(x: w * 0.9, y: h * 0.75)
         )
         
-        // Bottom edge - gentle accumulation with irregularity
+        // Bottom curve (gentle arc)
         path.addCurve(
-            to: CGPoint(x: w * 0.18, y: h * 0.85),
-            control1: CGPoint(x: w * (0.72 - cf * 0.10), y: h * 1.08),
-            control2: CGPoint(x: w * (0.28 + cf * 0.15), y: h * 0.95)
+            to: CGPoint(x: w * 0.15, y: h * 0.85),
+            control1: CGPoint(x: w * 0.65, y: h + ci * 6),
+            control2: CGPoint(x: w * 0.35, y: h + ci * 6)
         )
         
-        // Left edge - flowing return
+        // Left side up
         path.addCurve(
-            to: CGPoint(x: w * 0.12, y: h * 0.35),
-            control1: CGPoint(x: w * (-0.05 - cf * 0.08), y: h * 0.72),
-            control2: CGPoint(x: w * (0.05 + cf * 0.12), y: h * 0.48)
+            to: CGPoint(x: 0, y: h * 0.4),
+            control1: CGPoint(x: w * 0.1, y: h * 0.75),
+            control2: CGPoint(x: -ci * 4, y: h * 0.6)
+        )
+        
+        // Top left curve (soft)
+        path.addCurve(
+            to: CGPoint(x: w * 0.5, y: 0),
+            control1: CGPoint(x: 0, y: h * 0.2),
+            control2: CGPoint(x: w * (0.25 - ci * 0.2), y: 0)
         )
         
         path.closeSubpath()
@@ -424,8 +480,8 @@ struct ReadyStep: View {
         VStack(spacing: 24) {
             Spacer()
             
-            FluidLogoLockup()
-                .frame(width: 165, height: 125)
+            ContainedLogoLockup()
+                .frame(width: 140, height: 180)
             
             Text("You're all set")
                 .font(.system(size: 26, weight: .bold, design: .default))
@@ -458,11 +514,12 @@ struct ReadyStep: View {
 
 // MARK: - Color Extensions
 private extension Color {
-    // Warm, rich brand colors
-    static var emeraldPrimary: Color { Color(hex: "#3A7A60") }  // Richer, warmer green
+    // Refined brand colors
+    static var emeraldPrimary: Color { Color(hex: "#3A7A5E") }    // Richer green anchor
     static var emeraldSoft: Color { Color(hex: "#6BA892") }
-    static var pinkSoft: Color { Color(hex: "#E8B8C4") }       // Warmer pink
-    static var yellowSoft: Color { Color(hex: "#EED4A0") }     // Warmer, more visible yellow
+    static var pinkSoft: Color { Color(hex: "#E8B0C0") }          // Warmer pink, less grey
+    static var yellowSoft: Color { Color(hex: "#ECD298") }         // Clearer yellow
+    static var containerOutline: Color { Color(hex: "#9AA89E") }   // Subtle container outline
     
     static var textPrimary: Color { Color(hex: "#1A1A1A") }
     static var textSecondary: Color { Color(hex: "#5A5A5A") }
