@@ -114,7 +114,7 @@
             pointer-events: none;
         }
         
-        /* Contained Logo Lockup */
+        /* Vessel Logo */
         .logo-lockup {
             display: flex;
             flex-direction: column;
@@ -122,71 +122,70 @@
             gap: 10px;
         }
         
-        .container-wrapper {
+        .vessel-wrapper {
             position: relative;
-            width: 140px;
-            height: 160px;
+            width: 100px;
+            height: 150px;
         }
         
-        /* Soft container outline */
-        .container-outline {
+        /* Soft vessel outline */
+        .vessel-outline {
             position: absolute;
             top: 0;
             left: 0;
-            width: 140px;
-            height: 160px;
-            border: 1.5px solid rgba(154, 168, 158, 0.25);
-            border-radius: 28px;
+            width: 100px;
+            height: 150px;
+            border: 1.5px solid rgba(168, 180, 172, 0.22);
+            border-radius: 28px 28px 32px 32px;
         }
         
-        /* Liquid layers */
+        /* Liquid layers inside vessel */
         .liquid-layers {
             position: absolute;
-            top: 20px;
-            left: 10px;
-            width: 120px;
-            height: 120px;
+            top: 28px;
+            left: 5px;
+            width: 90px;
+            height: 110px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-end;
-            gap: -8px;
         }
         
-        .liquid-drop {
-            animation: liquidBreath 3.5s ease-in-out infinite;
+        .liquid-pool {
+            animation: poolBreath 3.5s ease-in-out infinite;
         }
         
-        /* Top - Yellow (airy, visible) */
-        .liquid-drop:nth-child(1) {
-            width: 85px;
-            height: 42px;
-            background: rgba(236, 210, 152, 0.70);
-            border-radius: 50% 50% 52% 48% / 48% 52% 50% 50%;
+        /* Top - Yellow (airy, clear) */
+        .liquid-pool:nth-child(1) {
+            width: 72px;
+            height: 38px;
+            background: rgba(236, 214, 154, 0.72);
+            border-radius: 50% 50% 48% 52% / 52% 48% 52% 48%;
             animation-delay: 0s;
         }
         
         /* Middle - Pink (warm, flowing) */
-        .liquid-drop:nth-child(2) {
-            width: 105px;
-            height: 48px;
-            background: rgba(232, 176, 192, 0.45);
-            border-radius: 48% 52% 50% 50% / 52% 48% 52% 48%;
-            margin-top: -8px;
+        .liquid-pool:nth-child(2) {
+            width: 82px;
+            height: 42px;
+            background: rgba(232, 176, 192, 0.48);
+            border-radius: 48% 52% 50% 50% / 50% 50% 52% 48%;
+            margin-top: -6px;
             animation-delay: -1.2s;
         }
         
-        /* Base - Emerald (rich anchor) */
-        .liquid-drop:nth-child(3) {
-            width: 120px;
-            height: 52px;
-            background: rgba(58, 122, 94, 0.50);
-            border-radius: 52% 48% 50% 50% / 45% 55% 50% 50%;
-            margin-top: -8px;
+        /* Base - Emerald (rich, defined) */
+        .liquid-pool:nth-child(3) {
+            width: 90px;
+            height: 46px;
+            background: rgba(58, 122, 94, 0.52);
+            border-radius: 52% 48% 50% 50% / 48% 52% 50% 50%;
+            margin-top: -6px;
             animation-delay: -2.4s;
         }
         
-        @keyframes liquidBreath {
+        @keyframes poolBreath {
             0%, 100% {
                 transform: translateY(0) scale(1);
             }
@@ -403,7 +402,7 @@
 </head>
 <body>
     <h1>B-Fed App Demo</h1>
-    <p class="subtitle">Contained Logo — Liquid in Vessel Concept</p>
+    <p class="subtitle">Vessel Logo — Liquid Inside Container Concept</p>
     
     <div class="phone-grid">
         <!-- 1. Welcome Screen -->
@@ -421,14 +420,14 @@
                         <a href="#" class="skip-btn">Skip</a>
                         
                         <div class="hero-section">
-                            <!-- Contained Logo Lockup -->
+                            <!-- Vessel Logo -->
                             <div class="logo-lockup">
-                                <div class="container-wrapper">
-                                    <div class="container-outline"></div>
+                                <div class="vessel-wrapper">
+                                    <div class="vessel-outline"></div>
                                     <div class="liquid-layers">
-                                        <div class="liquid-drop"></div>
-                                        <div class="liquid-drop"></div>
-                                        <div class="liquid-drop"></div>
+                                        <div class="liquid-pool"></div>
+                                        <div class="liquid-pool"></div>
+                                        <div class="liquid-pool"></div>
                                     </div>
                                 </div>
                                 <div class="brand-text">B-Fed</div>
@@ -501,12 +500,12 @@
                     
                     <div class="ready-content">
                         <div class="logo-lockup ready-logo">
-                            <div class="container-wrapper">
-                                <div class="container-outline"></div>
+                            <div class="vessel-wrapper">
+                                <div class="vessel-outline"></div>
                                 <div class="liquid-layers">
-                                    <div class="liquid-drop"></div>
-                                    <div class="liquid-drop"></div>
-                                    <div class="liquid-drop"></div>
+                                    <div class="liquid-pool"></div>
+                                    <div class="liquid-pool"></div>
+                                    <div class="liquid-pool"></div>
                                 </div>
                             </div>
                             <div class="brand-text">B-Fed</div>
