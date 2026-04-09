@@ -16,7 +16,7 @@ struct OnboardingView: View {
             CalmBackground()
             
             VStack(spacing: 0) {
-                // Skip button - refined with fade-in
+                // Skip button
                 HStack {
                     Spacer()
                     if currentStep < 2 {
@@ -24,7 +24,7 @@ struct OnboardingView: View {
                             completeOnboarding()
                         }
                         .font(.footnote.weight(.medium))
-                        .foregroundStyle(Color.textMuted.opacity(0.60))
+                        .foregroundStyle(Color.textMuted.opacity(0.55))
                         .padding(.top, 14)
                         .padding(.trailing, 24)
                         .opacity(skipButtonOpacity)
@@ -65,9 +65,15 @@ struct OnboardingView: View {
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 54)
-                            .background(Color.emeraldSoft)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color.emeraldSoft, Color.emeraldSoft.opacity(0.95)],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
                             .clipShape(Capsule())
-                            .shadow(color: Color.emeraldSoft.opacity(0.14), radius: 6, x: 0, y: 2)
+                            .shadow(color: Color.emeraldSoft.opacity(0.20), radius: 8, x: 0, y: 3)
                     }
                     .buttonStyle(CalmPressButtonStyle())
                     .padding(.horizontal, 24)
@@ -123,15 +129,15 @@ struct CalmBackground: View {
             )
             .ignoresSafeArea()
             
-            // Enhanced radial glow behind logo
+            // Enhanced radial glow with more contrast
             RadialGradient(
                 colors: [
-                    Color.emeraldPrimary.opacity(0.12),
+                    Color.emeraldPrimary.opacity(0.14),
                     Color.clear
                 ],
                 center: .init(x: 0.5, y: 0.34),
-                startRadius: 40,
-                endRadius: 200
+                startRadius: 50,
+                endRadius: 220
             )
             .ignoresSafeArea()
         }
@@ -145,11 +151,11 @@ struct WelcomeStep: View {
             Spacer()
                 .frame(height: UIScreen.main.bounds.height * 0.08)
             
-            // Logo lockup with slight tilt for distinctiveness
-            DistinctiveLogoLockup()
+            // Signature asymmetric logo
+            AsymmetricLogoLockup()
                 .padding(.bottom, 52)
             
-            // Headline
+            // Headline with controlled contrast
             VStack(spacing: 2) {
                 Text("Track feeds.")
                     .font(.system(size: 26, weight: .semibold, design: .default))
@@ -173,61 +179,61 @@ struct WelcomeStep: View {
     }
 }
 
-// MARK: - Distinctive Logo Lockup (with subtle tilt)
-struct DistinctiveLogoLockup: View {
+// MARK: - Asymmetric Logo Lockup (Signature visual identity)
+struct AsymmetricLogoLockup: View {
     @State private var phase: CGFloat = 0
     
     var body: some View {
-        VStack(spacing: 8) {
-            // Stacked organic shapes with slight tilt
+        VStack(spacing: 6) {
+            // Asymmetric stacked shapes with signature imbalance
             ZStack(alignment: .bottom) {
-                // Bottom layer - Emerald (more saturated, stronger)
+                // Bottom layer - Emerald (deeper, richer, wider, shifted right)
                 FluidShape(
-                    topCurve: 0.25,
-                    bottomCurve: 0.55,
-                    leftCurve: 0.15,
-                    rightCurve: 0.35
+                    topCurve: 0.28,
+                    bottomCurve: 0.58,
+                    leftCurve: 0.18,
+                    rightCurve: 0.38
                 )
-                .fill(Color.emeraldPrimary.opacity(0.52))
-                .frame(width: 175, height: 70)
-                .offset(x: -4, y: sin(phase) * 1.5)
+                .fill(Color.emeraldPrimary.opacity(0.50))
+                .frame(width: 185, height: 72)
+                .offset(x: 8, y: sin(phase) * 1.5)  // Shifted right
                 .scaleEffect(1.0 + sin(phase * 0.6) * 0.012)
                 
-                // Middle layer - Pink
+                // Middle layer - Pink (centered anchor)
                 FluidShape(
-                    topCurve: 0.40,
-                    bottomCurve: 0.30,
-                    leftCurve: 0.45,
-                    rightCurve: 0.20
+                    topCurve: 0.42,
+                    bottomCurve: 0.32,
+                    leftCurve: 0.47,
+                    rightCurve: 0.22
                 )
-                .fill(Color.pinkSoft.opacity(0.38))
+                .fill(Color.pinkSoft.opacity(0.36))
                 .frame(width: 135, height: 60)
-                .offset(x: 6, y: -40 + sin(phase + 1.2) * 1.5)
+                .offset(x: 0, y: -38 + sin(phase + 1.2) * 1.5)
                 .scaleEffect(1.0 + sin(phase * 0.7 + 0.8) * 0.015)
                 
-                // Top layer - Yellow (stronger visibility)
+                // Top layer - Yellow (shifted left, lighter)
                 FluidShape(
-                    topCurve: 0.55,
-                    bottomCurve: 0.25,
-                    leftCurve: 0.30,
-                    rightCurve: 0.40
+                    topCurve: 0.58,
+                    bottomCurve: 0.28,
+                    leftCurve: 0.32,
+                    rightCurve: 0.42
                 )
-                .fill(Color.yellowSoft.opacity(0.62))
+                .fill(Color.yellowSoft.opacity(0.58))
                 .frame(width: 95, height: 50)
-                .offset(x: -2, y: -82 + sin(phase + 2.4) * 1.2)
+                .offset(x: -6, y: -78 + sin(phase + 2.4) * 1.2)  // Shifted left
                 .scaleEffect(1.0 + sin(phase * 0.8 + 1.5) * 0.018)
             }
-            .frame(width: 200, height: 155)
-            // Subtle tilt for distinctiveness (2.5 degrees)
-            .rotationEffect(.degrees(2.5))
+            .frame(width: 210, height: 155)
+            // Subtle upward bias through slight rotation
+            .rotationEffect(.degrees(1.5))
             
-            // B-Fed text - tightly connected (reduced spacing)
+            // B-Fed label - refined signature
             Text("B-Fed")
-                .font(.system(size: 17, weight: .medium, design: .default))
-                .foregroundStyle(Color.textMuted.opacity(0.95))
+                .font(.system(size: 15, weight: .medium, design: .default))
+                .foregroundStyle(Color.textMuted.opacity(0.80))
         }
         .onAppear {
-            withAnimation(.easeInOut(duration: 3.8).repeatForever(autoreverses: true)) {
+            withAnimation(.easeInOut(duration: 4.0).repeatForever(autoreverses: true)) {
                 phase = .pi * 2
             }
         }
@@ -395,8 +401,8 @@ struct ReadyStep: View {
         VStack(spacing: 24) {
             Spacer()
             
-            DistinctiveLogoLockup()
-                .frame(width: 160, height: 135)
+            AsymmetricLogoLockup()
+                .frame(width: 170, height: 130)
             
             Text("You're all set")
                 .font(.system(size: 26, weight: .bold, design: .default))
@@ -438,15 +444,15 @@ struct CalmPressButtonStyle: ButtonStyle {
 
 // MARK: - Color Extensions
 private extension Color {
-    // Enhanced brand colors
-    static var emeraldPrimary: Color { Color(hex: "#3D8B6B") }  // More saturated green
-    static var emeraldSoft: Color { Color(hex: "#6BB89A") }
-    static var pinkSoft: Color { Color(hex: "#E8C4D0") }
-    static var yellowSoft: Color { Color(hex: "#F0D8A0") }  // Stronger yellow tone
+    // Deeper, richer brand colors
+    static var emeraldPrimary: Color { Color(hex: "#2D7A5E") }  // Deeper green anchor
+    static var emeraldSoft: Color { Color(hex: "#5BA88A") }
+    static var pinkSoft: Color { Color(hex: "#E6C0CC") }
+    static var yellowSoft: Color { Color(hex: "#ECD8A8") }
     
     static var textPrimary: Color { Color(hex: "#1A1A1A") }
-    static var textSecondary: Color { Color(hex: "#6B6B6B") }
-    static var textMuted: Color { Color(hex: "#6B6B6B") }
+    static var textSecondary: Color { Color(hex: "#5A5A5A") }  // Slightly deeper for contrast
+    static var textMuted: Color { Color(hex: "#7A7A7A") }
     
     static var cardBackground: Color { Color(hex: "#F5F5F3") }
     

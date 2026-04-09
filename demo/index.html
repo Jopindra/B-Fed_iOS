@@ -92,7 +92,7 @@
             z-index: 100;
         }
         
-        /* Enhanced Background */
+        /* Background */
         .calm-bg {
             position: absolute;
             top: 0;
@@ -102,70 +102,70 @@
             z-index: 0;
         }
         
-        /* Stronger radial glow */
+        /* Enhanced radial glow */
         .radial-glow {
             position: absolute;
-            width: 360px;
-            height: 360px;
+            width: 380px;
+            height: 380px;
             left: 50%;
             top: 32%;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(61, 139, 107, 0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(45, 122, 94, 0.14) 0%, transparent 70%);
             pointer-events: none;
         }
         
-        /* Distinctive Logo Lockup with tilt */
+        /* Asymmetric Logo Lockup */
         .logo-lockup {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .shapes-container {
             position: relative;
-            width: 200px;
+            width: 210px;
             height: 155px;
-            /* Subtle tilt for distinctiveness */
-            transform: rotate(2.5deg);
+            /* Subtle upward bias */
+            transform: rotate(1.5deg);
         }
         
         .organic-shape {
             position: absolute;
-            animation: shapeBreath 3.8s ease-in-out infinite;
+            animation: shapeBreath 4s ease-in-out infinite;
         }
         
-        /* Bottom - Emerald (more saturated, stronger) */
+        /* Bottom - Emerald (deeper, wider, shifted right) */
         .organic-shape:nth-child(1) {
-            width: 175px;
-            height: 70px;
-            left: 12px;
+            width: 185px;
+            height: 72px;
+            left: 18px;
             bottom: 0;
-            background: rgba(61, 139, 107, 0.52);
-            border-radius: 52% 48% 55% 45% / 45% 55% 48% 52%;
+            background: rgba(45, 122, 94, 0.50);
+            border-radius: 55% 45% 58% 42% / 48% 55% 45% 52%;
             animation-delay: 0s;
         }
         
-        /* Middle - Pink */
+        /* Middle - Pink (centered anchor) */
         .organic-shape:nth-child(2) {
             width: 135px;
             height: 60px;
-            left: 32px;
-            bottom: 40px;
-            background: rgba(232, 196, 208, 0.38);
-            border-radius: 45% 55% 50% 50% / 40% 50% 55% 45%;
-            animation-delay: -1.2s;
+            left: 37px;
+            bottom: 38px;
+            background: rgba(230, 192, 204, 0.36);
+            border-radius: 47% 53% 52% 48% / 42% 52% 58% 48%;
+            animation-delay: -1.3s;
         }
         
-        /* Top - Yellow (stronger visibility) */
+        /* Top - Yellow (shifted left, lighter) */
         .organic-shape:nth-child(3) {
             width: 95px;
             height: 50px;
-            left: 50px;
-            bottom: 82px;
-            background: rgba(240, 216, 160, 0.62);
-            border-radius: 55% 45% 50% 50% / 45% 55% 50% 50%;
-            animation-delay: -2.4s;
+            left: 42px;
+            bottom: 78px;
+            background: rgba(236, 216, 168, 0.58);
+            border-radius: 58% 42% 52% 48% / 47% 53% 52% 48%;
+            animation-delay: -2.6s;
         }
         
         @keyframes shapeBreath {
@@ -177,12 +177,13 @@
             }
         }
         
-        /* Brand text - tightly connected */
+        /* Refined B-Fed label */
         .brand-text {
-            font-size: 17px;
+            font-size: 15px;
             font-weight: 500;
-            color: #6B6B6B;
+            color: #7A7A7A;
             letter-spacing: normal;
+            opacity: 0.80;
         }
         
         /* Onboarding Content */
@@ -195,7 +196,7 @@
             z-index: 1;
         }
         
-        /* Refined Skip button with fade-in */
+        /* Skip button */
         .skip-btn {
             position: absolute;
             top: 14px;
@@ -209,7 +210,7 @@
         }
         
         @keyframes fadeIn {
-            to { opacity: 0.60; }
+            to { opacity: 0.55; }
         }
         
         .hero-section {
@@ -236,13 +237,14 @@
         .welcome-subtitle {
             font-size: 15px;
             font-weight: 400;
-            color: #6B6B6B;
+            color: #5A5A5A;
             text-align: center;
         }
         
+        /* Refined CTA button */
         .cta-button {
             margin-top: auto;
-            background: #6BB89A;
+            background: linear-gradient(180deg, #5BA88A 0%, #5BA88A 100%);
             color: white;
             border: none;
             padding: 16px;
@@ -250,7 +252,7 @@
             font-size: 17px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(107, 184, 154, 0.14);
+            box-shadow: 0 3px 8px rgba(91, 168, 138, 0.20);
             transition: transform 0.12s ease, opacity 0.12s ease;
         }
         
@@ -314,7 +316,7 @@
         }
         
         .type-btn.active {
-            background: #6BB89A;
+            background: #5BA88A;
             color: white;
         }
         
@@ -341,7 +343,7 @@
         }
         
         .range-card {
-            background: rgba(107, 184, 154, 0.08);
+            background: rgba(91, 168, 138, 0.08);
             border-radius: 20px;
             padding: 28px 32px;
             text-align: center;
@@ -358,14 +360,14 @@
         .range-value {
             font-size: 24px;
             font-weight: 600;
-            color: #6BB89A;
+            color: #5BA88A;
             margin-bottom: 8px;
         }
         
         .range-message {
             font-size: 15px;
             font-weight: 500;
-            color: rgba(107, 184, 154, 0.8);
+            color: rgba(91, 168, 138, 0.8);
         }
         
         /* Scrollbar */
@@ -385,7 +387,7 @@
 </head>
 <body>
     <h1>B-Fed App Demo</h1>
-    <p class="subtitle">Distinctive — Tilted Logo, Enhanced Visual Identity</p>
+    <p class="subtitle">World-Class — Signature Asymmetry, Distinctive Identity</p>
     
     <div class="phone-grid">
         <!-- 1. Welcome Screen -->
@@ -400,11 +402,10 @@
                     </div>
                     
                     <div class="onboarding-content">
-                        <!-- Refined Skip button with fade-in -->
                         <a href="#" class="skip-btn">Skip</a>
                         
                         <div class="hero-section">
-                            <!-- Distinctive Logo Lockup with tilt -->
+                            <!-- Asymmetric Logo Lockup -->
                             <div class="logo-lockup">
                                 <div class="shapes-container">
                                     <div class="organic-shape"></div>
