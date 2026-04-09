@@ -9,23 +9,30 @@ struct OnboardingView: View {
     @State private var ageWeeks = 0
     @State private var weightText = ""
     @State private var feedingType: FeedingType = .formula
+    @State private var skipButtonOpacity: Double = 0
     
     var body: some View {
         ZStack {
             CalmBackground()
             
             VStack(spacing: 0) {
-                // Skip button - refined positioning
+                // Skip button - refined with fade-in
                 HStack {
                     Spacer()
                     if currentStep < 2 {
                         Button("Skip") {
                             completeOnboarding()
                         }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(Color.textMuted.opacity(0.75))
-                        .padding(.top, 12)
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(Color.textMuted.opacity(0.60))
+                        .padding(.top, 14)
                         .padding(.trailing, 24)
+                        .opacity(skipButtonOpacity)
+                        .onAppear {
+                            withAnimation(.easeIn(duration: 0.6).delay(0.5)) {
+                                skipButtonOpacity = 1
+                            }
+                        }
                     }
                 }
                 
@@ -105,7 +112,7 @@ struct OnboardingView: View {
 struct CalmBackground: View {
     var body: some View {
         ZStack {
-            // Warm gradient with depth
+            // Warm gradient
             LinearGradient(
                 colors: [
                     Color(hex: "#FCFBF9"),
@@ -116,15 +123,15 @@ struct CalmBackground: View {
             )
             .ignoresSafeArea()
             
-            // Soft radial glow behind logo
+            // Enhanced radial glow behind logo
             RadialGradient(
                 colors: [
-                    Color.emeraldPrimary.opacity(0.08),
+                    Color.emeraldPrimary.opacity(0.12),
                     Color.clear
                 ],
                 center: .init(x: 0.5, y: 0.34),
-                startRadius: 30,
-                endRadius: 180
+                startRadius: 40,
+                endRadius: 200
             )
             .ignoresSafeArea()
         }
@@ -138,8 +145,8 @@ struct WelcomeStep: View {
             Spacer()
                 .frame(height: UIScreen.main.bounds.height * 0.08)
             
-            // Logo lockup: shapes + B-Fed as single unit
-            LogoLockup()
+            // Logo lockup with slight tilt for distinctiveness
+            DistinctiveLogoLockup()
                 .padding(.bottom, 52)
             
             // Headline
@@ -166,27 +173,27 @@ struct WelcomeStep: View {
     }
 }
 
-// MARK: - Logo Lockup (Shapes + B-Fed as unified brand mark)
-struct LogoLockup: View {
+// MARK: - Distinctive Logo Lockup (with subtle tilt)
+struct DistinctiveLogoLockup: View {
     @State private var phase: CGFloat = 0
     
     var body: some View {
-        VStack(spacing: 16) {
-            // Stacked organic shapes
+        VStack(spacing: 8) {
+            // Stacked organic shapes with slight tilt
             ZStack(alignment: .bottom) {
-                // Bottom layer - Emerald (strong anchor)
+                // Bottom layer - Emerald (more saturated, stronger)
                 FluidShape(
                     topCurve: 0.25,
                     bottomCurve: 0.55,
                     leftCurve: 0.15,
                     rightCurve: 0.35
                 )
-                .fill(Color.emeraldPrimary.opacity(0.45))
-                .frame(width: 170, height: 68)
-                .offset(x: -2, y: sin(phase) * 1.5 - 2)
+                .fill(Color.emeraldPrimary.opacity(0.52))
+                .frame(width: 175, height: 70)
+                .offset(x: -4, y: sin(phase) * 1.5)
                 .scaleEffect(1.0 + sin(phase * 0.6) * 0.012)
                 
-                // Middle layer - Pink (medium)
+                // Middle layer - Pink
                 FluidShape(
                     topCurve: 0.40,
                     bottomCurve: 0.30,
@@ -194,27 +201,27 @@ struct LogoLockup: View {
                     rightCurve: 0.20
                 )
                 .fill(Color.pinkSoft.opacity(0.38))
-                .frame(width: 130, height: 58)
-                .offset(x: 8, y: -42 + sin(phase + 1.2) * 1.5)
+                .frame(width: 135, height: 60)
+                .offset(x: 6, y: -40 + sin(phase + 1.2) * 1.5)
                 .scaleEffect(1.0 + sin(phase * 0.7 + 0.8) * 0.015)
-                .rotationEffect(.degrees(-2.5))
                 
-                // Top layer - Yellow (lightest)
+                // Top layer - Yellow (stronger visibility)
                 FluidShape(
                     topCurve: 0.55,
                     bottomCurve: 0.25,
                     leftCurve: 0.30,
                     rightCurve: 0.40
                 )
-                .fill(Color.yellowSoft.opacity(0.50))
-                .frame(width: 90, height: 48)
-                .offset(x: -3, y: -88 + sin(phase + 2.4) * 1.2)
+                .fill(Color.yellowSoft.opacity(0.62))
+                .frame(width: 95, height: 50)
+                .offset(x: -2, y: -82 + sin(phase + 2.4) * 1.2)
                 .scaleEffect(1.0 + sin(phase * 0.8 + 1.5) * 0.018)
-                .rotationEffect(.degrees(3))
             }
-            .frame(width: 200, height: 160)
+            .frame(width: 200, height: 155)
+            // Subtle tilt for distinctiveness (2.5 degrees)
+            .rotationEffect(.degrees(2.5))
             
-            // B-Fed text - tightly connected to shapes
+            // B-Fed text - tightly connected (reduced spacing)
             Text("B-Fed")
                 .font(.system(size: 17, weight: .medium, design: .default))
                 .foregroundStyle(Color.textMuted.opacity(0.95))
@@ -227,7 +234,7 @@ struct LogoLockup: View {
     }
 }
 
-// MARK: - Fluid Shape (Asymmetric organic form)
+// MARK: - Fluid Shape
 struct FluidShape: Shape {
     let topCurve: CGFloat
     let bottomCurve: CGFloat
@@ -240,31 +247,26 @@ struct FluidShape: Shape {
         let w = rect.width
         let h = rect.height
         
-        // Start at top-left with asymmetry
         path.move(to: CGPoint(x: w * 0.08, y: h * 0.15))
         
-        // Top edge - organic wave
         path.addCurve(
             to: CGPoint(x: w * 0.92, y: h * 0.12),
             control1: CGPoint(x: w * (0.25 + topCurve * 0.1), y: -h * 0.08),
             control2: CGPoint(x: w * (0.65 + topCurve * 0.15), y: h * 0.18)
         )
         
-        // Right edge - soft irregular curve
         path.addCurve(
             to: CGPoint(x: w * 0.88, y: h * 0.88),
             control1: CGPoint(x: w * (1.02 + rightCurve * 0.05), y: h * 0.35),
             control2: CGPoint(x: w * (0.95 - rightCurve * 0.08), y: h * 0.72)
         )
         
-        // Bottom edge - gentle accumulation
         path.addCurve(
             to: CGPoint(x: w * 0.12, y: h * 0.92),
             control1: CGPoint(x: w * (0.70 + bottomCurve * 0.12), y: h * 1.06),
             control2: CGPoint(x: w * (0.30 - bottomCurve * 0.08), y: h * 0.98)
         )
         
-        // Left edge - return to start
         path.addCurve(
             to: CGPoint(x: w * 0.08, y: h * 0.15),
             control1: CGPoint(x: w * (-0.02 - leftCurve * 0.05), y: h * 0.68),
@@ -294,7 +296,6 @@ struct BabyDetailsStep: View {
             Spacer().frame(height: 44)
             
             VStack(spacing: 20) {
-                // Age picker
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Age")
                         .font(.subheadline.weight(.semibold))
@@ -312,7 +313,6 @@ struct BabyDetailsStep: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
                 
-                // Weight input
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Weight (optional)")
                         .font(.subheadline.weight(.semibold))
@@ -332,7 +332,6 @@ struct BabyDetailsStep: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
                 
-                // Feeding type
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Feeding type")
                         .font(.subheadline.weight(.semibold))
@@ -396,15 +395,13 @@ struct ReadyStep: View {
         VStack(spacing: 24) {
             Spacer()
             
-            // Smaller logo lockup
-            LogoLockup()
-                .frame(width: 160, height: 140)
+            DistinctiveLogoLockup()
+                .frame(width: 160, height: 135)
             
             Text("You're all set")
                 .font(.system(size: 26, weight: .bold, design: .default))
                 .foregroundStyle(Color.textPrimary)
             
-            // Range preview
             VStack(spacing: 12) {
                 Text("Typical feeding range:")
                     .font(.subheadline)
@@ -441,18 +438,16 @@ struct CalmPressButtonStyle: ButtonStyle {
 
 // MARK: - Color Extensions
 private extension Color {
-    // Brand colors
-    static var emeraldPrimary: Color { Color(hex: "#4A9B7A") }
-    static var emeraldSoft: Color { Color(hex: "#7AB89A") }
+    // Enhanced brand colors
+    static var emeraldPrimary: Color { Color(hex: "#3D8B6B") }  // More saturated green
+    static var emeraldSoft: Color { Color(hex: "#6BB89A") }
     static var pinkSoft: Color { Color(hex: "#E8C4D0") }
-    static var yellowSoft: Color { Color(hex: "#F0E0B8") }
+    static var yellowSoft: Color { Color(hex: "#F0D8A0") }  // Stronger yellow tone
     
-    // Text colors
     static var textPrimary: Color { Color(hex: "#1A1A1A") }
     static var textSecondary: Color { Color(hex: "#6B6B6B") }
-    static var textMuted: Color { Color(hex: "#6B6B6B") }  // Slightly darker for brand text
+    static var textMuted: Color { Color(hex: "#6B6B6B") }
     
-    // UI colors
     static var cardBackground: Color { Color(hex: "#F5F5F3") }
     
     init(hex: String) {

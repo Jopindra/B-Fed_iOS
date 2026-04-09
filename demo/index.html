@@ -92,7 +92,7 @@
             z-index: 100;
         }
         
-        /* Background */
+        /* Enhanced Background */
         .calm-bg {
             position: absolute;
             top: 0;
@@ -102,29 +102,32 @@
             z-index: 0;
         }
         
+        /* Stronger radial glow */
         .radial-glow {
             position: absolute;
-            width: 340px;
-            height: 340px;
+            width: 360px;
+            height: 360px;
             left: 50%;
             top: 32%;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(74, 155, 122, 0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(61, 139, 107, 0.12) 0%, transparent 70%);
             pointer-events: none;
         }
         
-        /* Logo Lockup: Shapes + B-Fed unified */
+        /* Distinctive Logo Lockup with tilt */
         .logo-lockup {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 8px;
         }
         
         .shapes-container {
             position: relative;
             width: 200px;
-            height: 160px;
+            height: 155px;
+            /* Subtle tilt for distinctiveness */
+            transform: rotate(2.5deg);
         }
         
         .organic-shape {
@@ -132,38 +135,36 @@
             animation: shapeBreath 3.8s ease-in-out infinite;
         }
         
-        /* Bottom - Emerald (strong anchor) */
+        /* Bottom - Emerald (more saturated, stronger) */
         .organic-shape:nth-child(1) {
-            width: 170px;
-            height: 68px;
-            left: 15px;
+            width: 175px;
+            height: 70px;
+            left: 12px;
             bottom: 0;
-            background: rgba(74, 155, 122, 0.45);
+            background: rgba(61, 139, 107, 0.52);
             border-radius: 52% 48% 55% 45% / 45% 55% 48% 52%;
             animation-delay: 0s;
         }
         
-        /* Middle - Pink (medium) */
+        /* Middle - Pink */
         .organic-shape:nth-child(2) {
-            width: 130px;
-            height: 58px;
-            left: 35px;
-            bottom: 42px;
+            width: 135px;
+            height: 60px;
+            left: 32px;
+            bottom: 40px;
             background: rgba(232, 196, 208, 0.38);
             border-radius: 45% 55% 50% 50% / 40% 50% 55% 45%;
-            transform: rotate(-2.5deg);
             animation-delay: -1.2s;
         }
         
-        /* Top - Yellow (lightest) */
+        /* Top - Yellow (stronger visibility) */
         .organic-shape:nth-child(3) {
-            width: 90px;
-            height: 48px;
-            left: 53px;
-            bottom: 92px;
-            background: rgba(240, 224, 184, 0.50);
+            width: 95px;
+            height: 50px;
+            left: 50px;
+            bottom: 82px;
+            background: rgba(240, 216, 160, 0.62);
             border-radius: 55% 45% 50% 50% / 45% 55% 50% 50%;
-            transform: rotate(3deg);
             animation-delay: -2.4s;
         }
         
@@ -176,7 +177,7 @@
             }
         }
         
-        /* B-Fed brand text */
+        /* Brand text - tightly connected */
         .brand-text {
             font-size: 17px;
             font-weight: 500;
@@ -194,16 +195,21 @@
             z-index: 1;
         }
         
-        /* Refined Skip button */
+        /* Refined Skip button with fade-in */
         .skip-btn {
             position: absolute;
-            top: 12px;
+            top: 14px;
             right: 24px;
             color: #8E8E8E;
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 500;
             text-decoration: none;
-            opacity: 0.75;
+            opacity: 0;
+            animation: fadeIn 0.6s ease 0.5s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 0.60; }
         }
         
         .hero-section {
@@ -236,7 +242,7 @@
         
         .cta-button {
             margin-top: auto;
-            background: #7AB89A;
+            background: #6BB89A;
             color: white;
             border: none;
             padding: 16px;
@@ -244,7 +250,7 @@
             font-size: 17px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(122, 184, 154, 0.14);
+            box-shadow: 0 2px 6px rgba(107, 184, 154, 0.14);
             transition: transform 0.12s ease, opacity 0.12s ease;
         }
         
@@ -308,7 +314,7 @@
         }
         
         .type-btn.active {
-            background: #7AB89A;
+            background: #6BB89A;
             color: white;
         }
         
@@ -335,7 +341,7 @@
         }
         
         .range-card {
-            background: rgba(122, 184, 154, 0.08);
+            background: rgba(107, 184, 154, 0.08);
             border-radius: 20px;
             padding: 28px 32px;
             text-align: center;
@@ -352,14 +358,14 @@
         .range-value {
             font-size: 24px;
             font-weight: 600;
-            color: #7AB89A;
+            color: #6BB89A;
             margin-bottom: 8px;
         }
         
         .range-message {
             font-size: 15px;
             font-weight: 500;
-            color: rgba(122, 184, 154, 0.8);
+            color: rgba(107, 184, 154, 0.8);
         }
         
         /* Scrollbar */
@@ -379,7 +385,7 @@
 </head>
 <body>
     <h1>B-Fed App Demo</h1>
-    <p class="subtitle">Brand Lockup — Unified Logo, Clean Alignment</p>
+    <p class="subtitle">Distinctive — Tilted Logo, Enhanced Visual Identity</p>
     
     <div class="phone-grid">
         <!-- 1. Welcome Screen -->
@@ -394,11 +400,11 @@
                     </div>
                     
                     <div class="onboarding-content">
-                        <!-- Refined Skip button -->
+                        <!-- Refined Skip button with fade-in -->
                         <a href="#" class="skip-btn">Skip</a>
                         
                         <div class="hero-section">
-                            <!-- Logo Lockup: Shapes + B-Fed unified -->
+                            <!-- Distinctive Logo Lockup with tilt -->
                             <div class="logo-lockup">
                                 <div class="shapes-container">
                                     <div class="organic-shape"></div>
