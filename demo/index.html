@@ -105,92 +105,72 @@
         /* Soft radial glow */
         .radial-glow {
             position: absolute;
-            width: 360px;
-            height: 360px;
+            width: 340px;
+            height: 340px;
             left: 50%;
             top: 32%;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(58, 122, 94, 0.10) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(58, 122, 94, 0.08) 0%, transparent 70%);
             pointer-events: none;
         }
         
-        /* Vessel Logo */
+        /* Flowing Logo */
         .logo-lockup {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
-        .vessel-wrapper {
+        .flowing-shapes {
             position: relative;
-            width: 100px;
-            height: 150px;
+            width: 155px;
+            height: 130px;
         }
         
-        /* Soft vessel outline */
-        .vessel-outline {
+        .organic-shape {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100px;
-            height: 150px;
-            border: 1.5px solid rgba(168, 180, 172, 0.22);
-            border-radius: 28px 28px 32px 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: flowBreath 3.5s ease-in-out infinite;
         }
         
-        /* Liquid layers inside vessel */
-        .liquid-layers {
-            position: absolute;
-            top: 28px;
-            left: 5px;
-            width: 90px;
-            height: 110px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-        }
-        
-        .liquid-pool {
-            animation: poolBreath 3.5s ease-in-out infinite;
-        }
-        
-        /* Top - Yellow (airy, clear) */
-        .liquid-pool:nth-child(1) {
-            width: 72px;
-            height: 38px;
-            background: rgba(236, 214, 154, 0.72);
-            border-radius: 50% 50% 48% 52% / 52% 48% 52% 48%;
+        /* Base - Emerald (flowing foundation) */
+        .organic-shape:nth-child(1) {
+            width: 155px;
+            height: 62px;
+            bottom: 0;
+            background: rgba(58, 122, 94, 0.50);
+            border-radius: 52% 48% 50% 50% / 42% 58% 50% 50%;
             animation-delay: 0s;
         }
         
-        /* Middle - Pink (warm, flowing) */
-        .liquid-pool:nth-child(2) {
-            width: 82px;
-            height: 42px;
-            background: rgba(232, 176, 192, 0.48);
-            border-radius: 48% 52% 50% 50% / 50% 50% 52% 48%;
-            margin-top: -6px;
+        /* Middle - Pink (softly overlapping) */
+        .organic-shape:nth-child(2) {
+            width: 125px;
+            height: 56px;
+            bottom: 32px;
+            background: rgba(232, 176, 192, 0.45);
+            border-radius: 48% 52% 52% 48% / 50% 48% 52% 50%;
             animation-delay: -1.2s;
         }
         
-        /* Base - Emerald (rich, defined) */
-        .liquid-pool:nth-child(3) {
-            width: 90px;
-            height: 46px;
-            background: rgba(58, 122, 94, 0.52);
-            border-radius: 52% 48% 50% 50% / 48% 52% 50% 50%;
-            margin-top: -6px;
+        /* Top - Yellow (airy, visible) */
+        .organic-shape:nth-child(3) {
+            width: 95px;
+            height: 48px;
+            bottom: 62px;
+            background: rgba(237, 216, 160, 0.68);
+            border-radius: 50% 50% 48% 52% / 52% 50% 50% 50%;
             animation-delay: -2.4s;
         }
         
-        @keyframes poolBreath {
+        @keyframes flowBreath {
             0%, 100% {
-                transform: translateY(0) scale(1);
+                transform: translateX(-50%) translateY(0) scale(1);
             }
             50% {
-                transform: translateY(-2px) scale(1.01);
+                transform: translateX(-50%) translateY(-2px) scale(1.01);
             }
         }
         
@@ -346,7 +326,7 @@
         }
         
         .ready-logo {
-            transform: scale(0.90);
+            transform: scale(0.92);
             margin-bottom: 40px;
         }
         
@@ -402,7 +382,7 @@
 </head>
 <body>
     <h1>B-Fed App Demo</h1>
-    <p class="subtitle">Vessel Logo — Liquid Inside Container Concept</p>
+    <p class="subtitle">Abstract Flowing Logo — Clean, Minimal, Effortless</p>
     
     <div class="phone-grid">
         <!-- 1. Welcome Screen -->
@@ -420,15 +400,12 @@
                         <a href="#" class="skip-btn">Skip</a>
                         
                         <div class="hero-section">
-                            <!-- Vessel Logo -->
+                            <!-- Abstract Flowing Logo -->
                             <div class="logo-lockup">
-                                <div class="vessel-wrapper">
-                                    <div class="vessel-outline"></div>
-                                    <div class="liquid-layers">
-                                        <div class="liquid-pool"></div>
-                                        <div class="liquid-pool"></div>
-                                        <div class="liquid-pool"></div>
-                                    </div>
+                                <div class="flowing-shapes">
+                                    <div class="organic-shape"></div>
+                                    <div class="organic-shape"></div>
+                                    <div class="organic-shape"></div>
                                 </div>
                                 <div class="brand-text">B-Fed</div>
                             </div>
@@ -500,13 +477,10 @@
                     
                     <div class="ready-content">
                         <div class="logo-lockup ready-logo">
-                            <div class="vessel-wrapper">
-                                <div class="vessel-outline"></div>
-                                <div class="liquid-layers">
-                                    <div class="liquid-pool"></div>
-                                    <div class="liquid-pool"></div>
-                                    <div class="liquid-pool"></div>
-                                </div>
+                            <div class="flowing-shapes">
+                                <div class="organic-shape"></div>
+                                <div class="organic-shape"></div>
+                                <div class="organic-shape"></div>
                             </div>
                             <div class="brand-text">B-Fed</div>
                         </div>
