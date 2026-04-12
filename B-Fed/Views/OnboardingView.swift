@@ -132,7 +132,7 @@ struct CalmBackground: View {
             // Soft radial glow
             RadialGradient(
                 colors: [
-                    Color.emeraldPrimary.opacity(0.08),
+                    Color.tealAnchor.opacity(0.08),
                     Color.clear
                 ],
                 center: .init(x: 0.5, y: 0.34),
@@ -151,8 +151,8 @@ struct WelcomeStep: View {
             Spacer()
                 .frame(height: UIScreen.main.bounds.height * 0.08)
             
-            // Abstract flowing logo
-            FlowingLogo()
+            // Rainbow arc logo
+            RainbowArcLogo()
                 .padding(.bottom, 52)
             
             // Headline
@@ -179,42 +179,49 @@ struct WelcomeStep: View {
     }
 }
 
-// MARK: - Flowing Logo (Abstract, organic layers - balanced)
-struct FlowingLogo: View {
+// MARK: - Rainbow Arc Logo (Flowing arcs)
+struct RainbowArcLogo: View {
     var body: some View {
-        VStack(spacing: 8) {
-            // Three organic flowing shapes - perfectly centered
-            ZStack(alignment: .bottom) {
-                // Base layer - Rich emerald (flowing foundation)
-                FlowingShape(
-                    width: 150,
-                    height: 60,
-                    color: Color.emeraldPrimary.opacity(0.50),
-                    curveIntensity: 0.35,
-                    breathing: (intensity: 0.012, vertical: 2, delay: 0)
+        VStack(spacing: 10) {
+            // Three flowing arcs
+            ZStack {
+                // Bottom arc - Teal anchor (widest)
+                FlowingArc(
+                    width: 160,
+                    height: 70,
+                    strokeWidth: 14,
+                    color: Color.tealAnchor.opacity(0.65),
+                    arcSpan: 140,
+                    curveOffset: 0,
+                    breathing: (intensity: 0.008, vertical: 1.5, delay: 0)
                 )
+                .offset(y: 25)
                 
-                // Middle layer - Warm pink (softly overlapping)
-                FlowingShape(
-                    width: 120,
-                    height: 54,
-                    color: Color.pinkSoft.opacity(0.45),
-                    curveIntensity: 0.45,
-                    breathing: (intensity: 0.015, vertical: 1.5, delay: 1.2)
+                // Middle arc - Soft pink
+                FlowingArc(
+                    width: 130,
+                    height: 58,
+                    strokeWidth: 12,
+                    color: Color.roseSoft.opacity(0.55),
+                    arcSpan: 130,
+                    curveOffset: 2,
+                    breathing: (intensity: 0.010, vertical: 1.2, delay: 1.0)
                 )
-                .offset(y: -30)
+                .offset(y: 5)
                 
-                // Top layer - Clear yellow (airy, visible)
-                FlowingShape(
-                    width: 92,
+                // Top arc - Subtle yellow (narrowest)
+                FlowingArc(
+                    width: 100,
                     height: 46,
-                    color: Color.yellowSoft.opacity(0.68),
-                    curveIntensity: 0.55,
-                    breathing: (intensity: 0.010, vertical: 1, delay: 2.4)
+                    strokeWidth: 10,
+                    color: Color.goldSoft.opacity(0.60),
+                    arcSpan: 120,
+                    curveOffset: -1,
+                    breathing: (intensity: 0.006, vertical: 1, delay: 2.0)
                 )
-                .offset(y: -58)
+                .offset(y: -15)
             }
-            .frame(width: 170, height: 125)
+            .frame(width: 170, height: 120)
             
             // B-Fed label
             Text("B-Fed")
@@ -224,73 +231,88 @@ struct FlowingLogo: View {
     }
 }
 
-// MARK: - Flowing Shape (Organic, abstract form)
-struct FlowingShape: View {
+// MARK: - Flowing Arc (Thick, organic arc shape)
+struct FlowingArc: View {
     let width: CGFloat
     let height: CGFloat
+    let strokeWidth: CGFloat
     let color: Color
-    let curveIntensity: CGFloat
+    let arcSpan: Double
+    let curveOffset: CGFloat
     let breathing: (intensity: Double, vertical: Double, delay: Double)
     
     @State private var phase: CGFloat = 0
     
     var body: some View {
-        OrganicFormShape(curveIntensity: curveIntensity)
-            .fill(color)
-            .frame(width: width, height: height)
-            .offset(y: sin(phase + breathing.delay) * breathing.vertical)
-            .scaleEffect(1.0 + sin(phase + breathing.delay) * breathing.intensity)
-            .onAppear {
-                withAnimation(MotionCurve.breathing.repeatForever(autoreverses: true)) {
-                    phase = .pi * 2
-                }
+        OrganicArcShape(
+            arcSpan: arcSpan,
+            curveOffset: curveOffset
+        )
+        .stroke(color, style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round))
+        .frame(width: width, height: height)
+        .offset(y: sin(phase + breathing.delay) * breathing.vertical)
+        .scaleEffect(1.0 + sin(phase + breathing.delay) * breathing.intensity)
+        .onAppear {
+            withAnimation(MotionCurve.breathing.repeatForever(autoreverses: true)) {
+                phase = .pi * 2
             }
+        }
     }
 }
 
-// MARK: - Organic Form Shape (Abstract, flowing edges)
-struct OrganicFormShape: Shape {
-    let curveIntensity: CGFloat
+// MARK: - Organic Arc Shape (Curved with subtle irregularity)
+struct OrganicArcShape: Shape {
+    let arcSpan: Double
+    let curveOffset: CGFloat
     
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
         let w = rect.width
         let h = rect.height
-        let ci = curveIntensity
+        let centerX = w / 2
+        let centerY = h
+        let radius = h * 0.9
         
-        // Start at left with organic curve
-        path.move(to: CGPoint(x: w * 0.12, y: h * 0.35))
+        // Convert arc span to radians
+        let startAngle = (180 - arcSpan / 2) * .pi / 180
+        let endAngle = (180 + arcSpan / 2) * .pi / 180
         
-        // Top edge - flowing wave with irregularity
-        path.addCurve(
-            to: CGPoint(x: w * 0.88, y: h * 0.28),
-            control1: CGPoint(x: w * (0.30 + ci * 0.25), y: -h * 0.15),
-            control2: CGPoint(x: w * (0.70 - ci * 0.15), y: h * 0.22)
-        )
+        // Create organic arc with slight curve variation
+        let startX = centerX + radius * cos(startAngle)
+        let startY = centerY + radius * sin(startAngle)
         
-        // Right edge - soft flowing descent
-        path.addCurve(
-            to: CGPoint(x: w * 0.82, y: h * 0.75),
-            control1: CGPoint(x: w * (1.04 + ci * 0.08), y: h * 0.45),
-            control2: CGPoint(x: w * (0.90 - ci * 0.10), y: h * 0.65)
-        )
+        path.move(to: CGPoint(x: startX, y: startY))
         
-        // Bottom edge - gentle organic curve
-        path.addCurve(
-            to: CGPoint(x: w * 0.18, y: h * 0.82),
-            control1: CGPoint(x: w * (0.65 - ci * 0.12), y: h * 1.08),
-            control2: CGPoint(x: w * (0.35 + ci * 0.20), y: h * 0.95)
-        )
+        // Use multiple curves for organic feel
+        let steps = 12
+        let angleStep = (endAngle - startAngle) / Double(steps)
         
-        // Left edge - flowing return
-        path.addCurve(
-            to: CGPoint(x: w * 0.12, y: h * 0.35),
-            control1: CGPoint(x: w * (-0.04 - ci * 0.10), y: h * 0.70),
-            control2: CGPoint(x: w * (0.08 + ci * 0.15), y: h * 0.48)
-        )
+        for i in 1...steps {
+            let angle = startAngle + angleStep * Double(i)
+            let variation = sin(Double(i) * 0.5) * Double(curveOffset)
+            let r = radius + variation
+            
+            let x = centerX + r * cos(angle)
+            let y = centerY + r * sin(angle)
+            
+            // Add curve control points for smoothness
+            if i == steps {
+                path.addLine(to: CGPoint(x: x, y: y))
+            } else {
+                let nextAngle = startAngle + angleStep * Double(i + 0.5)
+                let nextVariation = sin(Double(i + 0.5) * 0.5) * Double(curveOffset)
+                let nextR = radius + nextVariation
+                let controlX = centerX + nextR * cos(nextAngle)
+                let controlY = centerY + nextR * sin(nextAngle)
+                
+                path.addQuadCurve(
+                    to: CGPoint(x: x, y: y),
+                    control: CGPoint(x: controlX, y: controlY)
+                )
+            }
+        }
         
-        path.closeSubpath()
         return path
     }
 }
@@ -368,7 +390,7 @@ struct BabyDetailsStep: View {
                                     .foregroundStyle(feedingType == type ? .white : Color.textPrimary)
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 52)
-                                    .background(feedingType == type ? Color.emeraldSoft : Color.cardBackground)
+                                    .background(feedingType == type ? Color.tealSoft : Color.cardBackground)
                                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                             }
                             .buttonStyle(.plain)
@@ -415,8 +437,8 @@ struct ReadyStep: View {
         VStack(spacing: 24) {
             Spacer()
             
-            FlowingLogo()
-                .frame(width: 140, height: 150)
+            RainbowArcLogo()
+                .frame(width: 140, height: 100)
             
             Text("You're all set")
                 .font(.system(size: 26, weight: .bold, design: .default))
@@ -429,15 +451,15 @@ struct ReadyStep: View {
                 
                 Text(typicalRange)
                     .font(.system(size: 24, weight: .semibold, design: .default))
-                    .foregroundStyle(Color.emeraldSoft)
+                    .foregroundStyle(Color.tealSoft)
                 
                 Text("You're right on track")
                     .font(.subheadline.weight(.medium))
-                    .foregroundStyle(Color.emeraldSoft.opacity(0.8))
+                    .foregroundStyle(Color.tealSoft.opacity(0.8))
             }
             .padding(24)
             .frame(maxWidth: .infinity)
-            .background(Color.emeraldSoft.opacity(0.08))
+            .background(Color.tealSoft.opacity(0.08))
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             .padding(.horizontal, 24)
             .staggered(index: 0, baseDelay: 0.2)
@@ -449,11 +471,11 @@ struct ReadyStep: View {
 
 // MARK: - Color Extensions
 private extension Color {
-    // Refined brand colors
-    static var emeraldPrimary: Color { Color(hex: "#3A7A5E") }     // Richer green
-    static var emeraldSoft: Color { Color(hex: "#6BA892") }
-    static var pinkSoft: Color { Color(hex: "#E8B0C0") }           // Warmer pink
-    static var yellowSoft: Color { Color(hex: "#EDD8A0") }          // Clearer yellow
+    // Muted rainbow tones
+    static var tealAnchor: Color { Color(hex: "#4A8574") }     // Rich teal anchor
+    static var tealSoft: Color { Color(hex: "#6BA892") }        // Soft teal for UI
+    static var roseSoft: Color { Color(hex: "#D4A5A5") }        // Muted rose pink
+    static var goldSoft: Color { Color(hex: "#D4C4A0") }        // Subtle gold/yellow
     
     static var textPrimary: Color { Color(hex: "#1A1A1A") }
     static var textSecondary: Color { Color(hex: "#5A5A5A") }

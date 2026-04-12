@@ -110,62 +110,69 @@
             left: 50%;
             top: 32%;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(58, 122, 94, 0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(74, 133, 116, 0.08) 0%, transparent 70%);
             pointer-events: none;
         }
         
-        /* Flowing Logo - Balanced */
+        /* Rainbow Arc Logo */
         .logo-lockup {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         
-        .flowing-shapes {
+        .arcs-container {
             position: relative;
             width: 170px;
-            height: 125px;
+            height: 120px;
         }
         
-        .organic-shape {
+        .flowing-arc {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            animation: flowBreath 3.5s ease-in-out infinite;
+            border-radius: 50% 50% 0 0;
+            animation: arcBreath 3.5s ease-in-out infinite;
         }
         
-        /* Base - Emerald (flowing foundation) */
-        .organic-shape:nth-child(1) {
-            width: 150px;
-            height: 60px;
+        /* Bottom arc - Teal anchor (widest, thickest) */
+        .flowing-arc:nth-child(1) {
+            width: 160px;
+            height: 70px;
             bottom: 0;
-            background: rgba(58, 122, 94, 0.50);
-            border-radius: 52% 48% 50% 50% / 42% 58% 50% 50%;
+            background: transparent;
+            border: 14px solid rgba(74, 133, 116, 0.65);
+            border-bottom: none;
+            border-radius: 80px 80px 0 0;
             animation-delay: 0s;
         }
         
-        /* Middle - Pink (softly overlapping) */
-        .organic-shape:nth-child(2) {
-            width: 120px;
-            height: 54px;
-            bottom: 30px;
-            background: rgba(232, 176, 192, 0.45);
-            border-radius: 48% 52% 52% 48% / 50% 48% 52% 50%;
-            animation-delay: -1.2s;
+        /* Middle arc - Soft pink */
+        .flowing-arc:nth-child(2) {
+            width: 130px;
+            height: 58px;
+            bottom: 20px;
+            background: transparent;
+            border: 12px solid rgba(212, 165, 165, 0.55);
+            border-bottom: none;
+            border-radius: 65px 65px 0 0;
+            animation-delay: -1s;
         }
         
-        /* Top - Yellow (airy, visible) */
-        .organic-shape:nth-child(3) {
-            width: 92px;
+        /* Top arc - Subtle gold (narrowest) */
+        .flowing-arc:nth-child(3) {
+            width: 100px;
             height: 46px;
-            bottom: 58px;
-            background: rgba(237, 216, 160, 0.68);
-            border-radius: 50% 50% 48% 52% / 52% 50% 50% 50%;
-            animation-delay: -2.4s;
+            bottom: 40px;
+            background: transparent;
+            border: 10px solid rgba(212, 196, 160, 0.60);
+            border-bottom: none;
+            border-radius: 50px 50px 0 0;
+            animation-delay: -2s;
         }
         
-        @keyframes flowBreath {
+        @keyframes arcBreath {
             0%, 100% {
                 transform: translateX(-50%) translateY(0) scale(1);
             }
@@ -326,7 +333,7 @@
         }
         
         .ready-logo {
-            transform: scale(0.92);
+            transform: scale(0.85);
             margin-bottom: 40px;
         }
         
@@ -382,7 +389,7 @@
 </head>
 <body>
     <h1>B-Fed App Demo</h1>
-    <p class="subtitle">Abstract Flowing Logo — Clean, Minimal, Effortless</p>
+    <p class="subtitle">Rainbow Arc Logo — Flowing, Premium, Calm</p>
     
     <div class="phone-grid">
         <!-- 1. Welcome Screen -->
@@ -400,12 +407,12 @@
                         <a href="#" class="skip-btn">Skip</a>
                         
                         <div class="hero-section">
-                            <!-- Abstract Flowing Logo -->
+                            <!-- Rainbow Arc Logo -->
                             <div class="logo-lockup">
-                                <div class="flowing-shapes">
-                                    <div class="organic-shape"></div>
-                                    <div class="organic-shape"></div>
-                                    <div class="organic-shape"></div>
+                                <div class="arcs-container">
+                                    <div class="flowing-arc"></div>
+                                    <div class="flowing-arc"></div>
+                                    <div class="flowing-arc"></div>
                                 </div>
                                 <div class="brand-text">B-Fed</div>
                             </div>
@@ -477,10 +484,10 @@
                     
                     <div class="ready-content">
                         <div class="logo-lockup ready-logo">
-                            <div class="flowing-shapes">
-                                <div class="organic-shape"></div>
-                                <div class="organic-shape"></div>
-                                <div class="organic-shape"></div>
+                            <div class="arcs-container">
+                                <div class="flowing-arc"></div>
+                                <div class="flowing-arc"></div>
+                                <div class="flowing-arc"></div>
                             </div>
                             <div class="brand-text">B-Fed</div>
                         </div>
