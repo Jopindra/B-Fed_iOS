@@ -114,7 +114,7 @@
             pointer-events: none;
         }
         
-        /* Rainbow Arc Logo */
+        /* Precise Rainbow Logo */
         .logo-lockup {
             display: flex;
             flex-direction: column;
@@ -125,59 +125,55 @@
         .arcs-container {
             position: relative;
             width: 170px;
-            height: 120px;
+            height: 110px;
         }
         
-        .flowing-arc {
+        /* Shared center point for all arcs */
+        .precise-arc {
             position: absolute;
             left: 50%;
+            bottom: 0;
             transform: translateX(-50%);
             border-radius: 50% 50% 0 0;
+            background: transparent;
             animation: arcBreath 3.5s ease-in-out infinite;
         }
         
-        /* Bottom arc - Teal anchor (widest, thickest) */
-        .flowing-arc:nth-child(1) {
-            width: 160px;
-            height: 70px;
-            bottom: 0;
-            background: transparent;
-            border: 14px solid rgba(74, 133, 116, 0.65);
+        /* Outer arc - Teal (base/anchor), radius 65px */
+        .precise-arc:nth-child(1) {
+            width: 130px;
+            height: 65px;
+            border: 10px solid rgba(74, 133, 116, 0.70);
             border-bottom: none;
-            border-radius: 80px 80px 0 0;
             animation-delay: 0s;
         }
         
-        /* Middle arc - Soft pink */
-        .flowing-arc:nth-child(2) {
-            width: 130px;
-            height: 58px;
-            bottom: 20px;
-            background: transparent;
-            border: 12px solid rgba(212, 165, 165, 0.55);
+        /* Middle arc - Rose, radius 51px (65-14) */
+        .precise-arc:nth-child(2) {
+            width: 102px;
+            height: 51px;
+            border: 10px solid rgba(212, 165, 165, 0.60);
             border-bottom: none;
-            border-radius: 65px 65px 0 0;
-            animation-delay: -1s;
+            bottom: 14px;
+            animation-delay: -0.8s;
         }
         
-        /* Top arc - Subtle gold (narrowest) */
-        .flowing-arc:nth-child(3) {
-            width: 100px;
-            height: 46px;
-            bottom: 40px;
-            background: transparent;
-            border: 10px solid rgba(212, 196, 160, 0.60);
+        /* Inner arc - Gold, radius 37px (65-28) */
+        .precise-arc:nth-child(3) {
+            width: 74px;
+            height: 37px;
+            border: 10px solid rgba(212, 196, 160, 0.65);
             border-bottom: none;
-            border-radius: 50px 50px 0 0;
-            animation-delay: -2s;
+            bottom: 28px;
+            animation-delay: -1.6s;
         }
         
         @keyframes arcBreath {
             0%, 100% {
-                transform: translateX(-50%) translateY(0) scale(1);
+                transform: translateX(-50%) scale(1);
             }
             50% {
-                transform: translateX(-50%) translateY(-2px) scale(1.01);
+                transform: translateX(-50%) scale(1.008);
             }
         }
         
@@ -389,7 +385,7 @@
 </head>
 <body>
     <h1>B-Fed App Demo</h1>
-    <p class="subtitle">Rainbow Arc Logo — Flowing, Premium, Calm</p>
+    <p class="subtitle">Precise Rainbow Arc — Clean, Mathematically Consistent</p>
     
     <div class="phone-grid">
         <!-- 1. Welcome Screen -->
@@ -407,12 +403,12 @@
                         <a href="#" class="skip-btn">Skip</a>
                         
                         <div class="hero-section">
-                            <!-- Rainbow Arc Logo -->
+                            <!-- Precise Rainbow Logo -->
                             <div class="logo-lockup">
                                 <div class="arcs-container">
-                                    <div class="flowing-arc"></div>
-                                    <div class="flowing-arc"></div>
-                                    <div class="flowing-arc"></div>
+                                    <div class="precise-arc"></div>
+                                    <div class="precise-arc"></div>
+                                    <div class="precise-arc"></div>
                                 </div>
                                 <div class="brand-text">B-Fed</div>
                             </div>
@@ -485,9 +481,9 @@
                     <div class="ready-content">
                         <div class="logo-lockup ready-logo">
                             <div class="arcs-container">
-                                <div class="flowing-arc"></div>
-                                <div class="flowing-arc"></div>
-                                <div class="flowing-arc"></div>
+                                <div class="precise-arc"></div>
+                                <div class="precise-arc"></div>
+                                <div class="precise-arc"></div>
                             </div>
                             <div class="brand-text">B-Fed</div>
                         </div>
