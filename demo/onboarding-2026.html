@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-Fed 2026 Onboarding</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+        
+        .subtitle span {
+            color: #2D6A5E;
+            font-weight: 600;
+        }
+        
+        .phone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+        
+        .phone-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .screen-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2D6A5E;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding: 6px 14px;
+            background: rgba(45, 106, 94, 0.1);
+            border-radius: 20px;
+        }
+        
+        .iphone {
+            width: 360px;
+            height: 780px;
+            background: #000;
+            border-radius: 50px;
+            padding: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1) inset;
+        }
+        
+        .iphone-inner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #FAFBF9 0%, #F5F7F4 50%, #F0F2EE 100%);
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 28px;
+            background: #000;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 100;
+        }
+        
+        .ambient-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            left: 50%;
+            top: 25%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(45, 106, 94, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding-top: 55px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-dot {
+            height: 6px;
+            border-radius: 3px;
+            background: #E5E5E5;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-dot.active {
+            background: #2D6A5E;
+            width: 20px;
+        }
+        
+        .progress-dot:not(.active) {
+            width: 6px;
+        }
+        
+        .welcome-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 0 24px 30px;
+        }
+        
+        .bottle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 60px;
+            margin-bottom: 48px;
+        }
+        
+        .bottle-glow {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(45, 106, 94, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bottle-svg {
+            width: 100px;
+            height: 140px;
+        }
+        
+        .bottle-outline {
+            fill: none;
+            stroke: rgba(45, 106, 94, 0.25);
+            stroke-width: 2;
+        }
+        
+        .bottle-liquid {
+            fill: rgba(45, 106, 94, 0.15);
+        }
+        
+        .welcome-headline {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1A1A1A;
+            text-align: center;
+            line-height: 1.15;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+        
+        .welcome-subtext {
+            font-size: 16px;
+            font-weight: 400;
+            color: #5A5A5A;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .cta-button {
+            margin-top: auto;
+            background: linear-gradient(180deg, #2D6A5E 0%, #255951 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(45, 106, 94, 0.25);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .cta-button:active {
+            transform: scale(0.97);
+        }
+        
+        .age-content, .feeding-content {
+            padding: 20px 24px 100px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .age-question, .feeding-question {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 16px;
+        }
+        
+        .age-selector, .feeding-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border: 1.5px solid rgba(45, 106, 94, 0.12);
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        
+        .age-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1A1A1A;
+        }
+        
+        .age-hint {
+            font-size: 13px;
+            font-weight: 500;
+            color: #8E8E93;
+            margin-left: 4px;
+            margin-top: 8px;
+        }
+        
+        .feeding-card { gap: 16px; }
+        
+        .feeding-card.selected {
+            background: #2D6A5E;
+            border-color: transparent;
+        }
+        
+        .feeding-card.selected.breast { background: #E8A598; }
+        .feeding-card.selected.mixed { background: #A895C7; }
+        
+        .feeding-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(45, 106, 94, 0.1);
+        }
+        
+        .feeding-card.selected .feeding-icon {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .feeding-info { flex: 1; }
+        
+        .feeding-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: #1A1A1A;
+        }
+        
+        .feeding-card.selected .feeding-title,
+        .feeding-card.selected .feeding-subtitle {
+            color: white;
+        }
+        
+        .feeding-subtitle {
+            font-size: 14px;
+            color: #8E8E93;
+        }
+        
+        .feeding-check {
+            font-size: 22px;
+            color: white;
+        }
+        
+        .confirmation-bubble {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 184, 150, 0.15);
+            border: 1px solid rgba(212, 184, 150, 0.3);
+            border-radius: 20px;
+            padding: 10px 16px;
+            margin-top: 16px;
+            width: fit-content;
+        }
+        
+        .confirmation-bubble span:first-child {
+            color: #D4B896;
+            font-size: 14px;
+        }
+        
+        .confirmation-bubble span:last-child {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1A1A1A;
+        }
+        
+        .completion-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 0 24px 30px;
+        }
+        
+        .success-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 100px;
+            margin-bottom: 40px;
+        }
+        
+        .success-rings {
+            position: relative;
+            width: 160px;
+            height: 160px;
+        }
+        
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .ring-outer {
+            width: 160px;
+            height: 160px;
+            background: rgba(45, 106, 94, 0.08);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .ring-middle {
+            width: 120px;
+            height: 120px;
+            background: rgba(45, 106, 94, 0.12);
+            animation: pulse 2s ease-in-out 0.3s infinite;
+        }
+        
+        .success-check {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #2D6A5E;
+            box-shadow: 0 4px 16px rgba(45, 106, 94, 0.2);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+        
+        .completion-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1A1A1A;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        
+        .completion-subtitle {
+            font-size: 16px;
+            font-weight: 400;
+            color: #5A5A5A;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>B-Fed 2026 Onboarding</h1>
+    <p class="subtitle">4-screen progressive flow • <span>Under 30 seconds</span> • Guided experience</p>
+    
+    <div class="phone-grid">
+        
+        <!-- SCREEN 1: Welcome -->
+        <div class="phone-container">
+            <div class="screen-label">Screen 1: Welcome</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="ambient-glow"></div>
+                    
+                    <div class="welcome-content">
+                        <div class="progress-dots">
+                            <div class="progress-dot active"></div>
+                            <div class="progress-dot"></div>
+                            <div class="progress-dot"></div>
+                            <div class="progress-dot"></div>
+                        </div>
+                        
+                        <div class="bottle-container">
+                            <div class="bottle-glow">
+                                <svg class="bottle-svg" viewBox="0 0 100 140">
+                                    <path class="bottle-outline" d="M30 35 L30 50 Q15 60 15 65 L15 125 Q15 138 50 138 Q85 138 85 125 L85 65 Q85 60 70 50 L70 35 Q70 28 50 28 Q30 28 30 35"/>
+                                    <ellipse class="bottle-liquid" cx="50" cy="100" rx="28" ry="35"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <h2 class="welcome-headline">Feel confident<br>feeding your baby</h2>
+                        <p class="welcome-subtext">Track feeds, spot patterns, and know they are getting enough</p>
+                        
+                        <button class="cta-button">Get started</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SCREEN 2: Age -->
+        <div class="phone-container">
+            <div class="screen-label">Screen 2: Baby Age</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="ambient-glow"></div>
+                    
+                    <div class="age-content">
+                        <div class="progress-dots">
+                            <div class="progress-dot active"></div>
+                            <div class="progress-dot active"></div>
+                            <div class="progress-dot"></div>
+                            <div class="progress-dot"></div>
+                        </div>
+                        
+                        <div class="age-question">How old is your baby?</div>
+                        
+                        <div class="age-selector">
+                            <span class="age-value">2 weeks old</span>
+                            <span style="color: #8E8E93; font-size: 12px;">▼</span>
+                        </div>
+                        
+                        <p class="age-hint">This helps personalise feeding patterns</p>
+                    </div>
+                    
+                    <button class="cta-button" style="position: absolute; bottom: 30px; left: 24px; right: 24px;">Continue</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SCREEN 3: Feeding -->
+        <div class="phone-container">
+            <div class="screen-label">Screen 3: Feeding Setup</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="ambient-glow"></div>
+                    
+                    <div class="feeding-content">
+                        <div class="progress-dots">
+                            <div class="progress-dot active"></div>
+                            <div class="progress-dot active"></div>
+                            <div class="progress-dot active"></div>
+                            <div class="progress-dot"></div>
+                        </div>
+                        
+                        <div class="feeding-question">How are you feeding?</div>
+                        
+                        <div class="feeding-card">
+                            <div class="feeding-icon">💧</div>
+                            <div class="feeding-info">
+                                <div class="feeding-title">Breastfeeding</div>
+                                <div class="feeding-subtitle">Nursing directly</div>
+                            </div>
+                        </div>
+                        
+                        <div class="feeding-card selected">
+                            <div class="feeding-icon">🍼</div>
+                            <div class="feeding-info">
+                                <div class="feeding-title">Formula</div>
+                                <div class="feeding-subtitle">Bottle feeding</div>
+                            </div>
+                            <div class="feeding-check">✓</div>
+                        </div>
+                        
+                        <div class="feeding-card">
+                            <div class="feeding-icon">🔄</div>
+                            <div class="feeding-info">
+                                <div class="feeding-title">Mixed</div>
+                                <div class="feeding-subtitle">Both methods</div>
+                            </div>
+                        </div>
+                        
+                        <div class="confirmation-bubble">
+                            <span>✓</span>
+                            <span>Got it - we will tailor tracking to this</span>
+                        </div>
+                    </div>
+                    
+                    <button class="cta-button" style="position: absolute; bottom: 30px; left: 24px; right: 24px;">Continue</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SCREEN 4: Completion -->
+        <div class="phone-container">
+            <div class="screen-label">Screen 4: All Set</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="ambient-glow"></div>
+                    
+                    <div class="completion-content">
+                        <div class="progress-dots">
+                            <div class="progress-dot active"></div>
+                            <div class="progress-dot active"></div>
+                            <div class="progress-dot active"></div>
+                            <div class="progress-dot active"></div>
+                        </div>
+                        
+                        <div class="success-container">
+                            <div class="success-rings">
+                                <div class="ring ring-outer"></div>
+                                <div class="ring ring-middle"></div>
+                                <div class="success-check">✓</div>
+                            </div>
+                        </div>
+                        
+                        <h2 class="completion-title">You are all set</h2>
+                        <p class="completion-subtitle">Lets start tracking your baby's next feed</p>
+                        
+                        <button class="cta-button" style="margin-top: auto;">Start tracking</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
