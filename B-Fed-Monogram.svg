@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- BF Geometric Monogram -->
+  <!-- Tech-forward: Stripe, Linear, Notion inspired -->
+  <!-- Unified symbol - F structure with B's lower bowl -->
+  
+  <!-- Left vertical (shared stem) -->
+  <rect x="55" y="35" width="24" height="130" fill="#5FA38E"/>
+  
+  <!-- Top bar (F top + B top) -->
+  <rect x="55" y="35" width="95" height="24" fill="#5FA38E"/>
+  
+  <!-- Middle bar (F middle + B waist) -->
+  <rect x="55" y="88" width="80" height="20" fill="#5FA38E"/>
+  
+  <!-- B bottom bowl - geometric precision -->
+  <path d="M 79 108
+           L 79 130
+           Q 79 155, 105 162
+           Q 135 170, 155 145
+           Q 170 125, 155 108
+           Q 140 88, 115 88
+           L 79 108" 
+        fill="#5FA38E"/>
+</svg>

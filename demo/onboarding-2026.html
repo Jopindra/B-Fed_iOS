@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B-Fed 2026 Onboarding</title>
+    <title>B-Fed Premium Onboarding 2026</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
             min-height: 100vh;
             padding: 30px 20px;
@@ -49,7 +49,7 @@
         }
         
         .screen-label {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #2D6A5E;
             text-transform: uppercase;
@@ -72,7 +72,7 @@
         .iphone-inner {
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, #FAFBF9 0%, #F5F7F4 50%, #F0F2EE 100%);
+            background: linear-gradient(180deg, #FDFBF8 0%, #F8F5F1 50%, #F5F1EC 100%);
             border-radius: 40px;
             overflow: hidden;
             position: relative;
@@ -98,76 +98,78 @@
             left: 50%;
             top: 25%;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(45, 106, 94, 0.05) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(45, 106, 94, 0.06) 0%, transparent 70%);
             pointer-events: none;
         }
         
-        .progress-dots {
+        /* Progress Stepper */
+        .progress-stepper {
             display: flex;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             padding-top: 55px;
             margin-bottom: 20px;
         }
         
-        .progress-dot {
-            height: 6px;
-            border-radius: 3px;
-            background: #E5E5E5;
-            transition: all 0.3s ease;
+        .step-dot {
+            height: 8px;
+            border-radius: 4px;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         
-        .progress-dot.active {
+        .step-dot.active {
             background: #2D6A5E;
-            width: 20px;
+            width: 28px;
         }
         
-        .progress-dot:not(.active) {
-            width: 6px;
+        .step-dot:not(.active) {
+            background: rgba(0,0,0,0.1);
+            width: 8px;
         }
         
+        /* Screen 1: Welcome */
         .welcome-content {
             height: 100%;
             display: flex;
             flex-direction: column;
-            padding: 0 24px 30px;
+            padding: 0 28px 36px;
         }
         
         .bottle-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 60px;
+            margin-top: 50px;
             margin-bottom: 48px;
+            position: relative;
         }
         
-        .bottle-glow {
+        .glow-ring {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(45, 106, 94, 0.04);
+        }
+        
+        .glow-ring.outer {
+            width: 220px;
+            height: 220px;
+        }
+        
+        .glow-ring.inner {
             width: 180px;
             height: 180px;
-            border-radius: 50%;
             background: rgba(45, 106, 94, 0.06);
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
         .bottle-svg {
-            width: 100px;
-            height: 140px;
-        }
-        
-        .bottle-outline {
-            fill: none;
-            stroke: rgba(45, 106, 94, 0.25);
-            stroke-width: 2;
-        }
-        
-        .bottle-liquid {
-            fill: rgba(45, 106, 94, 0.15);
+            width: 110px;
+            height: 150px;
+            position: relative;
+            z-index: 1;
         }
         
         .welcome-headline {
-            font-size: 32px;
+            font-size: 34px;
             font-weight: 700;
             color: #1A1A1A;
             text-align: center;
@@ -189,153 +191,373 @@
             background: linear-gradient(180deg, #2D6A5E 0%, #255951 100%);
             color: white;
             border: none;
-            padding: 18px;
+            padding: 18px 24px;
             border-radius: 16px;
             font-size: 17px;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(45, 106, 94, 0.25);
+            box-shadow: 0 6px 20px rgba(45, 106, 94, 0.3);
             cursor: pointer;
-            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.12s ease;
         }
         
         .cta-button:active {
             transform: scale(0.97);
         }
         
-        .age-content, .feeding-content {
-            padding: 20px 24px 100px;
+        /* Screen 2: Age */
+        .age-content {
+            padding: 10px 28px 36px;
             height: 100%;
             overflow-y: auto;
         }
         
-        .age-question, .feeding-question {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1A1A1A;
-            margin-bottom: 16px;
+        .screen-header {
+            text-align: center;
+            margin-bottom: 32px;
         }
         
-        .age-selector, .feeding-card {
+        .screen-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 8px;
+        }
+        
+        .screen-subtitle {
+            font-size: 15px;
+            font-weight: 500;
+            color: #5A5A5A;
+        }
+        
+        /* Age Card */
+        .age-card {
             background: white;
-            border-radius: 16px;
-            padding: 18px 20px;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            border: 1.5px solid rgba(45, 106, 94, 0.1);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .age-card:active {
+            transform: scale(0.98);
+        }
+        
+        .age-card-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: #7A7A7A;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        .age-card-value {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-            border: 1.5px solid rgba(45, 106, 94, 0.12);
-            margin-bottom: 12px;
-            cursor: pointer;
         }
         
-        .age-value {
-            font-size: 20px;
+        .age-value-text {
+            font-size: 22px;
             font-weight: 600;
             color: #1A1A1A;
         }
         
-        .age-hint {
+        .age-picker-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(45, 106, 94, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2D6A5E;
+            font-size: 14px;
+        }
+        
+        .integrated-feedback {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             font-size: 13px;
             font-weight: 500;
-            color: #8E8E93;
+            color: #7A7A7A;
             margin-left: 4px;
+        }
+        
+        .integrated-feedback span:first-child {
+            color: #C4A574;
+        }
+        
+        /* Weight Prompt */
+        .weight-prompt {
+            background: rgba(255,255,255,0.5);
+            border-radius: 20px;
+            padding: 20px;
             margin-top: 8px;
         }
         
-        .feeding-card { gap: 16px; }
-        
-        .feeding-card.selected {
-            background: #2D6A5E;
-            border-color: transparent;
+        .weight-question {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1A1A1A;
+            margin-bottom: 16px;
         }
         
-        .feeding-card.selected.breast { background: #E8A598; }
-        .feeding-card.selected.mixed { background: #A895C7; }
+        .weight-options {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .weight-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.12s ease;
+        }
+        
+        .weight-btn.primary {
+            background: rgba(45, 106, 94, 0.1);
+            color: #2D6A5E;
+            border: 1px solid rgba(45, 106, 94, 0.15);
+        }
+        
+        .weight-btn.secondary {
+            background: rgba(0,0,0,0.05);
+            color: #7A7A7A;
+        }
+        
+        .weight-btn:active {
+            transform: scale(0.96);
+        }
+        
+        /* Screen 3: Feeding */
+        .feeding-content {
+            padding: 10px 28px 36px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .feeding-option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px;
+            background: white;
+            border-radius: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1.5px solid transparent;
+        }
+        
+        .feeding-option:active {
+            transform: scale(0.98);
+        }
+        
+        .feeding-option.selected {
+            background: rgba(45, 106, 94, 0.06);
+            border-color: rgba(45, 106, 94, 0.25);
+            box-shadow: 0 6px 18px rgba(45, 106, 94, 0.12);
+        }
+        
+        .feeding-option.selected.breast {
+            background: rgba(212, 137, 122, 0.1);
+            border-color: rgba(212, 137, 122, 0.3);
+        }
+        
+        .feeding-option.selected.mixed {
+            background: rgba(155, 140, 181, 0.1);
+            border-color: rgba(155, 140, 181, 0.3);
+        }
         
         .feeding-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            background: rgba(45, 106, 94, 0.1);
+            background: rgba(45, 106, 94, 0.08);
         }
         
-        .feeding-card.selected .feeding-icon {
-            background: rgba(255,255,255,0.2);
+        .feeding-option.selected .feeding-icon {
+            background: rgba(45, 106, 94, 0.15);
         }
         
         .feeding-info { flex: 1; }
         
         .feeding-title {
-            font-size: 17px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 2px;
             color: #1A1A1A;
+            margin-bottom: 3px;
         }
         
-        .feeding-card.selected .feeding-title,
-        .feeding-card.selected .feeding-subtitle {
-            color: white;
+        .feeding-option.selected .feeding-title {
+            color: #2D6A5E;
         }
         
         .feeding-subtitle {
             font-size: 14px;
-            color: #8E8E93;
+            color: #7A7A7A;
         }
         
-        .feeding-check {
-            font-size: 22px;
+        .selection-indicator {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
             color: white;
+            transition: all 0.2s ease;
         }
         
-        .confirmation-bubble {
+        .feeding-option.selected .selection-indicator {
+            background: #2D6A5E;
+            border-color: #2D6A5E;
+        }
+        
+        .feeding-option.selected.breast .selection-indicator {
+            background: #D4897A;
+            border-color: #D4897A;
+        }
+        
+        .feeding-option.selected.mixed .selection-indicator {
+            background: #9B8CB5;
+            border-color: #9B8CB5;
+        }
+        
+        /* Micro feedback */
+        .micro-feedback {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(212, 184, 150, 0.15);
-            border: 1px solid rgba(212, 184, 150, 0.3);
-            border-radius: 20px;
+            background: rgba(196, 165, 116, 0.12);
             padding: 10px 16px;
-            margin-top: 16px;
+            border-radius: 20px;
             width: fit-content;
+            margin-top: 8px;
         }
         
-        .confirmation-bubble span:first-child {
-            color: #D4B896;
-            font-size: 14px;
-        }
-        
-        .confirmation-bubble span:last-child {
+        .micro-feedback span:first-child {
+            color: #C4A574;
             font-size: 13px;
+        }
+        
+        .micro-feedback span:last-child {
+            font-size: 14px;
             font-weight: 500;
             color: #1A1A1A;
         }
         
+        /* Follow-up Section */
+        .follow-up {
+            margin-top: 24px;
+            animation: slideIn 0.4s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .follow-up-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 16px;
+        }
+        
+        .detail-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .detail-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .detail-btn.selected {
+            background: #2D6A5E;
+        }
+        
+        .detail-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: rgba(45, 106, 94, 0.1);
+            color: #2D6A5E;
+        }
+        
+        .detail-btn.selected .detail-icon {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .detail-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1A1A1A;
+        }
+        
+        .detail-btn.selected .detail-text {
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* Screen 4: Completion */
         .completion-content {
             height: 100%;
             display: flex;
             flex-direction: column;
-            padding: 0 24px 30px;
+            padding: 0 28px 36px;
         }
         
         .success-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 100px;
-            margin-bottom: 40px;
-        }
-        
-        .success-rings {
+            margin-top: 90px;
+            margin-bottom: 48px;
             position: relative;
-            width: 160px;
-            height: 160px;
         }
         
-        .ring {
+        .success-ring {
             position: absolute;
             border-radius: 50%;
             left: 50%;
@@ -343,35 +565,23 @@
             transform: translate(-50%, -50%);
         }
         
-        .ring-outer {
-            width: 160px;
-            height: 160px;
-            background: rgba(45, 106, 94, 0.08);
+        .success-ring.outer {
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(45, 106, 94, 0.12);
             animation: pulse 2s ease-in-out infinite;
         }
         
-        .ring-middle {
-            width: 120px;
-            height: 120px;
-            background: rgba(45, 106, 94, 0.12);
-            animation: pulse 2s ease-in-out 0.3s infinite;
+        .success-ring.middle {
+            width: 180px;
+            height: 180px;
+            background: rgba(45, 106, 94, 0.05);
         }
         
-        .success-check {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            color: #2D6A5E;
-            box-shadow: 0 4px 16px rgba(45, 106, 94, 0.2);
+        .success-ring.inner {
+            width: 140px;
+            height: 140px;
+            background: rgba(45, 106, 94, 0.08);
         }
         
         @keyframes pulse {
@@ -379,8 +589,23 @@
             50% { transform: translate(-50%, -50%) scale(1.1); }
         }
         
+        .success-check {
+            position: relative;
+            z-index: 1;
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            color: #2D6A5E;
+            box-shadow: 0 8px 24px rgba(45, 106, 94, 0.2);
+        }
+        
         .completion-title {
-            font-size: 32px;
+            font-size: 34px;
             font-weight: 700;
             color: #1A1A1A;
             text-align: center;
@@ -388,16 +613,17 @@
         }
         
         .completion-subtitle {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 400;
             color: #5A5A5A;
             text-align: center;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
-    <h1>B-Fed 2026 Onboarding</h1>
-    <p class="subtitle">4-screen progressive flow • <span>Under 30 seconds</span> • Guided experience</p>
+    <h1>B-Fed Premium Onboarding 2026</h1>
+    <p class="subtitle">4-screen progressive flow • <span>Under 30 seconds</span> • Premium motion</p>
     
     <div class="phone-grid">
         
@@ -410,112 +636,156 @@
                     <div class="ambient-glow"></div>
                     
                     <div class="welcome-content">
-                        <div class="progress-dots">
-                            <div class="progress-dot active"></div>
-                            <div class="progress-dot"></div>
-                            <div class="progress-dot"></div>
-                            <div class="progress-dot"></div>
+                        <div class="progress-stepper">
+                            <div class="step-dot active"></div>
+                            <div class="step-dot"></div>
+                            <div class="step-dot"></div>
+                            <div class="step-dot"></div>
                         </div>
                         
                         <div class="bottle-container">
-                            <div class="bottle-glow">
-                                <svg class="bottle-svg" viewBox="0 0 100 140">
-                                    <path class="bottle-outline" d="M30 35 L30 50 Q15 60 15 65 L15 125 Q15 138 50 138 Q85 138 85 125 L85 65 Q85 60 70 50 L70 35 Q70 28 50 28 Q30 28 30 35"/>
-                                    <ellipse class="bottle-liquid" cx="50" cy="100" rx="28" ry="35"/>
-                                </svg>
-                            </div>
+                            <div class="glow-ring outer"></div>
+                            <div class="glow-ring inner"></div>
+                            <svg class="bottle-svg" viewBox="0 0 110 150">
+                                <path fill="none" stroke="rgba(45,106,94,0.2)" stroke-width="2.5" 
+                                      d="M35 33 L35 52 Q15 65 15 70 L15 130 Q15 145 55 145 Q95 145 95 130 L95 70 Q95 65 75 52 L75 33 Q75 22 55 22 Q35 22 35 33"/>
+                                <ellipse cx="55" cy="105" rx="30" ry="38" fill="rgba(45,106,94,0.15)"/>
+                            </svg>
                         </div>
                         
                         <h2 class="welcome-headline">Feel confident<br>feeding your baby</h2>
-                        <p class="welcome-subtext">Track feeds, spot patterns, and know they are getting enough</p>
+                        <p class="welcome-subtext">Track feeds, spot patterns, and know they are getting enough — effortlessly</p>
                         
-                        <button class="cta-button">Get started</button>
+                        <button class="cta-button">
+                            Get started
+                            <span>→</span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- SCREEN 2: Age -->
+        <!-- SCREEN 2: Age with Bottom Sheet -->
         <div class="phone-container">
-            <div class="screen-label">Screen 2: Baby Age</div>
+            <div class="screen-label">Screen 2: Age Selection</div>
             <div class="iphone">
                 <div class="iphone-inner">
                     <div class="notch"></div>
                     <div class="ambient-glow"></div>
                     
                     <div class="age-content">
-                        <div class="progress-dots">
-                            <div class="progress-dot active"></div>
-                            <div class="progress-dot active"></div>
-                            <div class="progress-dot"></div>
-                            <div class="progress-dot"></div>
+                        <div class="progress-stepper">
+                            <div class="step-dot active"></div>
+                            <div class="step-dot active"></div>
+                            <div class="step-dot"></div>
+                            <div class="step-dot"></div>
                         </div>
                         
-                        <div class="age-question">How old is your baby?</div>
-                        
-                        <div class="age-selector">
-                            <span class="age-value">2 weeks old</span>
-                            <span style="color: #8E8E93; font-size: 12px;">▼</span>
+                        <div class="screen-header">
+                            <h2 class="screen-title">How old is your baby?</h2>
+                            <p class="screen-subtitle">This helps personalise everything</p>
                         </div>
                         
-                        <p class="age-hint">This helps personalise feeding patterns</p>
+                        <!-- Age Card -->
+                        <div class="age-card">
+                            <div class="age-card-header">Age</div>
+                            <div class="age-card-value">
+                                <span class="age-value-text">2 weeks old</span>
+                                <div class="age-picker-btn">▼</div>
+                            </div>
+                        </div>
+                        
+                        <div class="integrated-feedback">
+                            <span>✦</span>
+                            <span>Personalised for 2 weeks old</span>
+                        </div>
+                        
+                        <!-- Weight Prompt -->
+                        <div class="weight-prompt">
+                            <div class="weight-question">Do you know your baby's weight?</div>
+                            <div class="weight-options">
+                                <button class="weight-btn primary">Yes</button>
+                                <button class="weight-btn secondary">Skip</button>
+                            </div>
+                        </div>
                     </div>
                     
-                    <button class="cta-button" style="position: absolute; bottom: 30px; left: 24px; right: 24px;">Continue</button>
+                    <button class="cta-button" style="position: absolute; bottom: 36px; left: 28px; right: 28px;">Continue</button>
                 </div>
             </div>
         </div>
         
-        <!-- SCREEN 3: Feeding -->
+        <!-- SCREEN 3: Feeding with Conditional Follow-up -->
         <div class="phone-container">
-            <div class="screen-label">Screen 3: Feeding Setup</div>
+            <div class="screen-label">Screen 3: Feeding + Follow-up</div>
             <div class="iphone">
                 <div class="iphone-inner">
                     <div class="notch"></div>
                     <div class="ambient-glow"></div>
                     
                     <div class="feeding-content">
-                        <div class="progress-dots">
-                            <div class="progress-dot active"></div>
-                            <div class="progress-dot active"></div>
-                            <div class="progress-dot active"></div>
-                            <div class="progress-dot"></div>
+                        <div class="progress-stepper">
+                            <div class="step-dot active"></div>
+                            <div class="step-dot active"></div>
+                            <div class="step-dot active"></div>
+                            <div class="step-dot"></div>
                         </div>
                         
-                        <div class="feeding-question">How are you feeding?</div>
+                        <div class="screen-header" style="margin-bottom: 24px;">
+                            <h2 class="screen-title">How are you feeding?</h2>
+                        </div>
                         
-                        <div class="feeding-card">
+                        <!-- Feeding Options -->
+                        <div class="feeding-option">
                             <div class="feeding-icon">💧</div>
                             <div class="feeding-info">
                                 <div class="feeding-title">Breastfeeding</div>
                                 <div class="feeding-subtitle">Nursing directly</div>
                             </div>
+                            <div class="selection-indicator"></div>
                         </div>
                         
-                        <div class="feeding-card selected">
+                        <div class="feeding-option selected">
                             <div class="feeding-icon">🍼</div>
                             <div class="feeding-info">
                                 <div class="feeding-title">Formula</div>
                                 <div class="feeding-subtitle">Bottle feeding</div>
                             </div>
-                            <div class="feeding-check">✓</div>
+                            <div class="selection-indicator">✓</div>
                         </div>
                         
-                        <div class="feeding-card">
+                        <div class="feeding-option">
                             <div class="feeding-icon">🔄</div>
                             <div class="feeding-info">
                                 <div class="feeding-title">Mixed</div>
                                 <div class="feeding-subtitle">Both methods</div>
                             </div>
+                            <div class="selection-indicator"></div>
                         </div>
                         
-                        <div class="confirmation-bubble">
+                        <!-- Micro Feedback -->
+                        <div class="micro-feedback">
                             <span>✓</span>
-                            <span>Got it - we will tailor tracking to this</span>
+                            <span>Tailored for formula feeding</span>
+                        </div>
+                        
+                        <!-- Conditional Follow-up -->
+                        <div class="follow-up">
+                            <div class="follow-up-title">How do you measure feeds?</div>
+                            
+                            <div class="detail-btn selected">
+                                <div class="detail-icon">💧</div>
+                                <div class="detail-text">Bottle (ml)</div>
+                            </div>
+                            
+                            <div class="detail-btn">
+                                <div class="detail-icon">👁</div>
+                                <div class="detail-text">Approximate</div>
+                            </div>
                         </div>
                     </div>
                     
-                    <button class="cta-button" style="position: absolute; bottom: 30px; left: 24px; right: 24px;">Continue</button>
+                    <button class="cta-button" style="position: absolute; bottom: 36px; left: 28px; right: 28px;">Continue</button>
                 </div>
             </div>
         </div>
@@ -529,25 +799,27 @@
                     <div class="ambient-glow"></div>
                     
                     <div class="completion-content">
-                        <div class="progress-dots">
-                            <div class="progress-dot active"></div>
-                            <div class="progress-dot active"></div>
-                            <div class="progress-dot active"></div>
-                            <div class="progress-dot active"></div>
+                        <div class="progress-stepper">
+                            <div class="step-dot active"></div>
+                            <div class="step-dot active"></div>
+                            <div class="step-dot active"></div>
+                            <div class="step-dot active"></div>
                         </div>
                         
                         <div class="success-container">
-                            <div class="success-rings">
-                                <div class="ring ring-outer"></div>
-                                <div class="ring ring-middle"></div>
-                                <div class="success-check">✓</div>
-                            </div>
+                            <div class="success-ring outer"></div>
+                            <div class="success-ring middle"></div>
+                            <div class="success-ring inner"></div>
+                            <div class="success-check">✓</div>
                         </div>
                         
                         <h2 class="completion-title">You are all set</h2>
-                        <p class="completion-subtitle">Lets start tracking your baby's next feed</p>
+                        <p class="completion-subtitle">Let's start tracking your<br>baby's next feed</p>
                         
-                        <button class="cta-button" style="margin-top: auto;">Start tracking</button>
+                        <button class="cta-button" style="margin-top: auto;">
+                            Start tracking
+                            <span>→</span>
+                        </button>
                     </div>
                 </div>
             </div>

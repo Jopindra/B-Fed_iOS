@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-Fed - Full App Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 40px 0 20px;
+            text-align: center;
+        }
+        
+        .phone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .phone-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .phone-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .iphone {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 54px;
+            padding: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1) inset;
+        }
+        
+        .iphone-inner {
+            width: 100%;
+            height: 100%;
+            background: #F2F2F7;
+            border-radius: 44px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+            z-index: 100;
+        }
+        
+        /* iOS Status Bar */
+        .status-bar {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            z-index: 99;
+        }
+        
+        /* ===== ONBOARDING SCREENS ===== */
+        .onboarding-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, #FDFCFA 0%, #F8F6F3 100%);
+        }
+        
+        .radial-glow {
+            position: absolute;
+            width: 340px;
+            height: 340px;
+            left: 50%;
+            top: 32%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(74, 133, 116, 0.08) 0%, transparent 70%);
+        }
+        
+        .logo-lockup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .arcs-container {
+            position: relative;
+            width: 170px;
+            height: 110px;
+        }
+        
+        .precise-arc {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            border-radius: 50% 50% 0 0;
+            background: transparent;
+            border-bottom: none;
+        }
+        
+        .precise-arc:nth-child(1) {
+            width: 130px;
+            height: 65px;
+            border: 10px solid rgba(74, 133, 116, 0.70);
+        }
+        
+        .precise-arc:nth-child(2) {
+            width: 102px;
+            height: 51px;
+            border: 10px solid rgba(212, 165, 165, 0.60);
+            bottom: 14px;
+        }
+        
+        .precise-arc:nth-child(3) {
+            width: 74px;
+            height: 37px;
+            border: 10px solid rgba(212, 196, 160, 0.65);
+            bottom: 28px;
+        }
+        
+        .brand-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: #7A7A7A;
+            opacity: 0.82;
+        }
+        
+        .welcome-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 0 32px 34px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-section {
+            margin-top: 14vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .welcome-headline {
+            font-size: 26px;
+            font-weight: 600;
+            color: #1A1A1A;
+            text-align: center;
+            line-height: 1.2;
+            margin-top: 52px;
+            margin-bottom: 14px;
+        }
+        
+        .welcome-headline span { display: block; }
+        
+        .welcome-subtitle {
+            font-size: 15px;
+            font-weight: 400;
+            color: #5A5A5A;
+            text-align: center;
+        }
+        
+        .cta-button {
+            margin-top: auto;
+            background: linear-gradient(180deg, #6BA892 0%, #5FA38E 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(107, 168, 146, 0.25);
+        }
+        
+        /* Baby Details Screen */
+        .details-content {
+            padding: 60px 24px 34px;
+            height: 100%;
+            overflow-y: auto;
+            background: #F2F2F7;
+        }
+        
+        .nav-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-top: 50px;
+        }
+        
+        .nav-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .details-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1A1A1A;
+            text-align: center;
+            margin-bottom: 44px;
+            margin-top: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8E8E8E;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .input-field {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            color: #1A1A1A;
+            border: none;
+            width: 100%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .picker-wheel {
+            background: white;
+            border-radius: 12px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #1A1A1A;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .type-selector {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .type-btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            background: white;
+            color: #1A1A1A;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .type-btn.active {
+            background: #5FA38E;
+            color: white;
+        }
+        
+        /* Ready Screen */
+        .ready-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 24px 34px;
+            background: linear-gradient(180deg, #FDFCFA 0%, #F8F6F3 100%);
+        }
+        
+        .ready-logo {
+            transform: scale(0.85);
+            margin-bottom: 40px;
+        }
+        
+        .ready-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 32px;
+        }
+        
+        .range-card {
+            background: rgba(107, 168, 146, 0.08);
+            border-radius: 20px;
+            padding: 28px 32px;
+            text-align: center;
+            width: 100%;
+            margin-bottom: auto;
+        }
+        
+        .range-label {
+            font-size: 14px;
+            color: #6B6B6B;
+            margin-bottom: 8px;
+        }
+        
+        .range-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #5FA38E;
+            margin-bottom: 8px;
+        }
+        
+        .range-message {
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(107, 168, 146, 0.8);
+        }
+        
+        /* ===== DASHBOARD SCREENS ===== */
+        .dashboard-content {
+            height: 100%;
+            background: #F2F2F7;
+            overflow-y: auto;
+            padding: 0 16px 100px;
+        }
+        
+        .dashboard-header {
+            padding: 60px 16px 20px;
+            background: #F2F2F7;
+        }
+        
+        .dashboard-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 80px;
+        }
+        
+        .bottle-outline {
+            width: 120px;
+            height: 180px;
+            border: 2.5px solid rgba(95, 163, 142, 0.3);
+            border-radius: 20px 20px 40px 40px;
+            position: relative;
+            margin-bottom: 48px;
+        }
+        
+        .bottle-outline::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 15px;
+            background: rgba(95, 163, 142, 0.2);
+            border-radius: 50%;
+        }
+        
+        .bottle-outline::after {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 2px;
+            background: rgba(95, 163, 142, 0.2);
+        }
+        
+        .empty-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .empty-subtitle {
+            font-size: 17px;
+            color: #6b7280;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        
+        /* Hero Card (Populated) */
+        .hero-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .period-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .period-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            background: #F2F2F7;
+            color: #1a1a1a;
+        }
+        
+        .period-btn.active {
+            background: #5FA38E;
+            color: white;
+        }
+        
+        .guidance-bubble {
+            display: inline-block;
+            background: rgba(95, 163, 142, 0.1);
+            color: #5FA38E;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .bottle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .bottle-glass {
+            width: 80px;
+            height: 140px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 100%);
+            border: 2px solid rgba(255,255,255,0.6);
+            border-radius: 15px 15px 30px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bottle-liquid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65%;
+            background: linear-gradient(180deg, #7AB8A6 0%, #5FA38E 50%, #4A8574 100%);
+            border-radius: 0 0 28px 28px;
+        }
+        
+        .bottle-liquid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .intake-display {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-top: 12px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .stat-box {
+            flex: 1;
+            background: rgba(95, 163, 142, 0.06);
+            border-radius: 16px;
+            padding: 14px 8px;
+            text-align: center;
+        }
+        
+        .stat-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(95, 163, 142, 0.12);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 6px;
+            font-size: 14px;
+        }
+        
+        .stat-value {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        
+        .stat-sublabel {
+            font-size: 10px;
+            color: #5FA38E;
+            margin-top: 2px;
+        }
+        
+        /* Recent Section */
+        .recent-section {
+            margin-top: 20px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .section-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .see-all {
+            font-size: 14px;
+            color: #5FA38E;
+            font-weight: 500;
+        }
+        
+        .feed-row {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .feed-time {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            width: 50px;
+        }
+        
+        .feed-dot {
+            width: 8px;
+            height: 8px;
+            background: #5FA38E;
+            border-radius: 50%;
+            margin: 0 12px;
+        }
+        
+        .feed-amount {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1a1a1a;
+            flex: 1;
+        }
+        
+        /* ===== LOG FEED SCREEN ===== */
+        .log-feed-content {
+            height: 100%;
+            background: #F2F2F7;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .amount-scrubber {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .amount-display {
+            font-size: 96px;
+            font-weight: 300;
+            color: #1a1a1a;
+            letter-spacing: -2px;
+        }
+        
+        .amount-unit {
+            font-size: 28px;
+            font-weight: 300;
+            color: #6b7280;
+            margin-left: 4px;
+        }
+        
+        .guidance-text {
+            font-size: 15px;
+            color: #6b7280;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        .helper-text {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-top: 20px;
+        }
+        
+        .bottom-controls {
+            background: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .drag-handle {
+            width: 36px;
+            height: 5px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
+            margin: 0 auto 16px;
+        }
+        
+        .timer-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: #5FA38E;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        
+        .timer-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F2F2F7;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .timer-time {
+            font-size: 32px;
+            font-weight: 500;
+            color: #1a1a1a;
+            font-family: 'SF Mono', monospace;
+        }
+        
+        .timer-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(95, 163, 142, 0.1);
+            border: none;
+            color: #5FA38E;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        /* ===== FEED HISTORY SCREEN ===== */
+        .history-content {
+            height: 100%;
+            background: #F2F2F7;
+            overflow-y: auto;
+            padding: 0 16px 20px;
+        }
+        
+        .history-header {
+            padding: 60px 16px 20px;
+            background: #F2F2F7;
+        }
+        
+        .date-group {
+            margin-bottom: 20px;
+        }
+        
+        .date-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+        
+        .history-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(95, 163, 142, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        
+        .history-details {
+            flex: 1;
+        }
+        
+        .history-time {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .history-meta {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        
+        .history-amount {
+            font-size: 17px;
+            font-weight: 600;
+            color: #5FA38E;
+        }
+        
+        /* ===== TAB BAR & FLOATING BUTTON ===== */
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 84px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 20px;
+            color: #8e8e93;
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .tab-item.active {
+            color: #5FA38E;
+        }
+        
+        .tab-icon {
+            font-size: 22px;
+        }
+        
+        .floating-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: #5FA38E;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 6px 20px rgba(95, 163, 142, 0.4);
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        /* Navigation Bar */
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 50px 16px 10px;
+            background: #F2F2F7;
+        }
+        
+        .nav-btn {
+            font-size: 17px;
+            color: #5FA38E;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 400;
+        }
+        
+        .nav-center {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <h1>B-Fed Full App Demo</h1>
+    <p class="subtitle">All screens from onboarding to daily use</p>
+
+    <!-- SECTION 1: ONBOARDING -->
+    <div class="section-title">1. Onboarding Flow</div>
+    <div class="phone-grid">
+        
+        <!-- Welcome Screen -->
+        <div class="phone-container">
+            <div class="phone-label">1.1 Welcome</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="onboarding-bg">
+                        <div class="radial-glow"></div>
+                    </div>
+                    <div class="welcome-content">
+                        <div class="hero-section">
+                            <div class="logo-lockup">
+                                <div class="arcs-container">
+                                    <div class="precise-arc"></div>
+                                    <div class="precise-arc"></div>
+                                    <div class="precise-arc"></div>
+                                </div>
+                                <div class="brand-text">B-Fed</div>
+                            </div>
+                            <h2 class="welcome-headline">
+                                <span>Track feeds.</span>
+                                <span>Stay in flow.</span>
+                            </h2>
+                            <p class="welcome-subtitle">Simple tracking, without the stress.</p>
+                        </div>
+                        <button class="cta-button">Get started</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Baby Details Screen -->
+        <div class="phone-container">
+            <div class="phone-label">1.2 Baby Details</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="status-bar">
+                        <span>9:41</span>
+                        <span>􀙇 􀛨 􀛭</span>
+                    </div>
+                    <div class="details-content">
+                        <h2 class="details-title">Tell us about<br>your baby</h2>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Age</label>
+                            <div class="picker-wheel">2 weeks old</div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Weight (optional)</label>
+                            <div class="input-field" style="display: flex; justify-content: space-between;">
+                                <span style="color: #8E8E8E;">Optional</span>
+                                <span style="color: #8E8E8E;">kg</span>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Feeding type</label>
+                            <div class="type-selector">
+                                <button class="type-btn active">Formula</button>
+                                <button class="type-btn">Mixed</button>
+                            </div>
+                        </div>
+                        
+                        <button class="cta-button" style="width: 100%; margin-top: 40px;">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ready Screen -->
+        <div class="phone-container">
+            <div class="phone-label">1.3 Ready</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="onboarding-bg">
+                        <div class="radial-glow"></div>
+                    </div>
+                    <div class="ready-content">
+                        <div class="logo-lockup ready-logo">
+                            <div class="arcs-container">
+                                <div class="precise-arc"></div>
+                                <div class="precise-arc"></div>
+                                <div class="precise-arc"></div>
+                            </div>
+                            <div class="brand-text">B-Fed</div>
+                        </div>
+                        <h2 class="ready-title">You're all set</h2>
+                        <div class="range-card">
+                            <p class="range-label">Typical feeding range:</p>
+                            <p class="range-value">70–100 ml</p>
+                            <p class="range-message">You're right on track</p>
+                        </div>
+                        <button class="cta-button" style="width: 100%;">Start tracking</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: DASHBOARD -->
+    <div class="section-title">2. Dashboard</div>
+    <div class="phone-grid">
+        
+        <!-- Empty State -->
+        <div class="phone-container">
+            <div class="phone-label">2.1 Empty State</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="dashboard-content">
+                        <div class="dashboard-header">
+                            <div class="dashboard-title">Today</div>
+                        </div>
+                        <div class="empty-state">
+                            <div class="bottle-outline"></div>
+                            <div class="empty-title">Let's log your first feed</div>
+                            <div class="empty-subtitle">You're doing great already</div>
+                            <button class="cta-button" style="width: calc(100% - 32px);">
+                                <span style="margin-right: 8px;">+</span> Log Feed
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tab-bar">
+                        <div class="tab-item active">
+                            <span class="tab-icon">􀎟</span>
+                            <span>Dashboard</span>
+                        </div>
+                        <div class="tab-item">
+                            <span class="tab-icon">􀋲</span>
+                            <span>History</span>
+                        </div>
+                    </div>
+                    <button class="floating-btn">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Populated Dashboard -->
+        <div class="phone-container">
+            <div class="phone-label">2.2 With Data</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="dashboard-content">
+                        <div class="dashboard-header">
+                            <div class="dashboard-title">Today</div>
+                        </div>
+                        
+                        <div class="hero-card">
+                            <div class="period-selector">
+                                <button class="period-btn active">Today</button>
+                                <button class="period-btn">7 Days</button>
+                            </div>
+                            
+                            <div style="text-align: center;">
+                                <span class="guidance-bubble">Last feed: 2h ago</span>
+                            </div>
+                            
+                            <div class="bottle-container">
+                                <div class="bottle-glass">
+                                    <div class="bottle-liquid"></div>
+                                </div>
+                                <div class="intake-display">145 ml today</div>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-box">
+                                    <div class="stat-icon" style="color: #007AFF;">#</div>
+                                    <div class="stat-value">3</div>
+                                    <div class="stat-label">Feeds</div>
+                                    <div class="stat-sublabel">today</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon" style="color: #5FA38E;">💧</div>
+                                    <div class="stat-value">145</div>
+                                    <div class="stat-label">Total</div>
+                                    <div class="stat-sublabel">ml</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon" style="color: #FF9500;">📈</div>
+                                    <div class="stat-value">48</div>
+                                    <div class="stat-label">Average</div>
+                                    <div class="stat-sublabel">per feed</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-section">
+                            <div class="section-header">
+                                <span class="section-label">Recent</span>
+                                <span class="see-all">See All ›</span>
+                            </div>
+                            <div class="feed-row">
+                                <span class="feed-time">2:30</span>
+                                <span class="feed-dot"></span>
+                                <span class="feed-amount">60 ml</span>
+                            </div>
+                            <div class="feed-row">
+                                <span class="feed-time">11:15</span>
+                                <span class="feed-dot"></span>
+                                <span class="feed-amount">45 ml</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-bar">
+                        <div class="tab-item active">
+                            <span class="tab-icon">􀎟</span>
+                            <span>Dashboard</span>
+                        </div>
+                        <div class="tab-item">
+                            <span class="tab-icon">􀋲</span>
+                            <span>History</span>
+                        </div>
+                    </div>
+                    <button class="floating-btn">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: LOG FEED -->
+    <div class="section-title">3. Log Feed</div>
+    <div class="phone-grid">
+        
+        <div class="phone-container">
+            <div class="phone-label">3.1 Amount Entry</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="log-feed-content">
+                        <div class="nav-bar">
+                            <button class="nav-btn">Cancel</button>
+                            <span class="nav-center">Log Feed</span>
+                            <button class="nav-btn" style="opacity: 0;">Cancel</button>
+                        </div>
+                        
+                        <div class="amount-scrubber">
+                            <div>
+                                <span class="amount-display">90</span>
+                                <span class="amount-unit">ml</span>
+                            </div>
+                            <div class="guidance-text">70–100 ml per feed</div>
+                            <div class="helper-text">Swipe to adjust</div>
+                        </div>
+                        
+                        <div class="bottom-controls">
+                            <div class="drag-handle"></div>
+                            <div class="timer-toggle">
+                                <span>⏱</span>
+                                <span>Track Duration</span>
+                            </div>
+                            <button class="cta-button" style="width: 100%;">Save Feed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phone-container">
+            <div class="phone-label">3.2 With Timer</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="log-feed-content">
+                        <div class="nav-bar">
+                            <button class="nav-btn">Cancel</button>
+                            <span class="nav-center">Log Feed</span>
+                            <button class="nav-btn" style="opacity: 0;">Cancel</button>
+                        </div>
+                        
+                        <div class="amount-scrubber">
+                            <div>
+                                <span class="amount-display">90</span>
+                                <span class="amount-unit">ml</span>
+                            </div>
+                            <div class="guidance-text">70–100 ml per feed</div>
+                        </div>
+                        
+                        <div class="bottom-controls">
+                            <div class="drag-handle"></div>
+                            <div class="timer-toggle">
+                                <span>⏱</span>
+                                <span>Hide Timer</span>
+                            </div>
+                            <div class="timer-display">
+                                <span class="timer-time">05:23</span>
+                                <button class="timer-btn">⏹</button>
+                            </div>
+                            <button class="cta-button" style="width: 100%;">Save Feed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: HISTORY -->
+    <div class="section-title">4. Feed History</div>
+    <div class="phone-grid">
+        
+        <div class="phone-container">
+            <div class="phone-label">4.1 Full History</div>
+            <div class="iphone">
+                <div class="iphone-inner">
+                    <div class="notch"></div>
+                    <div class="history-content">
+                        <div class="history-header">
+                            <div class="dashboard-title">History</div>
+                        </div>
+                        
+                        <div class="date-group">
+                            <div class="date-label">Today</div>
+                            <div class="history-card">
+                                <div class="history-item">
+                                    <div class="history-icon">🍼</div>
+                                    <div class="history-details">
+                                        <div class="history-time">2:30 PM</div>
+                                        <div class="history-meta">Formula • 25 min</div>
+                                    </div>
+                                    <div class="history-amount">60 ml</div>
+                                </div>
+                                <div class="history-item">
+                                    <div class="history-icon">🍼</div>
+                                    <div class="history-details">
+                                        <div class="history-time">11:15 AM</div>
+                                        <div class="history-meta">Formula • 18 min</div>
+                                    </div>
+                                    <div class="history-amount">45 ml</div>
+                                </div>
+                                <div class="history-item">
+                                    <div class="history-icon">🍼</div>
+                                    <div class="history-details">
+                                        <div class="history-time">8:00 AM</div>
+                                        <div class="history-meta">Formula • 22 min</div>
+                                    </div>
+                                    <div class="history-amount">40 ml</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="date-group">
+                            <div class="date-label">Yesterday</div>
+                            <div class="history-card">
+                                <div class="history-item">
+                                    <div class="history-icon">🍼</div>
+                                    <div class="history-details">
+                                        <div class="history-time">10:45 PM</div>
+                                        <div class="history-meta">Formula • 30 min</div>
+                                    </div>
+                                    <div class="history-amount">55 ml</div>
+                                </div>
+                                <div class="history-item">
+                                    <div class="history-icon">🍼</div>
+                                    <div class="history-details">
+                                        <div class="history-time">6:30 PM</div>
+                                        <div class="history-meta">Formula • 20 min</div>
+                                    </div>
+                                    <div class="history-amount">50 ml</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-bar">
+                        <div class="tab-item">
+                            <span class="tab-icon">􀎟</span>
+                            <span>Dashboard</span>
+                        </div>
+                        <div class="tab-item active">
+                            <span class="tab-icon">􀋲</span>
+                            <span>History</span>
+                        </div>
+                    </div>
+                    <button class="floating-btn">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

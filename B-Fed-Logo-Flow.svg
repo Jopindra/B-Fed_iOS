@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" fill="none">
+  <!-- Minimal flowing line - elegant bottle/wave abstraction -->
+  <!-- Primary stroke -->
+  <path d="M 100 170
+           C 60 170, 35 140, 35 105
+           C 35 70, 60 50, 85 40
+           C 110 30, 125 45, 120 65
+           C 115 85, 85 95, 75 115
+           C 65 135, 80 155, 100 155
+           C 120 155, 135 135, 125 115
+           C 115 95, 85 85, 80 65
+           C 75 45, 90 30, 115 40
+           C 140 50, 165 70, 165 105
+           C 165 140, 140 170, 100 170" 
+        stroke="#5FA38E" 
+        stroke-width="16" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        fill="none"/>
+  
+  <!-- Subtle inner accent -->
+  <path d="M 100 162
+           C 68 162, 47 138, 47 110
+           C 47 82, 68 62, 88 54
+           C 108 46, 118 56, 114 70
+           C 110 84, 86 92, 78 108
+           C 70 124, 82 140, 100 140
+           C 118 140, 130 124, 122 108
+           C 114 92, 90 84, 86 70
+           C 82 56, 92 46, 112 54
+           C 132 62, 153 82, 153 110
+           C 153 138, 132 162, 100 162" 
+        stroke="#8BC4B4" 
+        stroke-width="5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        fill="none"/>
+</svg>
