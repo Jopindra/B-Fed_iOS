@@ -756,7 +756,6 @@ struct FollowUpSection: View {
         case .formula: return "How do you measure feeds?"
         case .breast: return "Do you want to track duration?"
         case .mixed: return "What do you use more often?"
-        default: return ""
         }
     }
     
@@ -768,8 +767,6 @@ struct FollowUpSection: View {
             return [("timer", "stopwatch", "Yes, with timer"), ("simple", "checkmark", "Simple tracking")]
         case .mixed:
             return [("breast", "drop.fill", "Breastfeeding"), ("formula", "fork.knife", "Formula")]
-        default:
-            return []
         }
     }
     
