@@ -6,16 +6,29 @@ import SwiftData
 @Model
 class BabyProfile {
     var id: UUID
+    
+    // Parent information
+    var parentName: String
+    var parentEmail: String
+    var parentDOB: Date
+    var country: String
+    
+    // Baby information
     var babyName: String
     var dateOfBirth: Date
     var birthWeight: Double? // in grams
     var currentWeight: Double? // in grams
     var feedingType: FeedingType
+    
     var createdAt: Date
     var updatedAt: Date
     
     init(
         id: UUID = UUID(),
+        parentName: String = "",
+        parentEmail: String = "",
+        parentDOB: Date = Date(),
+        country: String = "",
         babyName: String = "Baby",
         dateOfBirth: Date = Date(),
         birthWeight: Double? = nil,
@@ -23,6 +36,10 @@ class BabyProfile {
         feedingType: FeedingType = .formula
     ) {
         self.id = id
+        self.parentName = parentName
+        self.parentEmail = parentEmail
+        self.parentDOB = parentDOB
+        self.country = country
         self.babyName = babyName
         self.dateOfBirth = dateOfBirth
         self.birthWeight = birthWeight
