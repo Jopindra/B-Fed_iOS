@@ -118,7 +118,7 @@ struct FeedHistoryRow: View {
                     .font(.subheadline.weight(.medium))
                 
                 HStack(spacing: 12) {
-                    if let duration = feed.duration {
+                    if feed.duration != nil {
                         Label(feed.durationInMinutes, systemImage: "clock")
                             .font(.caption)
                             .foregroundStyle(.secondary)

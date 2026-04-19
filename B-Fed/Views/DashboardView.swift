@@ -230,7 +230,7 @@ struct PopulatedDashboardView: View {
                 bottleFillLevel = targetFillLevel
             }
         }
-        .onChange(of: targetFillLevel) { newLevel in
+        .onChange(of: targetFillLevel) { _, newLevel in
             // Animate when level changes (new feed logged)
             if newLevel > bottleFillLevel {
                 animateBottleFill(to: newLevel)
