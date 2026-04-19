@@ -114,27 +114,27 @@ enum AgeUnit: String, CaseIterable {
 struct WarmBackground: View {
     var body: some View {
         ZStack {
-            // Warm cream gradient
+            // Refined warm cream gradient - less grey, more warmth
             LinearGradient(
                 colors: [
-                    Color(hex: "#FDFBF8"),
-                    Color(hex: "#F8F5F1"),
-                    Color(hex: "#F5F1EC")
+                    Color(hex: "#FDFCFA"),
+                    Color(hex: "#FAF7F3"),
+                    Color(hex: "#F7F3EE")
                 ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+                startPoint: .top,
+                endPoint: .bottom
             )
             .ignoresSafeArea()
             
-            // Soft ambient glow
+            // Subtle ambient glow - more focused
             RadialGradient(
                 colors: [
-                    Color.brandPrimary.opacity(0.06),
+                    Color.brandPrimary.opacity(0.05),
                     Color.clear
                 ],
-                center: .init(x: 0.5, y: 0.28),
-                startRadius: 60,
-                endRadius: 280
+                center: .init(x: 0.5, y: 0.32),
+                startRadius: 80,
+                endRadius: 240
             )
             .ignoresSafeArea()
         }
@@ -147,18 +147,14 @@ struct ProgressStepper: View {
     let totalSteps: Int
     
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             ForEach(0..<totalSteps, id: \.self) { index in
-                GeometryReader { geo in
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(index <= currentStep ? Color.brandPrimary : Color.gray.opacity(0.15))
-                        .frame(width: index == currentStep ? 28 : 8)
-                        .animation(.spring(response: 0.35, dampingFraction: 0.7), value: currentStep)
-                }
-                .frame(height: 8)
+                Capsule()
+                    .fill(index <= currentStep ? Color.brandPrimary : Color.black.opacity(0.08))
+                    .frame(width: index == currentStep ? 24 : 6, height: 6)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.75), value: currentStep)
             }
         }
-        .frame(maxWidth: 120)
     }
 }
 
@@ -169,100 +165,118 @@ struct WelcomeScreen: View {
     @State private var appearPhase = 0
     @State private var bottleFill: CGFloat = 0
     @State private var bottleWave: CGFloat = 0
+    @State private var haloScale: CGFloat = 1.0
     
     var body: some View {
         VStack(spacing: 0) {
-            Spacer()
+            Spacer().frame(height: 20)
             
-            // Animated bottle with wave
+            // Hero: Animated bottle with refined halos
             ZStack {
-                // Outer glow rings
+                // Outer halo - slow pulse
                 Circle()
-                    .fill(Color.brandPrimary.opacity(0.04))
-                    .frame(width: 220, height: 220)
-                    .scaleEffect(appearPhase >= 1 ? 1.0 : 0.8)
+                    .stroke(Color.brandPrimary.opacity(0.12), lineWidth: 1)
+                    .frame(width: 200, height: 200)
+                    .scaleEffect(haloScale)
                 
+                // Middle halo
                 Circle()
                     .fill(Color.brandPrimary.opacity(0.06))
-                    .frame(width: 180, height: 180)
-                    .scaleEffect(appearPhase >= 1 ? 1.0 : 0.85)
+                    .frame(width: 168, height: 168)
+                    .scaleEffect(haloScale * 0.96)
                 
-                // Bottle container
-                ZStack {
-                    // Glass bottle
-                    BottleWithWave(fillLevel: bottleFill, wavePhase: bottleWave)
-                        .frame(width: 110, height: 150)
-                }
+                // Inner glow
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [Color.brandPrimary.opacity(0.1), Color.clear],
+                            center: .center,
+                            startRadius: 40,
+                            endRadius: 80
+                        )
+                    )
+                    .frame(width: 140, height: 140)
+                
+                // Bottle
+                BottleWithWave(fillLevel: bottleFill, wavePhase: bottleWave)
+                    .frame(width: 100, height: 136)
             }
-            .padding(.bottom, 52)
+            .padding(.bottom, 36)
             .opacity(appearPhase >= 1 ? 1 : 0)
-            .offset(y: appearPhase >= 1 ? 0 : 30)
+            .scaleEffect(appearPhase >= 1 ? 1 : 0.9)
+            .offset(y: appearPhase >= 1 ? 0 : 20)
             
-            // Text content
-            VStack(spacing: 14) {
+            // Text content - tighter spacing
+            VStack(spacing: 10) {
                 Text("Feel confident\nfeeding your baby")
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
                     .foregroundStyle(Color.textPrimary)
                     .multilineTextAlignment(.center)
-                    .lineSpacing(2)
+                    .lineSpacing(0)
                     .opacity(appearPhase >= 2 ? 1 : 0)
-                    .offset(y: appearPhase >= 2 ? 0 : 20)
+                    .offset(y: appearPhase >= 2 ? 0 : 16)
                 
-                Text("Track feeds, spot patterns, and know\nthey are getting enough — effortlessly")
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundStyle(Color.textSecondary)
+                Text("Track feeds, spot patterns, and know\nthey're getting enough — effortlessly")
+                    .font(.system(size: 15, weight: .regular))
+                    .foregroundStyle(Color.textSecondary.opacity(0.9))
                     .multilineTextAlignment(.center)
-                    .lineSpacing(3)
+                    .lineSpacing(2)
+                    .padding(.top, 4)
                     .opacity(appearPhase >= 3 ? 1 : 0)
-                    .offset(y: appearPhase >= 3 ? 0 : 15)
+                    .offset(y: appearPhase >= 3 ? 0 : 12)
             }
             
             Spacer()
             
-            // CTA Button
+            // Refined CTA Button
             Button(action: onContinue) {
-                HStack(spacing: 8) {
+                HStack(spacing: 6) {
                     Text("Get started")
                         .font(.system(size: 17, weight: .semibold))
                     
                     Image(systemName: "arrow.right")
-                        .font(.system(size: 15, weight: .semibold))
-                        .offset(x: appearPhase >= 4 ? 0 : -10)
+                        .font(.system(size: 14, weight: .semibold))
+                        .offset(x: appearPhase >= 4 ? 0 : -8)
                         .opacity(appearPhase >= 4 ? 1 : 0)
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .frame(height: 58)
+                .frame(height: 54)
                 .background(
                     LinearGradient(
-                        colors: [Color.brandPrimary, Color.brandPrimary.opacity(0.9)],
+                        colors: [Color.brandPrimary, Color.brandPrimary.opacity(0.92)],
                         startPoint: .top,
                         endPoint: .bottom
                     )
                 )
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .shadow(color: Color.brandPrimary.opacity(0.3), radius: 16, x: 0, y: 6)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .shadow(color: Color.brandPrimary.opacity(0.22), radius: 12, x: 0, y: 4)
             }
-            .buttonStyle(PremiumPressEffect())
+            .buttonStyle(RefinedPressEffect())
             .padding(.horizontal, 28)
-            .padding(.bottom, 36)
+            .padding(.bottom, 40)
             .opacity(appearPhase >= 4 ? 1 : 0)
-            .offset(y: appearPhase >= 4 ? 0 : 20)
+            .offset(y: appearPhase >= 4 ? 0 : 16)
         }
         .padding(.horizontal, 24)
         .onAppear {
-            // Staggered appearance
-            withAnimation(.easeOut(duration: 0.5)) { appearPhase = 1 }
-            withAnimation(.easeOut(duration: 0.6).delay(0.15)) { 
-                bottleFill = 0.65 
-                appearPhase = 2 
+            // Entry animations - refined timing
+            withAnimation(.easeOut(duration: 0.6)) { appearPhase = 1 }
+            withAnimation(.easeOut(duration: 0.5).delay(0.12)) {
+                bottleFill = 0.6
+                appearPhase = 2
             }
-            withAnimation(.easeOut(duration: 0.5).delay(0.35)) { appearPhase = 3 }
-            withAnimation(.spring(response: 0.5).delay(0.55)) { appearPhase = 4 }
+            withAnimation(.easeOut(duration: 0.4).delay(0.28)) { appearPhase = 3 }
+            withAnimation(.spring(response: 0.45, dampingFraction: 0.8).delay(0.4)) { appearPhase = 4 }
             
-            // Continuous wave animation
-            withAnimation(.linear(duration: 2.5).repeatForever(autoreverses: false)) {
+            // Continuous gentle wave
+            withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
                 bottleWave = .pi * 2
+            }
+            
+            // Slow halo pulse
+            withAnimation(.easeInOut(duration: 4).repeatForever(autoreverses: true)) {
+                haloScale = 1.05
             }
         }
     }
@@ -275,37 +289,37 @@ struct BottleWithWave: View {
     
     var body: some View {
         ZStack {
-            // Bottle glass body
+            // Bottle outline - slightly more contrast
             BottleShape()
-                .stroke(Color.brandPrimary.opacity(0.2), lineWidth: 2.5)
+                .stroke(Color.brandPrimary.opacity(0.28), lineWidth: 2)
             
-            // Liquid with wave
+            // Liquid base
             BottleShape()
-                .fill(Color.brandPrimary.opacity(0.15))
+                .fill(Color.brandPrimary.opacity(0.08))
                 .overlay(
                     WaveLiquid(fillLevel: fillLevel, phase: wavePhase)
                         .fill(
                             LinearGradient(
                                 colors: [
-                                    Color.brandPrimaryLight.opacity(0.8),
+                                    Color.brandPrimary.opacity(0.5),
                                     Color.brandPrimary.opacity(0.7)
                                 ],
                                 startPoint: .top,
-                                endPoint: .bottom
+                            endPoint: .bottom
                             )
                         )
                 )
                 .clipShape(BottleShape())
             
-            // Glass highlight
+            // Subtle rim highlight
             BottleShape()
-                .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                .stroke(Color.white.opacity(0.5), lineWidth: 1)
             
-            // Teat
+            // Teat - slightly more visible
             Capsule()
-                .fill(Color.brandPrimary.opacity(0.25))
-                .frame(width: 22, height: 12)
-                .offset(y: -78)
+                .fill(Color.brandPrimary.opacity(0.35))
+                .frame(width: 20, height: 10)
+                .offset(y: -70)
         }
     }
 }
@@ -1172,6 +1186,15 @@ struct PremiumPressEffect: ButtonStyle {
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .brightness(configuration.isPressed ? -0.02 : 0)
             .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
+struct RefinedPressEffect: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .brightness(configuration.isPressed ? -0.03 : 0)
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 

@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-Fed - Interactive Onboarding Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .iphone {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 54px;
+            padding: 12px;
+            margin: 0 auto;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+        
+        .iphone-inner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #FDFBF8 0%, #F8F5F1 50%, #F5F1EC 100%);
+            border-radius: 44px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+            z-index: 100;
+        }
+        
+        .ambient-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            left: 50%;
+            top: 25%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(45, 106, 94, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        /* Screen Management */
+        .screen {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(50px);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+        
+        .screen.exit {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        
+        /* Progress Stepper */
+        .progress-stepper {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding-top: 55px;
+            margin-bottom: 20px;
+        }
+        
+        .step-dot {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.1);
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .step-dot.active {
+            background: #2D6A5E;
+            width: 28px;
+        }
+        
+        .step-dot:not(.active) {
+            width: 8px;
+        }
+        
+        /* ===== SCREEN 1: WELCOME ===== */
+        .welcome-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 0 28px 36px;
+        }
+        
+        .bottle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 60px;
+            margin-bottom: 48px;
+            position: relative;
+        }
+        
+        .glow-ring {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(45, 106, 94, 0.04);
+        }
+        
+        .glow-ring.outer {
+            width: 220px;
+            height: 220px;
+            animation: breathe 3s ease-in-out infinite;
+        }
+        
+        .glow-ring.inner {
+            width: 180px;
+            height: 180px;
+            background: rgba(45, 106, 94, 0.06);
+        }
+        
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .bottle-svg {
+            width: 110px;
+            height: 150px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .welcome-headline {
+            font-size: 34px;
+            font-weight: 700;
+            color: #1A1A1A;
+            text-align: center;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+        
+        .welcome-subtext {
+            font-size: 16px;
+            font-weight: 400;
+            color: #5A5A5A;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .cta-button {
+            margin-top: auto;
+            background: linear-gradient(180deg, #2D6A5E 0%, #255951 100%);
+            color: white;
+            border: none;
+            padding: 18px 24px;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            box-shadow: 0 6px 20px rgba(45, 106, 94, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.12s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(45, 106, 94, 0.35);
+        }
+        
+        .cta-button:active {
+            transform: scale(0.97);
+        }
+        
+        /* ===== SCREEN 2: AGE ===== */
+        .age-content {
+            padding: 10px 28px 36px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .screen-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .screen-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 8px;
+        }
+        
+        .screen-subtitle {
+            font-size: 15px;
+            font-weight: 500;
+            color: #5A5A5A;
+        }
+        
+        .age-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            border: 1.5px solid rgba(45, 106, 94, 0.1);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .age-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+        }
+        
+        .age-card:active {
+            transform: scale(0.98);
+        }
+        
+        .age-card-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: #7A7A7A;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        .age-card-value {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .age-value-text {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1A1A1A;
+        }
+        
+        .age-picker-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(45, 106, 94, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2D6A5E;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .age-card:hover .age-picker-btn {
+            background: #2D6A5E;
+            color: white;
+        }
+        
+        .integrated-feedback {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #7A7A7A;
+            margin-left: 4px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .integrated-feedback.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .integrated-feedback span:first-child {
+            color: #C4A574;
+        }
+        
+        /* Weight Section */
+        .weight-prompt {
+            background: rgba(255,255,255,0.5);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+        }
+        
+        .weight-prompt.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .weight-question {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1A1A1A;
+            margin-bottom: 16px;
+        }
+        
+        .weight-options {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .weight-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.12s ease;
+        }
+        
+        .weight-btn.primary {
+            background: rgba(45, 106, 94, 0.1);
+            color: #2D6A5E;
+            border: 1px solid rgba(45, 106, 94, 0.15);
+        }
+        
+        .weight-btn.secondary {
+            background: rgba(0,0,0,0.05);
+            color: #7A7A7A;
+        }
+        
+        .weight-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .weight-btn:active {
+            transform: scale(0.96);
+        }
+        
+        .weight-input-card {
+            background: rgba(255,255,255,0.7);
+            border-radius: 16px;
+            padding: 18px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .weight-input-card.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .weight-input-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1A1A1A;
+            margin-bottom: 12px;
+        }
+        
+        .weight-input-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 16px 18px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .weight-input-field input {
+            border: none;
+            background: none;
+            font-size: 22px;
+            font-weight: 600;
+            color: #1A1A1A;
+            width: 100px;
+            outline: none;
+        }
+        
+        .weight-input-field input::placeholder {
+            color: rgba(26,26,26,0.3);
+        }
+        
+        .weight-unit {
+            font-size: 16px;
+            font-weight: 600;
+            color: #7A7A7A;
+        }
+        
+        /* ===== SCREEN 3: FEEDING ===== */
+        .feeding-content {
+            padding: 10px 28px 36px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .feeding-option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px;
+            background: white;
+            border-radius: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1.5px solid transparent;
+        }
+        
+        .feeding-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        }
+        
+        .feeding-option:active {
+            transform: scale(0.98);
+        }
+        
+        .feeding-option.selected {
+            background: rgba(45, 106, 94, 0.06);
+            border-color: rgba(45, 106, 94, 0.25);
+            box-shadow: 0 6px 20px rgba(45, 106, 94, 0.15);
+            transform: scale(1.02);
+        }
+        
+        .feeding-option.selected.breast {
+            background: rgba(212, 137, 122, 0.1);
+            border-color: rgba(212, 137, 122, 0.3);
+        }
+        
+        .feeding-option.selected.mixed {
+            background: rgba(155, 140, 181, 0.1);
+            border-color: rgba(155, 140, 181, 0.3);
+        }
+        
+        .feeding-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(45, 106, 94, 0.08);
+            transition: all 0.2s ease;
+        }
+        
+        .feeding-option.selected .feeding-icon {
+            background: rgba(45, 106, 94, 0.15);
+            transform: scale(1.1);
+        }
+        
+        .feeding-info { flex: 1; }
+        
+        .feeding-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A1A1A;
+            margin-bottom: 3px;
+            transition: all 0.2s ease;
+        }
+        
+        .feeding-option.selected .feeding-title {
+            color: #2D6A5E;
+        }
+        
+        .feeding-subtitle {
+            font-size: 14px;
+            color: #7A7A7A;
+            transition: all 0.2s ease;
+        }
+        
+        .selection-indicator {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .feeding-option.selected .selection-indicator {
+            background: #2D6A5E;
+            border-color: #2D6A5E;
+            color: white;
+        }
+        
+        .feeding-option.selected.breast .selection-indicator {
+            background: #D4897A;
+            border-color: #D4897A;
+        }
+        
+        .feeding-option.selected.mixed .selection-indicator {
+            background: #9B8CB5;
+            border-color: #9B8CB5;
+        }
+        
+        /* Micro feedback */
+        .micro-feedback {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(196, 165, 116, 0.12);
+            padding: 10px 16px;
+            border-radius: 20px;
+            width: fit-content;
+            margin-top: 8px;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+        
+        .micro-feedback.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .micro-feedback span:first-child {
+            color: #C4A574;
+            font-size: 13px;
+        }
+        
+        .micro-feedback span:last-child {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1A1A1A;
+        }
+        
+        /* Follow-up Section */
+        .follow-up {
+            margin-top: 24px;
+            opacity: 0;
+            transform: translateX(30px);
+            display: none;
+        }
+        
+        .follow-up.show {
+            display: block;
+            animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .follow-up-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 16px;
+        }
+        
+        .detail-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1.5px solid transparent;
+        }
+        
+        .detail-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 14px rgba(0,0,0,0.06);
+        }
+        
+        .detail-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .detail-btn.selected {
+            background: #2D6A5E;
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 6px 18px rgba(45, 106, 94, 0.25);
+        }
+        
+        .detail-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: rgba(45, 106, 94, 0.1);
+            color: #2D6A5E;
+            transition: all 0.2s ease;
+        }
+        
+        .detail-btn.selected .detail-icon {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .detail-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1A1A1A;
+            transition: all 0.2s ease;
+        }
+        
+        .detail-btn.selected .detail-text {
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* ===== SCREEN 4: COMPLETION ===== */
+        .completion-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 0 28px 36px;
+        }
+        
+        .success-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 100px;
+            margin-bottom: 48px;
+            position: relative;
+        }
+        
+        .success-ring {
+            position: absolute;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .success-ring.outer {
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(45, 106, 94, 0.12);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .success-ring.middle {
+            width: 180px;
+            height: 180px;
+            background: rgba(45, 106, 94, 0.05);
+            animation: pulse 2s ease-in-out 0.3s infinite;
+        }
+        
+        .success-ring.inner {
+            width: 140px;
+            height: 140px;
+            background: rgba(45, 106, 94, 0.08);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+        
+        .success-check {
+            position: relative;
+            z-index: 1;
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            color: #2D6A5E;
+            box-shadow: 0 8px 24px rgba(45, 106, 94, 0.2);
+            animation: checkPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes checkPop {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+        
+        .completion-title {
+            font-size: 34px;
+            font-weight: 700;
+            color: #1A1A1A;
+            text-align: center;
+            margin-bottom: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.5s ease 0.3s forwards;
+        }
+        
+        .completion-subtitle {
+            font-size: 17px;
+            font-weight: 400;
+            color: #5A5A5A;
+            text-align: center;
+            line-height: 1.5;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.5s ease 0.5s forwards;
+        }
+        
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ===== BOTTOM SHEET ===== */
+        .sheet-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 200;
+        }
+        
+        .sheet-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 28px 28px 0 0;
+            padding: 16px 20px 30px;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 201;
+            max-height: 70%;
+        }
+        
+        .bottom-sheet.show {
+            transform: translateY(0);
+        }
+        
+        .sheet-handle {
+            width: 36px;
+            height: 5px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
+            margin: 0 auto 20px;
+        }
+        
+        .sheet-title {
+            font-size: 17px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            color: #1A1A1A;
+        }
+        
+        .unit-tabs {
+            display: flex;
+            background: #F2F2F7;
+            border-radius: 8px;
+            padding: 2px;
+            margin-bottom: 16px;
+        }
+        
+        .unit-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            background: transparent;
+            color: #8E8E93;
+        }
+        
+        .unit-tab.active {
+            background: white;
+            color: #1A1A1A;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .wheel-container {
+            height: 200px;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            margin-bottom: 16px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .wheel-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* No gradient overlays - all items fully visible */
+        
+        .wheel-options {
+            text-align: center;
+            padding: 80px 0;
+        }
+        
+        .wheel-option {
+            padding: 10px;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .wheel-option.selected {
+            color: #1A1A1A;
+            font-weight: 700;
+            font-size: 26px;
+        }
+        
+        .sheet-done-btn {
+            width: 100%;
+            background: #2D6A5E;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .sheet-done-btn:hover {
+            background: #255951;
+        }
+        
+        .sheet-done-btn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>B-Fed Interactive Demo</h1>
+        <p class="subtitle">Click through the onboarding flow</p>
+    </div>
+    
+    <div class="iphone">
+        <div class="iphone-inner">
+            <div class="notch"></div>
+            <div class="ambient-glow"></div>
+            
+            <!-- ===== SCREEN 1: WELCOME ===== -->
+            <div class="screen active" id="screen1">
+                <div class="welcome-content">
+                    <div class="progress-stepper">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                    
+                    <div class="bottle-container">
+                        <div class="glow-ring outer"></div>
+                        <div class="glow-ring inner"></div>
+                        <svg class="bottle-svg" viewBox="0 0 110 150">
+                            <path fill="none" stroke="rgba(45,106,94,0.2)" stroke-width="2.5" 
+                                  d="M35 33 L35 52 Q15 65 15 70 L15 130 Q15 145 55 145 Q95 145 95 130 L95 70 Q95 65 75 52 L75 33 Q75 22 55 22 Q35 22 35 33"/>
+                            <ellipse cx="55" cy="105" rx="30" ry="38" fill="rgba(45,106,94,0.15)"/>
+                        </svg>
+                    </div>
+                    
+                    <h2 class="welcome-headline">Feel confident<br>feeding your baby</h2>
+                    <p class="welcome-subtext">Track feeds, spot patterns, and know they're getting enough — effortlessly</p>
+                    
+                    <button class="cta-button" onclick="goToScreen(2)">
+                        Get started
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- ===== SCREEN 2: AGE ===== -->
+            <div class="screen" id="screen2">
+                <div class="age-content">
+                    <div class="progress-stepper">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                    
+                    <div class="screen-header">
+                        <h2 class="screen-title">How old is your baby?</h2>
+                        <p class="screen-subtitle">This helps personalise everything</p>
+                    </div>
+                    
+                    <div class="age-card" onclick="openAgePicker()">
+                        <div class="age-card-header">Age</div>
+                        <div class="age-card-value">
+                            <span class="age-value-text" id="ageDisplay">2 weeks old</span>
+                            <div class="age-picker-btn">▼</div>
+                        </div>
+                    </div>
+                    
+                    <div class="integrated-feedback" id="ageFeedback">
+                        <span>✦</span>
+                        <span id="feedbackText">Personalised for 2 weeks old</span>
+                    </div>
+                    
+                    <div class="weight-prompt show" id="weightPrompt">
+                        <div class="weight-question">Do you know your baby's weight?</div>
+                        <div class="weight-options">
+                            <button class="weight-btn primary" onclick="showWeightInput()">Yes</button>
+                            <button class="weight-btn secondary" onclick="skipWeight()">Skip</button>
+                        </div>
+                    </div>
+                    
+                    <div class="weight-input-card" id="weightInputCard">
+                        <div class="weight-input-header">
+                            <span>⚖️</span>
+                            Weight
+                            <span style="margin-left: auto; font-size: 12px; color: #8E8E93; background: rgba(0,0,0,0.05); padding: 4px 10px; border-radius: 10px;">Optional</span>
+                        </div>
+                        <div class="weight-input-field">
+                            <input type="number" placeholder="0.0" step="0.1" id="weightInput">
+                            <span class="weight-unit">kg</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="cta-button" style="position: absolute; bottom: 36px; left: 28px; right: 28px;" onclick="goToScreen(3)">
+                    Continue
+                    <span>→</span>
+                </button>
+            </div>
+            
+            <!-- ===== SCREEN 3: FEEDING ===== -->
+            <div class="screen" id="screen3">
+                <div class="feeding-content">
+                    <div class="progress-stepper">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                    
+                    <div class="screen-header" style="margin-bottom: 24px;">
+                        <h2 class="screen-title">How are you feeding?</h2>
+                    </div>
+                    
+                    <div class="feeding-option" id="optBreast" onclick="selectFeeding('breast')">
+                        <div class="feeding-icon">💧</div>
+                        <div class="feeding-info">
+                            <div class="feeding-title">Breastfeeding</div>
+                            <div class="feeding-subtitle">Nursing directly</div>
+                        </div>
+                        <div class="selection-indicator">✓</div>
+                    </div>
+                    
+                    <div class="feeding-option" id="optFormula" onclick="selectFeeding('formula')">
+                        <div class="feeding-icon">🍼</div>
+                        <div class="feeding-info">
+                            <div class="feeding-title">Formula</div>
+                            <div class="feeding-subtitle">Bottle feeding</div>
+                        </div>
+                        <div class="selection-indicator">✓</div>
+                    </div>
+                    
+                    <div class="feeding-option" id="optMixed" onclick="selectFeeding('mixed')">
+                        <div class="feeding-icon">🔄</div>
+                        <div class="feeding-info">
+                            <div class="feeding-title">Mixed</div>
+                            <div class="feeding-subtitle">Both methods</div>
+                        </div>
+                        <div class="selection-indicator">✓</div>
+                    </div>
+                    
+                    <div class="micro-feedback" id="feedingFeedback">
+                        <span>✓</span>
+                        <span id="feedingFeedbackText">Tailored for formula feeding</span>
+                    </div>
+                    
+                    <div class="follow-up" id="followUpSection">
+                        <div class="follow-up-title" id="followUpTitle">How do you measure feeds?</div>
+                        
+                        <div id="formulaOptions">
+                            <div class="detail-btn" id="detBottle" onclick="selectDetail('bottle')">
+                                <div class="detail-icon">💧</div>
+                                <div class="detail-text">Bottle (ml)</div>
+                            </div>
+                            <div class="detail-btn" id="detApprox" onclick="selectDetail('approx')">
+                                <div class="detail-icon">👁</div>
+                                <div class="detail-text">Approximate</div>
+                            </div>
+                        </div>
+                        
+                        <div id="breastOptions" style="display: none;">
+                            <div class="detail-btn" id="detTimer" onclick="selectDetail('timer')">
+                                <div class="detail-icon">⏱</div>
+                                <div class="detail-text">Yes, with timer</div>
+                            </div>
+                            <div class="detail-btn" id="detSimple" onclick="selectDetail('simple')">
+                                <div class="detail-icon">✓</div>
+                                <div class="detail-text">Simple tracking</div>
+                            </div>
+                        </div>
+                        
+                        <div id="mixedOptions" style="display: none;">
+                            <div class="detail-btn" id="detMoreBreast" onclick="selectDetail('moreBreast')">
+                                <div class="detail-icon">💧</div>
+                                <div class="detail-text">Breastfeeding</div>
+                            </div>
+                            <div class="detail-btn" id="detMoreFormula" onclick="selectDetail('moreFormula')">
+                                <div class="detail-icon">🍼</div>
+                                <div class="detail-text">Formula</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="cta-button" id="feedingContinueBtn" style="position: absolute; bottom: 36px; left: 28px; right: 28px; opacity: 0; pointer-events: none; transform: translateY(20px); transition: all 0.3s ease;" onclick="goToScreen(4)">
+                    Continue
+                    <span>→</span>
+                </button>
+            </div>
+            
+            <!-- ===== SCREEN 4: COMPLETION ===== -->
+            <div class="screen" id="screen4">
+                <div class="completion-content">
+                    <div class="progress-stepper">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                    </div>
+                    
+                    <div class="success-container">
+                        <div class="success-ring outer"></div>
+                        <div class="success-ring middle"></div>
+                        <div class="success-ring inner"></div>
+                        <div class="success-check">✓</div>
+                    </div>
+                    
+                    <h2 class="completion-title">You're all set</h2>
+                    <p class="completion-subtitle">Let's start tracking your<br>baby's next feed</p>
+                    
+                    <button class="cta-button" style="margin-top: auto;" onclick="restartDemo()">
+                        Start tracking
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- ===== AGE PICKER BOTTOM SHEET ===== -->
+            <div class="sheet-overlay" id="sheetOverlay" onclick="closeAgePicker()"></div>
+            <div class="bottom-sheet" id="agePickerSheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-title">Select your baby's age</div>
+                
+                <div class="unit-tabs">
+                    <button class="unit-tab" id="tabDays" onclick="setAgeUnit('days')">Days</button>
+                    <button class="unit-tab active" id="tabWeeks" onclick="setAgeUnit('weeks')">Weeks</button>
+                    <button class="unit-tab" id="tabMonths" onclick="setAgeUnit('months')">Months</button>
+                </div>
+                
+                <div class="wheel-container">
+                    <div class="wheel-options" id="wheelOptions">
+                        <!-- Options generated by JS -->
+                    </div>
+                </div>
+                
+                <button class="sheet-done-btn" onclick="confirmAgeSelection()">Done</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // State
+        let currentScreen = 1;
+        let ageUnit = 'weeks';
+        let ageValue = 2;
+        let selectedFeeding = null;
+        let selectedDetail = null;
+        
+        // Screen navigation
+        function goToScreen(screenNum) {
+            const currentEl = document.getElementById('screen' + currentScreen);
+            const nextEl = document.getElementById('screen' + screenNum);
+            
+            currentEl.classList.remove('active');
+            currentEl.classList.add('exit');
+            
+            setTimeout(() => {
+                currentEl.classList.remove('exit');
+                nextEl.classList.add('active');
+                currentScreen = screenNum;
+            }, 300);
+        }
+        
+        function restartDemo() {
+            // Reset state
+            ageUnit = 'weeks';
+            ageValue = 2;
+            selectedFeeding = null;
+            selectedDetail = null;
+            
+            // Reset UI
+            document.getElementById('ageDisplay').textContent = '2 weeks old';
+            document.getElementById('weightPrompt').classList.remove('show');
+            document.getElementById('weightInputCard').classList.remove('show');
+            document.getElementById('ageFeedback').classList.remove('show');
+            document.getElementById('weightInput').value = '';
+            
+            document.querySelectorAll('.feeding-option').forEach(el => {
+                el.classList.remove('selected', 'breast', 'mixed');
+            });
+            document.getElementById('feedingFeedback').classList.remove('show');
+            document.getElementById('followUpSection').classList.remove('show');
+            document.getElementById('feedingContinueBtn').style.opacity = '0';
+            document.getElementById('feedingContinueBtn').style.pointerEvents = 'none';
+            
+            document.querySelectorAll('.detail-btn').forEach(el => el.classList.remove('selected'));
+            
+            // Go to screen 1
+            const currentEl = document.getElementById('screen4');
+            const nextEl = document.getElementById('screen1');
+            
+            currentEl.classList.remove('active');
+            currentEl.classList.add('exit');
+            
+            setTimeout(() => {
+                currentEl.classList.remove('exit');
+                nextEl.classList.add('active');
+                currentScreen = 1;
+            }, 300);
+        }
+        
+        // Age picker
+        function openAgePicker() {
+            generateWheelOptions();
+            document.getElementById('sheetOverlay').classList.add('show');
+            document.getElementById('agePickerSheet').classList.add('show');
+        }
+        
+        function closeAgePicker() {
+            document.getElementById('sheetOverlay').classList.remove('show');
+            document.getElementById('agePickerSheet').classList.remove('show');
+        }
+        
+        function setAgeUnit(unit) {
+            ageUnit = unit;
+            document.querySelectorAll('.unit-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById('tab' + unit.charAt(0).toUpperCase() + unit.slice(1)).classList.add('active');
+            generateWheelOptions();
+        }
+        
+        function generateWheelOptions() {
+            const container = document.getElementById('wheelOptions');
+            container.innerHTML = '';
+            
+            let options = [];
+            if (ageUnit === 'days') {
+                options.push({ value: 0, label: 'Newborn' });
+                for (let i = 1; i <= 30; i++) {
+                    options.push({ value: i, label: i + ' day' + (i === 1 ? '' : 's') });
+                }
+            } else if (ageUnit === 'weeks') {
+                for (let i = 1; i <= 12; i++) {
+                    options.push({ value: i, label: i + ' week' + (i === 1 ? '' : 's') });
+                }
+            } else {
+                for (let i = 1; i <= 12; i++) {
+                    options.push({ value: i, label: i + ' month' + (i === 1 ? '' : 's') });
+                }
+            }
+            
+            options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'wheel-option';
+                div.textContent = opt.label;
+                div.dataset.index = idx;
+                div.dataset.value = opt.value;
+                div.style.opacity = '0.4';
+                div.onclick = () => {
+                    selectWheelOption(idx, opt.value);
+                };
+                container.appendChild(div);
+            });
+            
+            // Set up scroll-based highlighting
+            setTimeout(() => setupWheelHighlighting(), 50);
+        }
+        
+        function setupWheelHighlighting() {
+            const wheelContainer = document.querySelector('.wheel-container');
+            const options = document.querySelectorAll('.wheel-option');
+            
+            wheelContainer.addEventListener('scroll', () => {
+                const containerRect = wheelContainer.getBoundingClientRect();
+                const containerCenter = containerRect.top + containerRect.height / 2;
+                
+                let closestIndex = 0;
+                let closestDistance = Infinity;
+                
+                options.forEach((opt, idx) => {
+                    const optRect = opt.getBoundingClientRect();
+                    const optCenter = optRect.top + optRect.height / 2;
+                    const distance = Math.abs(optCenter - containerCenter);
+                    
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestIndex = idx;
+                    }
+                    
+                    // Reset styling
+                    opt.classList.remove('selected');
+                    opt.style.opacity = '0.4';
+                    opt.style.fontSize = '20px';
+                    opt.style.fontWeight = '400';
+                });
+                
+                // Highlight closest
+                if (options[closestIndex]) {
+                    options[closestIndex].classList.add('selected');
+                    options[closestIndex].style.opacity = '1';
+                    options[closestIndex].style.fontSize = '26px';
+                    options[closestIndex].style.fontWeight = '700';
+                    ageValue = parseInt(options[closestIndex].dataset.value);
+                    
+                    // Highlight neighbors slightly
+                    if (options[closestIndex - 1]) {
+                        options[closestIndex - 1].style.opacity = '0.7';
+                        options[closestIndex - 1].style.fontSize = '22px';
+                    }
+                    if (options[closestIndex + 1]) {
+                        options[closestIndex + 1].style.opacity = '0.7';
+                        options[closestIndex + 1].style.fontSize = '22px';
+                    }
+                }
+            });
+            
+            // Trigger initial highlight
+            wheelContainer.dispatchEvent(new Event('scroll'));
+        }
+        
+        function selectWheelOption(index, value) {
+            ageValue = value;
+            const container = document.querySelector('.wheel-container');
+            const option = document.querySelectorAll('.wheel-option')[index];
+            if (option) {
+                option.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
+        function confirmAgeSelection() {
+            let displayText;
+            if (ageValue === 0 && ageUnit === 'days') {
+                displayText = 'Newborn';
+            } else {
+                // Use singular unit and add 's' for plural
+                const unitSingular = ageUnit.slice(0, -1); // Remove 's' from 'days', 'weeks', 'months'
+                displayText = ageValue + ' ' + unitSingular + (ageValue === 1 ? '' : 's') + ' old';
+            }
+            
+            document.getElementById('ageDisplay').textContent = displayText;
+            document.getElementById('feedbackText').textContent = 'Personalised for ' + displayText.toLowerCase();
+            document.getElementById('ageFeedback').classList.add('show');
+            
+            setTimeout(() => {
+                document.getElementById('weightPrompt').classList.add('show');
+            }, 300);
+            
+            closeAgePicker();
+        }
+        
+        // Weight handling
+        function showWeightInput() {
+            document.getElementById('weightPrompt').classList.remove('show');
+            setTimeout(() => {
+                document.getElementById('weightInputCard').classList.add('show');
+                document.getElementById('weightInput').focus();
+            }, 200);
+        }
+        
+        function skipWeight() {
+            // Fade out the weight prompt and proceed
+            document.getElementById('weightPrompt').style.opacity = '0.5';
+            // Continue to next screen after brief delay
+            setTimeout(() => {
+                goToScreen(3);
+            }, 300);
+        }
+        
+        // Feeding selection
+        function selectFeeding(type) {
+            selectedFeeding = type;
+            
+            // Update UI
+            document.querySelectorAll('.feeding-option').forEach(el => {
+                el.classList.remove('selected', 'breast', 'mixed');
+            });
+            
+            const selectedEl = document.getElementById('opt' + type.charAt(0).toUpperCase() + type.slice(1));
+            selectedEl.classList.add('selected');
+            if (type === 'breast') selectedEl.classList.add('breast');
+            if (type === 'mixed') selectedEl.classList.add('mixed');
+            
+            // Show feedback
+            const messages = {
+                breast: "Perfect for breastfeeding",
+                formula: "Tailored for formula feeding",
+                mixed: "Great — we'll track both"
+            };
+            document.getElementById('feedingFeedbackText').textContent = messages[type];
+            document.getElementById('feedingFeedback').classList.add('show');
+            
+            // Show follow-up after delay
+            setTimeout(() => {
+                showFollowUp(type);
+            }, 600);
+        }
+        
+        function showFollowUp(type) {
+            const section = document.getElementById('followUpSection');
+            const title = document.getElementById('followUpTitle');
+            
+            // Hide all option groups
+            document.getElementById('formulaOptions').style.display = 'none';
+            document.getElementById('breastOptions').style.display = 'none';
+            document.getElementById('mixedOptions').style.display = 'none';
+            
+            // Show appropriate group
+            if (type === 'formula') {
+                title.textContent = 'How do you measure feeds?';
+                document.getElementById('formulaOptions').style.display = 'block';
+            } else if (type === 'breast') {
+                title.textContent = 'Do you want to track duration?';
+                document.getElementById('breastOptions').style.display = 'block';
+            } else {
+                title.textContent = 'What do you use more often?';
+                document.getElementById('mixedOptions').style.display = 'block';
+            }
+            
+            section.classList.add('show');
+        }
+        
+        function selectDetail(detail) {
+            selectedDetail = detail;
+            
+            document.querySelectorAll('.detail-btn').forEach(el => el.classList.remove('selected'));
+            document.getElementById('det' + detail.charAt(0).toUpperCase() + detail.slice(1)).classList.add('selected');
+            
+            // Show continue button
+            const btn = document.getElementById('feedingContinueBtn');
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+            btn.style.transform = 'translateY(0)';
+        }
+        
+        // Initialize
+        generateWheelOptions();
+    </script>
+</body>
+</html>
