@@ -71,9 +71,9 @@ class SmartFeedingIntelligence {
     }
     
     /// Calculates per-feed recommendation
-    static func recommendedPerFeedAmount(for profile: BabyProfile?) -> PerFeedGuide {
+    static func recommendedPerFeedAmount(for profile: BabyProfile?) -> FeedAmountGuide {
         guard let profile = profile else {
-            return PerFeedGuide(typicalRange: (60, 120), typicalCount: 8)
+            return FeedAmountGuide(typicalRange: (60, 120), typicalCount: 8)
         }
         
         let days = profile.ageInDays
@@ -94,7 +94,7 @@ class SmartFeedingIntelligence {
         let minFeed = max(30, avgFeed - 30)
         let maxFeed = avgFeed + 40
         
-        return PerFeedGuide(
+        return FeedAmountGuide(
             typicalRange: (minFeed, maxFeed),
             typicalCount: feedsPerDay
         )
@@ -274,7 +274,7 @@ struct DailyIntakeGuide {
     }
 }
 
-struct PerFeedGuide {
+struct FeedAmountGuide {
     let typicalRange: (min: Int, max: Int)
     let typicalCount: Int
     

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MonthView: View {
-    @ObservedObject var store: FeedStore
+    @Environment(FeedStore.self) private var store
     @State private var selectedDate: Date?
     @State private var monthData: [DayCompletion] = []
     @State private var currentMonth: Date = Date()
@@ -102,8 +102,7 @@ struct MonthView: View {
         }
     }
     
-    init(store: FeedStore) {
-        self.store = store
+    init() {
         _monthData = State(initialValue: generateSampleMonthData())
     }
     
@@ -186,6 +185,7 @@ private extension Color {
 }
 
 #Preview {
-    MonthView(store: FeedStore())
+    MonthView()
         .background(Color.white)
+        .environment(FeedStore())
 }

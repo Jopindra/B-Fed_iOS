@@ -85,7 +85,7 @@ struct FirstTimeDashboardView: View {
             }
             .padding(.horizontal, 20)
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color(hex: "F2F2F7"))
     }
 }
 
@@ -214,7 +214,7 @@ struct PopulatedDashboardView: View {
             .padding(.top, 8)
             .padding(.bottom, 100)
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color(hex: "F2F2F7"))
         .onAppear {
             // Check if this is the first feed (bottle was empty)
             let isFirstFeed = bottleFillLevel == 0 && targetFillLevel > 0

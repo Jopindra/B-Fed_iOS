@@ -315,5 +315,5 @@ extension Color {
             .frame(height: 200)
     }
     .padding()
-    .background(Color(.systemGroupedBackground))
+    .background(Color(hex: "F2F2F7"))
 }

@@ -31,7 +31,7 @@ struct LogFeedView: View {
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
-                .background(Color(.systemGroupedBackground))
+                .background(Color(hex: "F2F2F7"))
                 
                 // Bottom Controls
                 VStack(spacing: 20) {
@@ -73,7 +73,7 @@ struct LogFeedView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 20)
-                .background(Color(.systemBackground))
+                .background(Color.white)
             }
             .navigationTitle("Log Feed")
             .navigationBarTitleDisplayMode(.inline)

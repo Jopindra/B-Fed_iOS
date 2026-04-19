@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SevenDaysView: View {
-    @ObservedObject var store: FeedStore
+    @Environment(FeedStore.self) private var store
     @State private var weekData: [DayRhythm] = []
     @State private var insights: [String] = []
     @State private var wavePhase: CGFloat = 0
@@ -327,6 +327,7 @@ private extension Color {
 }
 
 #Preview {
-    SevenDaysView(store: FeedStore())
-        .background(Color(.systemBackground))
+    SevenDaysView()
+        .background(Color.white)
+        .environment(FeedStore())
 }

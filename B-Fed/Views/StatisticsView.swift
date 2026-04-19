@@ -61,7 +61,7 @@ struct StatisticsView: View {
                 .padding()
             }
             .navigationTitle("Statistics")
-            .background(Color(.systemGroupedBackground))
+            .background(Color(hex: "F2F2F7"))
             .onAppear {
                 updateStats()
             }

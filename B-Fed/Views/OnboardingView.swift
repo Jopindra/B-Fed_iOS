@@ -23,64 +23,66 @@ struct OnboardingView: View {
     @State private var showingValidationErrors = false
     
     var body: some View {
-        ZStack {
-            WarmBackground()
-            
-            VStack(spacing: 0) {
-                ProgressStepper(currentStep: currentStep, totalSteps: 4)
-                    .padding(.top, 16)
+        GeometryReader { geometry in
+            ZStack {
+                WarmBackground()
                 
-                ZStack {
-                    Group {
-                        switch currentStep {
-                        case 0:
-                            WelcomeScreen { advanceToStep(1) }
-                        case 1:
-                            ParentBabyFormScreen(
-                                parentName: $parentName,
-                                parentEmail: $parentEmail,
-                                parentDOB: $parentDOB,
-                                country: $country,
-                                babyName: $babyName,
-                                babyDOB: $babyDOB,
-                                babyWeight: $babyWeight,
-                                showingValidationErrors: $showingValidationErrors,
-                                onContinue: { validateAndProceed() },
-                                onBack: { goBackToStep(0) }
-                            )
-                        case 2:
-                            FeedingTypeScreen(
-                                feedingType: $feedingType,
-                                onContinue: { advanceToStep(3) },
-                                onBack: { goBackToStep(1) }
-                            )
-                        case 3:
-                            CompletionScreen(
-                                onStart: { completeOnboarding() },
-                                onBack: { goBackToStep(2) }
-                            )
-                        default:
-                            EmptyView()
+                VStack(spacing: 0) {
+                    ProgressStepper(currentStep: currentStep, totalSteps: 4)
+                        .padding(.top, 16)
+                    
+                    ZStack {
+                        Group {
+                            switch currentStep {
+                            case 0:
+                                WelcomeScreen { advanceToStep(1, width: geometry.size.width) }
+                            case 1:
+                                ParentBabyFormScreen(
+                                    parentName: $parentName,
+                                    parentEmail: $parentEmail,
+                                    parentDOB: $parentDOB,
+                                    country: $country,
+                                    babyName: $babyName,
+                                    babyDOB: $babyDOB,
+                                    babyWeight: $babyWeight,
+                                    showingValidationErrors: $showingValidationErrors,
+                                    onContinue: { validateAndProceed(width: geometry.size.width) },
+                                    onBack: { goBackToStep(0, width: geometry.size.width) }
+                                )
+                            case 2:
+                                FeedingTypeScreen(
+                                    feedingType: $feedingType,
+                                    onContinue: { advanceToStep(3, width: geometry.size.width) },
+                                    onBack: { goBackToStep(1, width: geometry.size.width) }
+                                )
+                            case 3:
+                                CompletionScreen(
+                                    onStart: { completeOnboarding() },
+                                    onBack: { goBackToStep(2, width: geometry.size.width) }
+                                )
+                            default:
+                                EmptyView()
+                            }
                         }
+                        .offset(x: slideOffset)
                     }
-                    .offset(x: slideOffset)
                 }
             }
         }
     }
     
-    private func advanceToStep(_ step: Int) {
+    private func advanceToStep(_ step: Int, width: CGFloat) {
         guard !isAnimating else { return }
         isAnimating = true
         showingValidationErrors = false
         
         withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-            slideOffset = -UIScreen.main.bounds.width
+            slideOffset = -width
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             currentStep = step
-            slideOffset = UIScreen.main.bounds.width
+            slideOffset = width
             withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
                 slideOffset = 0
             }
@@ -90,18 +92,18 @@ struct OnboardingView: View {
         }
     }
     
-    private func goBackToStep(_ step: Int) {
+    private func goBackToStep(_ step: Int, width: CGFloat) {
         guard !isAnimating else { return }
         isAnimating = true
         showingValidationErrors = false
         
         withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-            slideOffset = UIScreen.main.bounds.width
+            slideOffset = width
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             currentStep = step
-            slideOffset = -UIScreen.main.bounds.width
+            slideOffset = -width
             withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
                 slideOffset = 0
             }
@@ -111,7 +113,7 @@ struct OnboardingView: View {
         }
     }
     
-    private func validateAndProceed() {
+    private func validateAndProceed(width: CGFloat) {
         let isValid = !parentName.isEmpty &&
                      !parentEmail.isEmpty &&
                      parentEmail.contains("@") &&
@@ -120,7 +122,7 @@ struct OnboardingView: View {
                      !babyWeight.isEmpty
         
         if isValid {
-            advanceToStep(2)
+            advanceToStep(2, width: width)
         } else {
             withAnimation(.spring(response: 0.3)) {
                 showingValidationErrors = true
@@ -276,18 +278,18 @@ struct HeroBottle: View {
     
     var body: some View {
         ZStack {
-            BottleShape()
+            OnboardingBottleShape()
                 .stroke(Color.brandPrimary.opacity(0.28), lineWidth: 2)
             
-            BottleShape()
+            OnboardingBottleShape()
                 .fill(Color.brandPrimary.opacity(0.08))
                 .overlay(
-                    WaveLiquid(fillLevel: 0.6, phase: wavePhase)
+                    OnboardingWaveLiquid(fillLevel: 0.6, wavePhase: wavePhase)
                         .fill(LinearGradient(colors: [Color.brandPrimary.opacity(0.5), Color.brandPrimary.opacity(0.7)], startPoint: .top, endPoint: .bottom))
                 )
-                .clipShape(BottleShape())
+                .clipShape(OnboardingBottleShape())
             
-            BottleShape()
+            OnboardingBottleShape()
                 .stroke(Color.white.opacity(0.5), lineWidth: 1)
             
             Capsule()
@@ -381,7 +383,6 @@ struct ParentBabyFormScreen: View {
                             label: "Email address",
                             text: $parentEmail,
                             placeholder: "e.g. sarah@email.com",
-                            keyboard: .emailAddress,
                             isRequired: true,
                             showError: showingValidationErrors && (parentEmail.isEmpty || !parentEmail.contains("@"))
                         )
@@ -426,7 +427,6 @@ struct ParentBabyFormScreen: View {
                             label: "Weight (kg)",
                             text: $babyWeight,
                             placeholder: "e.g. 3.5",
-                            keyboard: .decimalPad,
                             isRequired: true,
                             showError: showingValidationErrors && babyWeight.isEmpty,
                             suffix: "kg"
@@ -488,7 +488,6 @@ struct FormField: View {
     let label: String
     @Binding var text: String
     let placeholder: String
-    var keyboard: UIKeyboardType = .default
     var isRequired: Bool = false
     var showError: Bool = false
     var suffix: String? = nil
@@ -509,7 +508,6 @@ struct FormField: View {
             HStack {
                 TextField(placeholder, text: $text)
                     .font(.system(size: 17, weight: .regular))
-                    .keyboardType(keyboard)
                 
                 if let suffix = suffix {
                     Text(suffix)
@@ -931,7 +929,7 @@ struct CompletionScreen: View {
 }
 
 // MARK: - Shapes
-struct BottleShape: Shape {
+struct OnboardingBottleShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
         let w = rect.width
@@ -967,7 +965,7 @@ struct BottleShape: Shape {
     }
 }
 
-struct WaveLiquid: Shape {
+struct OnboardingWaveLiquid: Shape {
     let fillLevel: CGFloat
     let wavePhase: CGFloat
     
@@ -1034,6 +1032,8 @@ private extension Color {
             opacity: Double(a) / 255
         )
     }
+    
+
 }
 
 #Preview {
