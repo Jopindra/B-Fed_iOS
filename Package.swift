@@ -21,7 +21,11 @@ let package = Package(
                 "Views/SevenDaysView.swift",
                 "Views/BottleView.swift",
                 "Views/BabyBottleView.swift",
-                "Views/ContentView.swift"
+                "Views/ContentView.swift",
+                "Info.plist"
+            ],
+            resources: [
+                .process("Resources")
             ],
             swiftSettings: [.enableExperimentalFeature("StrictConcurrency")]
         )
