@@ -101,12 +101,20 @@ struct BottleView: View {
 }
 
 // MARK: - Bottle Shape (Soft, rounded, hand-drawn feel)
-struct BottleShape: Shape {
+struct BottleShape: Shape, InsettableShape {
+    var insetAmount: CGFloat = 0
+    
+    func inset(by amount: CGFloat) -> some InsettableShape {
+        var shape = self
+        shape.insetAmount += amount
+        return shape
+    }
     func path(in rect: CGRect) -> Path {
         var path = Path()
         
-        let width = rect.width
-        let height = rect.height
+        let insetRect = rect.insetBy(dx: insetAmount, dy: insetAmount)
+        let width = insetRect.width
+        let height = insetRect.height
         
         // Neck width and body width
         let neckWidth = width * 0.35

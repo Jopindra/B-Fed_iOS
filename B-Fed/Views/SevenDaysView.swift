@@ -149,7 +149,7 @@ struct SevenDaysView: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color(.secondarySystemBackground).opacity(0.5))
+                .fill(Color(hex: "F2F2F7").opacity(0.5))
         )
     }
     

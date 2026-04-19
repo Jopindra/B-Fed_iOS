@@ -12,17 +12,8 @@ let package = Package(
             name: "BFed",
             path: "B-Fed",
             exclude: [
-                "B_FedApp.swift",
-                "Views/DashboardView.swift",
-                "Views/LogFeedView.swift",
-                "Views/FeedHistoryView.swift",
-                "Views/StatisticsView.swift",
-                "Views/MonthView.swift",
-                "Views/SevenDaysView.swift",
-                "Views/BottleView.swift",
-                "Views/BabyBottleView.swift",
-                "Views/ContentView.swift",
-                "Info.plist"
+                "Info.plist",
+                "Views/SevenDaysView.swift"
             ],
             resources: [
                 .process("Resources")

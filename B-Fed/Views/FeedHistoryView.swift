@@ -56,9 +56,15 @@ struct FeedHistoryView: View {
                     }
                 }
             }
+            
+            #if os(iOS)
             .listStyle(.insetGrouped)
+            #endif
             .navigationTitle("History")
+            
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #endif
             .sheet(item: $feedToEdit) { feed in
                 EditFeedView(feed: feed)
             }
@@ -170,7 +176,9 @@ struct EditFeedView: View {
                 Section("Amount") {
                     HStack {
                         TextField("Amount", text: $amount)
+                            #if os(iOS)
                             .keyboardType(.decimalPad)
+                            #endif
                         
                         Picker("Unit", selection: $selectedUnit) {
                             ForEach(FeedUnit.allCases, id: \.self) { unit in
@@ -199,7 +207,9 @@ struct EditFeedView: View {
                             Text("Duration")
                             Spacer()
                             TextField("Minutes", text: $durationMinutes)
+                                #if os(iOS)
                                 .keyboardType(.numberPad)
+                                #endif
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 80)
                             Text("min")
@@ -221,7 +231,10 @@ struct EditFeedView: View {
                 }
             }
             .navigationTitle("Edit Feed")
+            
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

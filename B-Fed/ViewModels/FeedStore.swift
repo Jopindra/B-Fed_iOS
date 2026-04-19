@@ -88,6 +88,14 @@ class FeedStore {
         save()
     }
     
+    func updateFeed(_ feed: Feed, amount: Double, startTime: Date, endTime: Date?, notes: String) {
+        feed.amount = amount
+        feed.startTime = startTime
+        feed.endTime = endTime
+        feed.notes = notes
+        save()
+    }
+    
     // MARK: - Fetch Operations
     
     func fetchFeeds(for date: Date) -> [Feed] {
@@ -132,6 +140,31 @@ class FeedStore {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: date)
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        return FeedStatistics(
+            feeds: feeds,
+            dateRange: DateInterval(start: startOfDay, end: endOfDay)
+        )
+    }
+    
+    func getStatistics(from startDate: Date, to endDate: Date) -> FeedStatistics {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: startDate)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: endDate))!
+        
+        let descriptor = FetchDescriptor<Feed>(
+            predicate: #Predicate {
+                $0.startTime >= startOfDay && $0.startTime < endOfDay
+            },
+            sortBy: [SortDescriptor(\.startTime, order: .reverse)]
+        )
+        
+        var feeds: [Feed] = []
+        do {
+            feeds = try modelContext?.fetch(descriptor) ?? []
+        } catch {
+            print("Error fetching feeds: \(error)")
+        }
         
         return FeedStatistics(
             feeds: feeds,

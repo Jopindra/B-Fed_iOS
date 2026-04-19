@@ -25,7 +25,10 @@ struct DashboardView: View {
                 }
             }
             .navigationTitle("Today")
+            
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #endif
             .sheet(isPresented: $showingLogFeed) {
                 LogFeedView()
             }
@@ -331,7 +334,7 @@ struct HeroCardPopulated: View {
             }
         }
         .padding(20)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(hex: "EBEBF0"))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 }
@@ -395,7 +398,7 @@ struct LiquidWithWave: View {
                     .frame(maxHeight: .infinity, alignment: .bottom)
                 
                 // Wave surface
-                WaveShape(fillLevel: fillLevel, phase: phase)
+                DashboardWaveShape(fillLevel: fillLevel, phase: phase)
                     .fill(Color.emeraldLight.opacity(0.9))
                     .frame(height: geometry.size.height)
             }
@@ -404,7 +407,7 @@ struct LiquidWithWave: View {
 }
 
 // MARK: - Wave Shape
-struct WaveShape: Shape {
+struct DashboardWaveShape: Shape {
     let fillLevel: CGFloat
     let phase: CGFloat
     
@@ -630,7 +633,7 @@ struct InsightsSection: View {
                 }
             }
             .padding(16)
-            .background(Color(.secondarySystemGroupedBackground))
+            .background(Color(hex: "EBEBF0"))
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
         .onAppear { insights = feedStore.getInsights() }
@@ -690,7 +693,7 @@ struct FeedRow: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(hex: "EBEBF0"))
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }

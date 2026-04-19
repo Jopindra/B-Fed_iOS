@@ -87,7 +87,7 @@ struct StatisticsView: View {
                             .padding(.vertical, 8)
                             .background(
                                 RoundedRectangle(cornerRadius: 20)
-                                    .fill(selectedPeriod == period ? Color.blue : Color(.secondarySystemFill))
+                                    .fill(selectedPeriod == period ? Color.blue : Color(hex: "787880").opacity(0.2))
                             )
                             .foregroundStyle(selectedPeriod == period ? .white : .primary)
                     }
@@ -157,7 +157,7 @@ struct StatisticsView: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(hex: "EBEBF0"))
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
@@ -196,7 +196,7 @@ struct StatisticsView: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(hex: "EBEBF0"))
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
@@ -213,7 +213,7 @@ struct StatisticsView: View {
                 Divider()
                 StatRow(title: "Total Duration", value: formatTotalDuration(stats))
             }
-            .background(Color(.secondarySystemGroupedBackground))
+            .background(Color(hex: "EBEBF0"))
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
@@ -314,7 +314,7 @@ struct StatCard: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(hex: "EBEBF0"))
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }

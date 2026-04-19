@@ -340,9 +340,12 @@ struct LiquidSurface: Shape {
         
         path.move(to: CGPoint(x: 22, y: baseY))
         for x in stride(from: 22, through: 78, by: 2) {
-            let normalized = (x - 22) / 56
-            let y = baseY + sin(normalized * .pi * 1.5 + phase) * 2
-            path.addLine(to: CGPoint(x: x, y: y))
+            let xFloat = CGFloat(x)
+            let normalized = (xFloat - 22) / 56
+            let angle = normalized * .pi * 1.5 + phase
+            let sineValue = sin(angle)
+            let y = baseY + sineValue * 2
+            path.addLine(to: CGPoint(x: xFloat, y: y))
         }
         path.addLine(to: CGPoint(x: 78, y: baseY + 5))
         path.addLine(to: CGPoint(x: 22, y: baseY + 5))

@@ -76,7 +76,10 @@ struct LogFeedView: View {
                 .background(Color.white)
             }
             .navigationTitle("Log Feed")
-            .navigationBarTitleDisplayMode(.inline)
+            
+                #if os(iOS)
+                .navigationBarTitleDisplayMode(.inline)
+                #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -248,7 +251,7 @@ struct TimerView: View {
             .buttonStyle(GentlePressEffect())
         }
         .padding()
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(hex: "EBEBF0"))
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
