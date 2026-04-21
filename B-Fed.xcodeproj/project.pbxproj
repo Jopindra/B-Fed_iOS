@@ -32,6 +32,7 @@
 		BC1F4EAB95FB1C001F767D58 /* DMSerifDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B8E74DF6B602FF617445B611 /* DMSerifDisplay-Regular.ttf */; };
 		C1E7BB3C25C386E33C94086D /* FeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A7AC9C4707EBA7E138EAAB /* FeedStore.swift */; };
 		C2E74325AF8D09A342B7124E /* DMSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8D764835BD84CEF803FE6416 /* DMSans-SemiBold.ttf */; };
+		097dbedb-c291-407c-b762-bbd6c6685de7 /* DMSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0daafb27-83c0-4ff4-abc9-3bb8d3957fa4 /* DMSans-Bold.ttf */; };
 		C3037773233F3359C1DD2E56 /* BabyProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9970E660B4FEF4122FDE6C12 /* BabyProfile.swift */; };
 		C98FBBA8BCF84D1DF0616178 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D561E3E5C8CFE2ADE1036188 /* ContentView.swift */; };
 		F92DF5BB2FDC0C00BE49A0AC /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC9826D2ADE9A48C5032C7A /* StatisticsView.swift */; };
@@ -60,6 +61,7 @@
 		74FE31E2064A7FD6C5F9B5C5 /* FeedHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedHistoryView.swift; sourceTree = "<group>"; };
 		7C1281980D7FBE29E3F229AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8D764835BD84CEF803FE6416 /* DMSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "DMSans-SemiBold.ttf"; path = "B-Fed/Fonts/DMSans-SemiBold.ttf"; sourceTree = SOURCE_ROOT; };
+		0daafb27-83c0-4ff4-abc9-3bb8d3957fa4 /* DMSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "DMSans-Bold.ttf"; path = "B-Fed/Fonts/DMSans-Bold.ttf"; sourceTree = SOURCE_ROOT; };
 		939AF6362F487B90EEDF7DD7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9970E660B4FEF4122FDE6C12 /* BabyProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyProfile.swift; sourceTree = "<group>"; };
 		B4A07527ACF80A45BF7CB042 /* BottleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleView.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				10A04678874E0258722CF7B0 /* DMSans-Regular.ttf */,
 				FA4744FBB7046A2E0228682F /* DMSans-Medium.ttf */,
 				8D764835BD84CEF803FE6416 /* DMSans-SemiBold.ttf */,
+				0daafb27-83c0-4ff4-abc9-3bb8d3957fa4 /* DMSans-Bold.ttf */,
 				B8E74DF6B602FF617445B611 /* DMSerifDisplay-Regular.ttf */,
 			);
 			name = Fonts;
@@ -278,6 +281,7 @@
 				B60642138FB78C936323E015 /* DMSans-Regular.ttf in Resources */,
 				AD924A73A2F913288F60920C /* DMSans-Medium.ttf in Resources */,
 				C2E74325AF8D09A342B7124E /* DMSans-SemiBold.ttf in Resources */,
+				097dbedb-c291-407c-b762-bbd6c6685de7 /* DMSans-Bold.ttf in Resources */,
 				BC1F4EAB95FB1C001F767D58 /* DMSerifDisplay-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

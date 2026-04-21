@@ -35,6 +35,7 @@
 		<string>DMSans-Regular.ttf</string>
 		<string>DMSans-Medium.ttf</string>
 		<string>DMSans-SemiBold.ttf</string>
+		<string>DMSans-Bold.ttf</string>
 		<string>DMSerifDisplay-Regular.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>

@@ -47,6 +47,7 @@ enum AppFont {
         case .light: name = "DMSans-Light"
         case .medium: name = "DMSans-Medium"
         case .semibold: name = "DMSans-SemiBold"
+        case .bold: name = "DMSans-Bold"
         default: name = "DMSans-Regular"
         }
         return Font.custom(name, size: size)

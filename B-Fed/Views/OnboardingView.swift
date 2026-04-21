@@ -29,7 +29,6 @@ struct OnboardingView: View {
                 
                 VStack(spacing: 0) {
                     ProgressStepper(currentStep: currentStep, totalSteps: 4)
-                        .padding(.top, 16)
                     
                     ZStack {
                         Group {
@@ -162,12 +161,18 @@ struct ProgressStepper: View {
     var body: some View {
         HStack(spacing: 6) {
             ForEach(0..<totalSteps, id: \.self) { index in
-                Capsule()
-                    .fill(index <= currentStep ? Color.inkPrimary : Color.inkPrimary.opacity(0.08))
-                    .frame(width: index == currentStep ? 24 : 6, height: 6)
-                    .animation(.spring(response: 0.4, dampingFraction: 0.75), value: currentStep)
+                if index == currentStep {
+                    RoundedRectangle(cornerRadius: 3, style: .continuous)
+                        .fill(Color.inkPrimary)
+                        .frame(width: 24, height: 6)
+                } else {
+                    Circle()
+                        .fill(Color.inkSecondary.opacity(0.3))
+                        .frame(width: 6, height: 6)
+                }
             }
         }
+        .padding(.top, 48)
     }
 }
 
@@ -177,27 +182,29 @@ struct WelcomeScreen: View {
     @State private var appearPhase = 0
     
     let tags: [(text: String, rotation: Double, xOffset: CGFloat, yOffset: CGFloat)] = [
-        ("TRACKING", -2.0, -50, -10),
-        ("INSIGHTS", 1.5, 40, -28),
-        ("GROWTH", -1.0, 80, 5),
-        ("PATTERNS", 2.5, -10, 25)
+        ("TRACKING", -2.0, -70, -10),
+        ("INSIGHTS", 3.0, 60, -28),
+        ("GROWTH", -1.0, 90, 5),
+        ("PATTERNS", 2.0, -20, 25)
     ]
     
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Top-right organic blob
+                // Top-right organic blob — bleeds off corner, ~60% visible
                 OrganicBlobShape()
                     .fill(Color.peachDust)
                     .frame(width: 280, height: 280)
-                    .position(x: geometry.size.width + 60, y: 60)
+                    .position(x: geometry.size.width + 20, y: -20)
+                    .zIndex(0)
                     .opacity(appearPhase >= 1 ? 1 : 0)
                 
-                // Bottom-right accent blob
+                // Orchid accent blob — sits behind floating tags
                 Circle()
                     .fill(Color.orchidTint.opacity(0.6))
                     .frame(width: 110, height: 110)
-                    .position(x: geometry.size.width - 30, y: geometry.size.height - 200)
+                    .position(x: geometry.size.width - 60, y: geometry.size.height * 0.18 + 45)
+                    .zIndex(0)
                     .opacity(appearPhase >= 1 ? 1 : 0)
                 
                 VStack(spacing: 0) {
@@ -207,7 +214,7 @@ struct WelcomeScreen: View {
                     ZStack {
                         ForEach(tags.indices, id: \.self) { i in
                             Text(tags[i].text)
-                                .font(AppFont.sans(12, weight: .semibold))
+                                .font(AppFont.sans(12, weight: .bold))
                                 .foregroundStyle(Color.inkPrimary)
                                 .padding(.horizontal, AppSpacing.md)
                                 .padding(.vertical, AppSpacing.sm)
@@ -218,6 +225,7 @@ struct WelcomeScreen: View {
                         }
                     }
                     .frame(height: 90)
+                    .zIndex(2)
                     .opacity(appearPhase >= 2 ? 1 : 0)
                     .offset(y: appearPhase >= 2 ? 0 : 14)
                     
@@ -226,23 +234,24 @@ struct WelcomeScreen: View {
                     // Headline with decorative star
                     ZStack(alignment: .topTrailing) {
                         Text("Feel confident\nfeeding your baby")
-                            .font(AppFont.heroTitle)
+                            .font(AppFont.serif(38))
                             .foregroundStyle(Color.inkPrimary)
                             .multilineTextAlignment(.center)
                             .lineSpacing(2)
                             .fixedSize(horizontal: false, vertical: true)
                         
                         StarShape()
-                            .fill(Color.orchidTintDark.opacity(0.7))
-                            .frame(width: 28, height: 28)
+                            .fill(Color.orchidTintDark.opacity(0.8))
+                            .frame(width: 34, height: 34)
                             .offset(x: 10, y: -18)
                     }
+                    .zIndex(2)
                     .opacity(appearPhase >= 3 ? 1 : 0)
                     .offset(y: appearPhase >= 3 ? 0 : 16)
                     
                     Spacer()
                     
-                    // CTA
+                    // CTA — 88% width, centred
                     Button(action: onContinue) {
                         HStack(spacing: 10) {
                             Text("Get started")
@@ -251,14 +260,14 @@ struct WelcomeScreen: View {
                                 .font(AppFont.bodyLarge)
                         }
                         .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
+                        .frame(width: geometry.size.width * 0.88)
                     }
                     .primaryButton()
-                    .padding(.horizontal, 24)
                     .padding(.bottom, AppSpacing.xxl)
                     .opacity(appearPhase >= 4 ? 1 : 0)
                     .offset(y: appearPhase >= 4 ? 0 : 16)
                 }
+                .zIndex(1)
                 .padding(.horizontal, 24)
             }
         }
