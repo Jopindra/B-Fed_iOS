@@ -20,25 +20,25 @@ struct MonthView: View {
             
             // Clean completion calendar
             completionCalendar
-                .padding(.horizontal, 28)
-                .padding(.top, 20)
+                .padding(.horizontal, AppSpacing.xl)
+                .padding(.top, AppSpacing.xl)
             
             // Single supportive insight
             insightSection
-                .padding(.horizontal, 28)
+                .padding(.horizontal, AppSpacing.xl)
                 .padding(.top, 32)
             
             Spacer()
         }
-        .background(Color.white)
+        .background(Color.backgroundCard)
     }
     
     // MARK: - Header
     private var monthHeader: some View {
         VStack(spacing: 4) {
             Text(monthTitle)
-                .font(.system(size: 32, weight: .semibold, design: .rounded))
-                .foregroundStyle(.primary)
+                .font(AppFont.screenTitle)
+                .foregroundStyle(Color.inkPrimary)
         }
         .padding(.top, 12)
     }
@@ -56,8 +56,8 @@ struct MonthView: View {
             HStack(spacing: 0) {
                 ForEach(["S", "M", "T", "W", "T", "F", "S"], id: \.self) { day in
                     Text(day)
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(.secondary.opacity(0.4))
+                        .font(AppFont.caption)
+                        .foregroundStyle(Color.inkSecondary.opacity(0.4))
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -81,12 +81,12 @@ struct MonthView: View {
     private var insightSection: some View {
         HStack(spacing: 6) {
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 12))
-                .foregroundStyle(Color.emerald.opacity(0.6))
+                .font(AppFont.sans(12, weight: .regular))
+                .foregroundStyle(Color.almostAquaDark.opacity(0.6))
             
             Text(insightText)
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(.secondary)
+                .font(AppFont.bodyLarge)
+                .foregroundStyle(Color.inkSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -141,12 +141,16 @@ struct CompletionDay: View {
         ZStack {
             // Base shape
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(backgroundColor)
+                .fill(Color.backgroundCard)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                )
             
             // Today indicator (subtle ring)
             if isToday {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(Color.emerald.opacity(0.4), lineWidth: 2)
+                    .stroke(Color.almostAquaDark.opacity(0.4), lineWidth: 2)
             }
             
             // Logged indicator (subtle inner mark)
@@ -155,37 +159,18 @@ struct CompletionDay: View {
             }
         }
         .frame(height: 44)
-        .shadow(
-            color: isLogged ? Color.emerald.opacity(0.08) : Color.clear,
-            radius: 3,
-            x: 0,
-            y: 2
-        )
-    }
-    
-    private var backgroundColor: Color {
-        if isLogged {
-            return Color.emerald.opacity(0.12)
-        }
-        return Color(.tertiarySystemFill).opacity(0.2)
     }
     
     private var loggedIndicator: some View {
         Circle()
-            .fill(Color.emerald.opacity(0.5))
+            .fill(Color.almostAquaDark.opacity(0.5))
             .frame(width: 6, height: 6)
     }
 }
 
-// MARK: - Color Extension
-private extension Color {
-    static var emerald: Color {
-        Color(red: 0.18, green: 0.44, blue: 0.37)
-    }
-}
 
 #Preview {
     MonthView()
-        .background(Color.white)
+        .background(Color.backgroundCard)
         .environment(FeedStore())
 }

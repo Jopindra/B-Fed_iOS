@@ -22,65 +22,22 @@ struct BabyBottleView: View {
             ZStack {
                 // Back wall
                 ExactBottleShape()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.5),
-                                Color.white.opacity(0.25),
-                                Color.gray.opacity(0.15)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .fill(Color.white.opacity(0.35))
                 
                 // Liquid
                 LiquidContent(level: cappedFillLevel, phase: wavePhase, offset: liquidOffset)
                 
                 // Front wall
                 ExactBottleShape()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.95),
-                                Color.white.opacity(0.7),
-                                Color.white.opacity(0.5),
-                                Color.white.opacity(0.6)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .fill(Color.white.opacity(0.7))
                 
                 // Left highlight
                 ExactBottleShape()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.white,
-                                Color.white.opacity(0.6),
-                                Color.clear,
-                                Color.clear
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                    .fill(Color.white.opacity(0.5))
                 
                 // Right depth
                 ExactBottleShape()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.clear,
-                                Color.clear,
-                                Color.gray.opacity(0.35),
-                                Color.gray.opacity(0.5)
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                    .fill(Color.inkSecondary.opacity(0.35))
                 
                 // Collar and teat
                 CollarTeatAssembly()
@@ -107,29 +64,14 @@ struct BabyBottleView: View {
     }
     
     private var ambientGlow: some View {
-        RadialGradient(
-            colors: [Color.white.opacity(0.4), Color.clear],
-            center: .center,
-            startRadius: 30,
-            endRadius: 100
-        )
-        .frame(width: 200, height: 200)
-        .blur(radius: 30)
+        Color.clear
+            .frame(width: 200, height: 200)
     }
     
     private var groundShadow: some View {
-        Ellipse()
-            .fill(
-                RadialGradient(
-                    colors: [Color.black.opacity(0.18), Color.clear],
-                    center: .center,
-                    startRadius: 5,
-                    endRadius: 50
-                )
-            )
+        Color.clear
             .frame(width: 80, height: 12)
             .offset(y: 88)
-            .blur(radius: 10)
     }
     
     private func animate() {
@@ -288,17 +230,11 @@ struct LiquidContent: View {
         GeometryReader { geometry in
             ZStack {
                 LiquidBody(level: level)
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.emeraldLight, Color.emerald, Color.emeraldDeep],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                    .fill(Color.almostAquaDark)
                     .offset(y: offset)
                 
                 LiquidSurface(level: level, phase: phase)
-                    .fill(Color.emeraldSurface)
+                    .fill(Color.almostAqua)
                     .offset(y: offset)
                 
                 LiquidSurface(level: level, phase: phase + 0.5)
@@ -362,20 +298,13 @@ struct CollarTeatAssembly: View {
                 .frame(width: 44, height: 26)
             
             RoundedRectangle(cornerRadius: 3)
-                .fill(
-                    LinearGradient(
-                        colors: [Color.white, Color.gray.opacity(0.15), Color.white],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .fill(Color.white)
                 .frame(width: 26, height: 18)
                 .overlay(
                     RoundedRectangle(cornerRadius: 3)
-                        .fill(LinearGradient(colors: [Color.white.opacity(0.9), Color.clear], startPoint: .top, endPoint: .center))
+                        .fill(Color.white.opacity(0.5))
                 )
         }
-        .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
         .offset(y: -75)
     }
 }
@@ -396,32 +325,15 @@ struct TeatView: View {
             path.addCurve(to: CGPoint(x: cx + baseW/2, y: baseY), control1: CGPoint(x: cx + tipW/2 + 6, y: tipY + 14), control2: CGPoint(x: cx + baseW/2, y: baseY - 12))
             path.closeSubpath()
             
-            context.fill(path, with: .linearGradient(
-                Gradient(colors: [Color.teatLight, Color.teatMid, Color.teatDark]),
-                startPoint: CGPoint(x: cx, y: tipY), endPoint: CGPoint(x: cx, y: baseY)
-            ))
+            context.fill(path, with: .color(Color.peachDust))
             
-            context.fill(path, with: .linearGradient(
-                Gradient(colors: [Color.white.opacity(0.6), Color.clear]),
-                startPoint: CGPoint(x: 0, y: size.height/2), endPoint: CGPoint(x: cx, y: size.height/2)
-            ))
+            context.fill(path, with: .color(Color.white.opacity(0.3)))
             
-            context.fill(Path(ellipseIn: CGRect(x: cx - 2, y: tipY, width: 4, height: 3)), with: .color(Color.teatDark.opacity(0.5)))
+            context.fill(Path(ellipseIn: CGRect(x: cx - 2, y: tipY, width: 4, height: 3)), with: .color(Color.peachDustDark.opacity(0.5)))
         }
     }
 }
 
-// MARK: - Colors
-private extension Color {
-    static let emeraldLight = Color(red: 0.30, green: 0.55, blue: 0.48)
-    static let emerald = Color(red: 0.18, green: 0.44, blue: 0.37)
-    static let emeraldDeep = Color(red: 0.10, green: 0.30, blue: 0.25)
-    static let emeraldSurface = Color(red: 0.35, green: 0.60, blue: 0.52)
-    
-    static let teatLight = Color(red: 0.97, green: 0.92, blue: 0.88)
-    static let teatMid = Color(red: 0.93, green: 0.86, blue: 0.79)
-    static let teatDark = Color(red: 0.85, green: 0.76, blue: 0.68)
-}
 
 #Preview {
     ZStack {

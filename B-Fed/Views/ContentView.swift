@@ -22,6 +22,7 @@ struct ContentView: View {
                 }
                 .tag(1)
         }
+        .tabBarStyled()
         .overlay(alignment: .bottom) {
             LogFeedButton {
                 showingLogFeedSheet = true
@@ -54,24 +55,18 @@ struct LogFeedButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "plus")
-                .font(.system(size: 24, weight: .semibold))
+                .font(AppFont.sans(24, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(width: 60, height: 60)
-                .background(Color.emerald)
+                .background(Color.inkPrimary)
                 .clipShape(Circle())
-                .shadow(color: Color.emerald.opacity(0.3), radius: 12, x: 0, y: 6)
         }
         .frame(maxHeight: .infinity, alignment: .bottom)
-        .padding(.bottom, 30)
+        .padding(.bottom, AppSpacing.xl)
     }
 }
 
-// MARK: - Color Extension
-private extension Color {
-    static var emerald: Color {
-        Color(red: 0.18, green: 0.44, blue: 0.37)
-    }
-}
+
 
 #Preview {
     ContentView()

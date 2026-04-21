@@ -43,26 +43,26 @@ struct FirstTimeDashboardView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
-                Spacer().frame(height: 40)
+                Spacer().frame(height: AppSpacing.xxl)
                 
                 // Empty bottle (outline only)
                 EmptyBottleView()
                     .frame(width: 120, height: 180)
                 
-                Spacer().frame(height: 48)
+                Spacer().frame(height: AppSpacing.xxl)
                 
                 // Primary message
                 Text("Let's log your first feed")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundStyle(.primary)
+                    .font(AppFont.heroTitle)
+                    .foregroundStyle(Color.inkPrimary)
                     .multilineTextAlignment(.center)
                 
                 Spacer().frame(height: 8)
                 
                 // Secondary reassurance
                 Text("You're doing great already")
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
+                    .font(AppFont.bodyLarge)
+                    .foregroundStyle(Color.inkSecondary)
                 
                 Spacer().frame(height: 32)
                 
@@ -70,25 +70,21 @@ struct FirstTimeDashboardView: View {
                 Button(action: { showingLogFeed = true }) {
                     HStack(spacing: 8) {
                         Image(systemName: "plus")
-                            .font(.system(size: 20, weight: .semibold))
+                            .font(AppFont.bodyLarge)
                         Text("Log Feed")
-                            .font(.headline.weight(.semibold))
+                            .font(AppFont.bodyLarge)
                     }
-                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 60)
-                    .background(Color.emerald)
-                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                    .shadow(color: Color.emerald.opacity(0.20), radius: 8, x: 0, y: 3)
+                    .primaryButton()
                 }
                 .buttonStyle(GentlePressEffect())
                 .padding(.horizontal, 24)
                 
                 Spacer(minLength: 100)
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, AppSpacing.lg)
         }
-        .background(Color(hex: "F2F2F7"))
+        .background(Color.backgroundBase)
     }
 }
 
@@ -97,23 +93,20 @@ struct EmptyBottleView: View {
     var body: some View {
         ZStack {
             // Soft glow background
-            RadialGradient(
-                colors: [Color.emerald.opacity(0.05), Color.clear],
-                center: .center,
-                startRadius: 10,
-                endRadius: 100
-            )
+            Circle()
+                .fill(Color.almostAquaDark.opacity(0.05))
+                .frame(width: 200, height: 200)
             
             // Bottle outline
             BottleOutlineShape()
                 .stroke(
-                    Color.emerald.opacity(0.3),
+                    Color.almostAquaDark.opacity(0.3),
                     style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round)
                 )
             
             // Subtle teat
             Ellipse()
-                .fill(Color.emerald.opacity(0.2))
+                .fill(Color.almostAquaDark.opacity(0.2))
                 .frame(width: 20, height: 12)
                 .offset(y: -82)
         }
@@ -215,9 +208,9 @@ struct PopulatedDashboardView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
-            .padding(.bottom, 100)
+            .padding(.bottom, AppSpacing.xxl)
         }
-        .background(Color(hex: "F2F2F7"))
+        .background(Color.backgroundBase)
         .onAppear {
             // Check if this is the first feed (bottle was empty)
             let isFirstFeed = bottleFillLevel == 0 && targetFillLevel > 0
@@ -315,8 +308,8 @@ struct HeroCardPopulated: View {
                     
                     // Intake display
                     Text(feedStore.getIntakeDisplay())
-                        .font(.system(size: 20, weight: .semibold, design: .rounded))
-                        .foregroundStyle(.primary)
+                        .font(AppFont.serif(20))
+                        .foregroundStyle(Color.inkPrimary)
                         .monospacedDigit()
                 }
                 
@@ -333,9 +326,7 @@ struct HeroCardPopulated: View {
                     .transition(.opacity.combined(with: .scale(scale: 0.95, anchor: .top)))
             }
         }
-        .padding(20)
-        .background(Color(hex: "EBEBF0"))
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .cardStyle()
     }
 }
 
@@ -348,17 +339,7 @@ struct FillingBottleView: View {
         ZStack {
             // Bottle glass
             BottleGlassShape()
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.9),
-                            Color.white.opacity(0.5),
-                            Color.white.opacity(0.3)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .fill(Color.white.opacity(0.6))
             
             // Liquid with wave
             LiquidWithWave(fillLevel: fillLevel, phase: wavePhase)
@@ -387,19 +368,13 @@ struct LiquidWithWave: View {
             ZStack {
                 // Base liquid
                 Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.emeraldLight, Color.emerald, Color.emeraldDeep],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                    .fill(Color.almostAquaDark)
                     .frame(height: geometry.size.height * fillLevel)
                     .frame(maxHeight: .infinity, alignment: .bottom)
                 
                 // Wave surface
                 DashboardWaveShape(fillLevel: fillLevel, phase: phase)
-                    .fill(Color.emeraldLight.opacity(0.9))
+                    .fill(Color.almostAqua.opacity(0.9))
                     .frame(height: geometry.size.height)
             }
         }
@@ -490,13 +465,13 @@ struct ReassuranceBubble: View {
         VStack {
             Spacer()
             Text(message)
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 18)
-                .padding(.vertical, 10)
+                .font(AppFont.body)
+                .foregroundStyle(Color.inkSecondary)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.vertical, AppSpacing.sm)
                 .background(.ultraThinMaterial)
                 .clipShape(Capsule())
-                .padding(.bottom, 20)
+                .padding(.bottom, AppSpacing.lg)
         }
         .frame(height: 180)
     }
@@ -514,13 +489,21 @@ struct PeriodSelector: View {
                         selectedPeriod = period
                     }
                 } label: {
-                    Text(period == .today ? "Today" : "7 Days")
-                        .font(.subheadline.weight(selectedPeriod == period ? .semibold : .medium))
-                        .foregroundStyle(selectedPeriod == period ? .white : .primary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 44)
-                        .background(selectedPeriod == period ? Color.emerald : Color(.tertiarySystemFill))
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    if selectedPeriod == period {
+                        Text(period == .today ? "Today" : "7 Days")
+                            .font(AppFont.bodyLarge)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                            .tagActive()
+                    } else {
+                        Text(period == .today ? "Today" : "7 Days")
+                            .font(AppFont.bodyLarge)
+                            .foregroundStyle(Color.inkPrimary)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                            .tagInactive()
+                    }
                 }
                 .buttonStyle(.plain)
             }
@@ -533,11 +516,11 @@ struct GuidanceBubble: View {
     
     var body: some View {
         Text(text)
-            .font(.subheadline.weight(.medium))
-            .foregroundStyle(Color.emerald.opacity(0.9))
+            .font(AppFont.body)
+            .foregroundStyle(Color.almostAquaDark.opacity(0.9))
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
-            .background(Color.emerald.opacity(0.1))
+            .background(Color.almostAquaDark.opacity(0.1))
             .clipShape(Capsule())
     }
 }
@@ -554,21 +537,21 @@ struct StatsGrid: View {
                 value: "\(stats.totalFeeds)",
                 label: "Feeds",
                 sublabel: "today",
-                tint: .blue
+                tint: Color.peachDustDark
             )
             StatBox(
                 icon: "drop.fill",
                 value: "\(Int(stats.totalAmount))",
                 label: "Total",
                 sublabel: "ml",
-                tint: Color.emerald
+                tint: Color.almostAquaDark
             )
             StatBox(
                 icon: "chart.line.uptrend.xyaxis",
                 value: "\(Int(stats.averageAmount))",
                 label: "Average",
                 sublabel: "per feed",
-                tint: .orange
+                tint: Color.orchidTintDark
             )
         }
     }
@@ -584,28 +567,26 @@ struct StatBox: View {
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
+                .font(AppFont.sans(16, weight: .medium))
                 .foregroundStyle(tint)
                 .frame(width: 32, height: 32)
                 .background(tint.opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             
             Text(value)
-                .font(.title3.weight(.bold))
-                .foregroundStyle(.primary)
+                .font(AppFont.serif(20))
+                .foregroundStyle(Color.inkPrimary)
             
             Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(AppFont.caption)
+                .foregroundStyle(Color.inkSecondary)
             
             Text(sublabel)
-                .font(.caption2)
+                .font(AppFont.caption)
                 .foregroundStyle(tint.opacity(0.7))
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
-        .background(tint.opacity(0.06))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .cardStyle()
     }
 }
 
@@ -616,25 +597,23 @@ struct InsightsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Insights")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .font(AppFont.sectionTitle)
+                .foregroundStyle(Color.inkSecondary)
             
             VStack(alignment: .leading, spacing: 10) {
                 ForEach(insights.prefix(2), id: \.self) { insight in
                     HStack(spacing: 8) {
                         Image(systemName: "sparkle")
-                            .font(.system(size: 11))
-                            .foregroundStyle(Color.emerald)
+                            .font(AppFont.sans(11, weight: .regular))
+                            .foregroundStyle(Color.almostAquaDark)
                         Text(insight)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.secondary)
+                            .font(AppFont.body)
+                            .foregroundStyle(Color.inkSecondary)
                         Spacer()
                     }
                 }
             }
-            .padding(16)
-            .background(Color(hex: "EBEBF0"))
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .cardStyle()
         }
         .onAppear { insights = feedStore.getInsights() }
     }
@@ -651,16 +630,16 @@ struct RecentFeedsSection: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Recent")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .font(AppFont.sectionTitle)
+                    .foregroundStyle(Color.inkSecondary)
                 Spacer()
                 NavigationLink(destination: FeedHistoryView()) {
                     HStack(spacing: 4) {
                         Text("See All")
                         Image(systemName: "chevron.right")
-                            .font(.caption)
+                            .font(AppFont.caption)
                     }
-                    .foregroundStyle(Color.emerald)
+                    .foregroundStyle(Color.almostAquaDark)
                 }
             }
             
@@ -679,22 +658,19 @@ struct FeedRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Text(feed.startTime, style: .time)
-                .font(.subheadline.weight(.semibold))
+                .font(AppFont.bodyLarge)
                 .frame(width: 50)
             
             Circle()
-                .fill(Color.emerald)
+                .fill(Color.almostAquaDark)
                 .frame(width: 8, height: 8)
             
             Text(feed.formattedAmount)
-                .font(.subheadline.weight(.medium))
+                .font(AppFont.body)
             
             Spacer()
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(Color(hex: "EBEBF0"))
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .cardStyle()
     }
 }
 
@@ -702,18 +678,7 @@ enum TimePeriod {
     case today, last7Days
 }
 
-// MARK: - Colors
-private extension Color {
-    static var emerald: Color {
-        Color(red: 0.18, green: 0.44, blue: 0.37)
-    }
-    static var emeraldLight: Color {
-        Color(red: 0.30, green: 0.55, blue: 0.48)
-    }
-    static var emeraldDeep: Color {
-        Color(red: 0.10, green: 0.30, blue: 0.25)
-    }
-}
+
 
 #Preview {
     DashboardView()

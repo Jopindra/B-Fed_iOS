@@ -38,20 +38,20 @@ struct FeedHistoryView: View {
                                     } label: {
                                         Label("Edit", systemImage: "pencil")
                                     }
-                                    .tint(.indigo)
+                                    .tint(Color.orchidTintDark)
                                 }
                         }
                     } header: {
                         HStack {
                             Text(dateString)
-                                .font(.subheadline.weight(.semibold))
+                                .font(AppFont.sectionTitle)
                                 .textCase(nil)
                             
                             Spacer()
                             
                             Text("\(dayFeeds.count) feeds • \(Int(dayFeeds.reduce(0) { $0 + $1.amount }))ml")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .font(AppFont.caption)
+                                .foregroundStyle(Color.inkSecondary)
                         }
                     }
                 }
@@ -101,12 +101,12 @@ struct FeedHistoryRow: View {
         HStack(spacing: 16) {
             VStack(alignment: .trailing, spacing: 2) {
                 Text(feed.startTime, style: .time)
-                    .font(.subheadline.weight(.semibold))
+                    .font(AppFont.bodyLarge)
                 
                 if let endTime = feed.endTime {
                     Text(endTime, style: .time)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(AppFont.caption)
+                        .foregroundStyle(Color.inkSecondary)
                 }
             }
             .frame(width: 55)
@@ -115,19 +115,19 @@ struct FeedHistoryRow: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(feed.formattedAmount)
-                    .font(.subheadline.weight(.medium))
+                    .font(AppFont.body)
                 
                 HStack(spacing: 12) {
                     if feed.duration != nil {
                         Label(feed.durationInMinutes, systemImage: "clock")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(AppFont.caption)
+                            .foregroundStyle(Color.inkSecondary)
                     }
                     
                     if !feed.notes.isEmpty {
                         Label("Note", systemImage: "text.alignleft")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(AppFont.caption)
+                            .foregroundStyle(Color.inkSecondary)
                     }
                 }
             }
@@ -142,11 +142,11 @@ struct TimelineDot: View {
     
     var body: some View {
         Circle()
-            .fill(isActive ? Color.accentColor : Color.green)
+            .fill(Color.almostAquaDark)
             .frame(width: 10, height: 10)
             .overlay(
                 Circle()
-                    .stroke(isActive ? Color.accentColor.opacity(0.3) : Color.green.opacity(0.3), lineWidth: 3)
+                    .stroke(Color.almostAquaDark.opacity(0.3), lineWidth: 3)
             )
     }
 }
@@ -213,7 +213,7 @@ struct EditFeedView: View {
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 80)
                             Text("min")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.inkSecondary)
                         }
                     }
                 }
@@ -228,6 +228,7 @@ struct EditFeedView: View {
                         saveChanges()
                     }
                     .frame(maxWidth: .infinity)
+                    .primaryButton()
                 }
             }
             .navigationTitle("Edit Feed")

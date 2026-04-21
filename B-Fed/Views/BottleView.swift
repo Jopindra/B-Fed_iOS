@@ -23,17 +23,7 @@ struct BottleView: View {
             // Glow effect when bottle is well-fed
             if shouldGlow {
                 Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                Color(hex: "#2F6F5E").opacity(0.3),
-                                Color(hex: "#2F6F5E").opacity(0)
-                            ],
-                            center: .center,
-                            startRadius: 60,
-                            endRadius: 120
-                        )
-                    )
+                    .fill(Color.almostAquaDark.opacity(0.3))
                     .frame(width: 200, height: 200)
                     .opacity(glowOpacity)
                     .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: glowOpacity)
@@ -47,7 +37,7 @@ struct BottleView: View {
                 // Bottle outline (hand-drawn feel)
                 BottleShape()
                     .stroke(
-                        Color(hex: "#8B9A8B"),
+                        Color.inkSecondary,
                         style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round)
                     )
                     .frame(width: 100, height: 160)
@@ -180,16 +170,7 @@ struct LiquidBottleView: View {
             ZStack {
                 // Base liquid color
                 Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color(hex: "#4A9B85"), // Lighter at top
-                                Color(hex: "#2F6F5E")  // Emerald base
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                    .fill(Color.almostAquaDark)
                     .frame(height: geometry.size.height)
                     .offset(y: geometry.size.height * (1 - fillLevel))
                 
@@ -199,7 +180,7 @@ struct LiquidBottleView: View {
                     waveHeight: 6,
                     phase: waveOffset
                 )
-                .fill(Color(hex: "#4A9B85").opacity(0.8))
+                .fill(Color.almostAqua.opacity(0.8))
                 .frame(height: geometry.size.height)
                 
                 // Secondary wave for depth
@@ -208,7 +189,7 @@ struct LiquidBottleView: View {
                     waveHeight: 4,
                     phase: secondaryWaveOffset
                 )
-                .fill(Color(hex: "#5BA895").opacity(0.5))
+                .fill(Color.almostAqua.opacity(0.5))
                 .frame(height: geometry.size.height)
             }
         }
@@ -269,15 +250,16 @@ struct SupportiveMessageView: View {
     
     var body: some View {
         Text(message)
-            .font(.subheadline)
-            .fontWeight(.medium)
-            .foregroundStyle(Color(hex: "#2F6F5E"))
+            .font(AppFont.bodyLarge)
+            .foregroundStyle(Color.almostAquaDark)
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
-            .background(
+            .background(Color.backgroundCard)
+            .overlay(
                 Capsule()
-                    .fill(Color(hex: "#2F6F5E").opacity(0.1))
+                    .stroke(Color.inkSecondary.opacity(0.20), lineWidth: 0.5)
             )
+            .clipShape(Capsule())
             .opacity(isVisible ? 1 : 0)
             .offset(y: isVisible ? 0 : 10)
             .animation(.easeOut(duration: 0.3), value: isVisible)
@@ -323,5 +305,5 @@ extension Color {
             .frame(height: 200)
     }
     .padding()
-    .background(Color(hex: "F2F2F7"))
+    .background(Color.backgroundBase)
 }

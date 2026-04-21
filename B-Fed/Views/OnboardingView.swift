@@ -149,22 +149,8 @@ struct OnboardingView: View {
 // MARK: - Background
 struct WarmBackground: View {
     var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(hex: "FDFCFA"), Color(hex: "FAF7F3"), Color(hex: "F7F3EE")],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+        Color.backgroundBase
             .ignoresSafeArea()
-            
-            RadialGradient(
-                colors: [Color.brandPrimary.opacity(0.04), Color.clear],
-                center: .init(x: 0.5, y: 0.3),
-                startRadius: 80,
-                endRadius: 240
-            )
-            .ignoresSafeArea()
-        }
     }
 }
 
@@ -177,7 +163,7 @@ struct ProgressStepper: View {
         HStack(spacing: 6) {
             ForEach(0..<totalSteps, id: \.self) { index in
                 Capsule()
-                    .fill(index <= currentStep ? Color.brandPrimary : Color.black.opacity(0.08))
+                    .fill(index <= currentStep ? Color.inkPrimary : Color.inkPrimary.opacity(0.08))
                     .frame(width: index == currentStep ? 24 : 6, height: 6)
                     .animation(.spring(response: 0.4, dampingFraction: 0.75), value: currentStep)
             }
@@ -189,118 +175,98 @@ struct ProgressStepper: View {
 struct WelcomeScreen: View {
     let onContinue: () -> Void
     @State private var appearPhase = 0
-    @State private var haloScale: CGFloat = 1.0
+    
+    let tags: [(text: String, rotation: Double, xOffset: CGFloat, yOffset: CGFloat)] = [
+        ("TRACKING", -2.0, -50, -10),
+        ("INSIGHTS", 1.5, 40, -28),
+        ("GROWTH", -1.0, 80, 5),
+        ("PATTERNS", 2.5, -10, 25)
+    ]
     
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer().frame(height: 20)
-            
+        GeometryReader { geometry in
             ZStack {
-                Circle()
-                    .stroke(Color.brandPrimary.opacity(0.12), lineWidth: 1)
-                    .frame(width: 200, height: 200)
-                    .scaleEffect(haloScale)
+                // Top-right organic blob
+                OrganicBlobShape()
+                    .fill(Color.peachDust)
+                    .frame(width: 280, height: 280)
+                    .position(x: geometry.size.width + 60, y: 60)
+                    .opacity(appearPhase >= 1 ? 1 : 0)
                 
+                // Bottom-right accent blob
                 Circle()
-                    .fill(Color.brandPrimary.opacity(0.06))
-                    .frame(width: 168, height: 168)
-                    .scaleEffect(haloScale * 0.96)
+                    .fill(Color.orchidTint.opacity(0.6))
+                    .frame(width: 110, height: 110)
+                    .position(x: geometry.size.width - 30, y: geometry.size.height - 200)
+                    .opacity(appearPhase >= 1 ? 1 : 0)
                 
-                Circle()
-                    .fill(RadialGradient(colors: [Color.brandPrimary.opacity(0.1), Color.clear], center: .center, startRadius: 40, endRadius: 80))
-                    .frame(width: 140, height: 140)
-                
-                HeroBottle()
-                    .frame(width: 100, height: 136)
-            }
-            .padding(.bottom, 36)
-            .opacity(appearPhase >= 1 ? 1 : 0)
-            .scaleEffect(appearPhase >= 1 ? 1 : 0.9)
-            .offset(y: appearPhase >= 1 ? 0 : 20)
-            
-            VStack(spacing: 10) {
-                Text("Feel confident\nfeeding your baby")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.textPrimary)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(0)
+                VStack(spacing: 0) {
+                    Spacer().frame(height: geometry.size.height * 0.18)
+                    
+                    // Floating topic tags
+                    ZStack {
+                        ForEach(tags.indices, id: \.self) { i in
+                            Text(tags[i].text)
+                                .font(AppFont.sans(12, weight: .semibold))
+                                .foregroundStyle(Color.inkPrimary)
+                                .padding(.horizontal, AppSpacing.md)
+                                .padding(.vertical, AppSpacing.sm)
+                                .background(Color.backgroundCard)
+                                .clipShape(Capsule())
+                                .rotationEffect(.degrees(tags[i].rotation))
+                                .offset(x: tags[i].xOffset, y: tags[i].yOffset)
+                        }
+                    }
+                    .frame(height: 90)
                     .opacity(appearPhase >= 2 ? 1 : 0)
-                    .offset(y: appearPhase >= 2 ? 0 : 16)
-                
-                Text("Track feeds, spot patterns, and know\nthey're getting enough - effortlessly")
-                    .font(.system(size: 15, weight: .regular))
-                    .foregroundStyle(Color.textSecondary.opacity(0.9))
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(2)
-                    .padding(.top, 4)
+                    .offset(y: appearPhase >= 2 ? 0 : 14)
+                    
+                    Spacer().frame(height: 36)
+                    
+                    // Headline with decorative star
+                    ZStack(alignment: .topTrailing) {
+                        Text("Feel confident\nfeeding your baby")
+                            .font(AppFont.heroTitle)
+                            .foregroundStyle(Color.inkPrimary)
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(2)
+                            .fixedSize(horizontal: false, vertical: true)
+                        
+                        StarShape()
+                            .fill(Color.orchidTintDark.opacity(0.7))
+                            .frame(width: 28, height: 28)
+                            .offset(x: 10, y: -18)
+                    }
                     .opacity(appearPhase >= 3 ? 1 : 0)
-                    .offset(y: appearPhase >= 3 ? 0 : 12)
-            }
-            
-            Spacer()
-            
-            Button(action: onContinue) {
-                HStack(spacing: 6) {
-                    Text("Get started")
-                        .font(.system(size: 17, weight: .semibold))
-                    Image(systemName: "arrow.right")
-                        .font(.system(size: 14, weight: .semibold))
-                        .offset(x: appearPhase >= 4 ? 0 : -8)
-                        .opacity(appearPhase >= 4 ? 1 : 0)
+                    .offset(y: appearPhase >= 3 ? 0 : 16)
+                    
+                    Spacer()
+                    
+                    // CTA
+                    Button(action: onContinue) {
+                        HStack(spacing: 10) {
+                            Text("Get started")
+                                .font(AppFont.bodyLarge)
+                            Image(systemName: "arrow.right")
+                                .font(AppFont.bodyLarge)
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                    }
+                    .primaryButton()
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, AppSpacing.xxl)
+                    .opacity(appearPhase >= 4 ? 1 : 0)
+                    .offset(y: appearPhase >= 4 ? 0 : 16)
                 }
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 54)
-                .background(LinearGradient(colors: [Color.brandPrimary, Color.brandPrimary.opacity(0.92)], startPoint: .top, endPoint: .bottom))
-                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .shadow(color: Color.brandPrimary.opacity(0.22), radius: 12, x: 0, y: 4)
+                .padding(.horizontal, 24)
             }
-            .buttonStyle(RefinedPressEffect())
-            .padding(.horizontal, 28)
-            .padding(.bottom, 40)
-            .opacity(appearPhase >= 4 ? 1 : 0)
-            .offset(y: appearPhase >= 4 ? 0 : 16)
         }
-        .padding(.horizontal, 24)
         .onAppear {
             withAnimation(.easeOut(duration: 0.6)) { appearPhase = 1 }
-            withAnimation(.easeOut(duration: 0.5).delay(0.12)) { appearPhase = 2 }
-            withAnimation(.easeOut(duration: 0.4).delay(0.28)) { appearPhase = 3 }
-            withAnimation(.spring(response: 0.45, dampingFraction: 0.8).delay(0.4)) { appearPhase = 4 }
-            withAnimation(.easeInOut(duration: 4).repeatForever(autoreverses: true)) { haloScale = 1.05 }
-        }
-    }
-}
-
-// MARK: - Hero Bottle
-struct HeroBottle: View {
-    @State private var wavePhase: CGFloat = 0
-    
-    var body: some View {
-        ZStack {
-            OnboardingBottleShape()
-                .stroke(Color.brandPrimary.opacity(0.28), lineWidth: 2)
-            
-            OnboardingBottleShape()
-                .fill(Color.brandPrimary.opacity(0.08))
-                .overlay(
-                    OnboardingWaveLiquid(fillLevel: 0.6, wavePhase: wavePhase)
-                        .fill(LinearGradient(colors: [Color.brandPrimary.opacity(0.5), Color.brandPrimary.opacity(0.7)], startPoint: .top, endPoint: .bottom))
-                )
-                .clipShape(OnboardingBottleShape())
-            
-            OnboardingBottleShape()
-                .stroke(Color.white.opacity(0.5), lineWidth: 1)
-            
-            Capsule()
-                .fill(Color.brandPrimary.opacity(0.35))
-                .frame(width: 20, height: 10)
-                .offset(y: -70)
-        }
-        .onAppear {
-            withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
-                wavePhase = .pi * 2
-            }
+            withAnimation(.easeOut(duration: 0.5).delay(0.15)) { appearPhase = 2 }
+            withAnimation(.easeOut(duration: 0.5).delay(0.3)) { appearPhase = 3 }
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.82).delay(0.45)) { appearPhase = 4 }
         }
     }
 }
@@ -341,12 +307,12 @@ struct ParentBabyFormScreen: View {
                 Button(action: onBack) {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(AppFont.bodyLarge)
                         Text("Back")
-                            .font(.system(size: 17, weight: .regular))
+                            .font(AppFont.bodyLarge)
                     }
-                    .foregroundStyle(Color.brandPrimary)
                 }
+                .ghostButton()
                 Spacer()
             }
             .padding(.horizontal, 24)
@@ -357,11 +323,11 @@ struct ParentBabyFormScreen: View {
                     // Header
                     VStack(alignment: .leading, spacing: 4) {
                         Text("About you")
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
-                            .foregroundStyle(Color.textPrimary)
+                            .font(AppFont.heroTitle)
+                            .foregroundStyle(Color.inkPrimary)
                         Text("This helps us personalise your experience")
-                            .font(.system(size: 15, weight: .regular))
-                            .foregroundStyle(Color.textSecondary)
+                            .font(AppFont.bodyLarge)
+                            .foregroundStyle(Color.inkSecondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 12)
@@ -434,7 +400,7 @@ struct ParentBabyFormScreen: View {
                         .focused($focusedField, equals: .babyWeight)
                     }
                     
-                    Spacer().frame(height: 100)
+                    Spacer().frame(height: AppSpacing.xxl)
                 }
                 .padding(.horizontal, 24)
                 .opacity(appear ? 1 : 0)
@@ -444,18 +410,16 @@ struct ParentBabyFormScreen: View {
             // CTA
             Button(action: onContinue) {
                 Text("Continue")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(AppFont.bodyLarge)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 54)
-                    .background(isValid ? Color.brandPrimary : Color.brandPrimary.opacity(0.4))
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .shadow(color: isValid ? Color.brandPrimary.opacity(0.22) : Color.clear, radius: 12, x: 0, y: 4)
             }
+            .primaryButton()
+            .opacity(isValid ? 1.0 : 0.4)
             .buttonStyle(RefinedPressEffect())
             .disabled(!isValid && showingValidationErrors)
-            .padding(.horizontal, 28)
-            .padding(.bottom, 36)
+            .padding(.horizontal, AppSpacing.xl)
+            .padding(.bottom, AppSpacing.xxl)
             .animation(.easeOut(duration: 0.2), value: isValid)
         }
         .onAppear {
@@ -472,11 +436,11 @@ struct SectionHeader: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.brandPrimary)
+                .font(AppFont.body)
+                .foregroundStyle(Color.almostAquaDark)
             Text(title)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(Color.textPrimary)
+                .font(AppFont.sectionTitle)
+                .foregroundStyle(Color.inkPrimary)
             Spacer()
         }
         .padding(.top, 8)
@@ -496,40 +460,35 @@ struct FormField: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
                 Text(label)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(Color.textPrimary)
+                    .font(AppFont.body)
+                    .foregroundStyle(Color.inkPrimary)
                 if isRequired {
                     Text("*")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(Color.warmCoral)
+                        .font(AppFont.sectionTitle)
+                        .foregroundStyle(Color.peachDustDark)
                 }
             }
             
             HStack {
                 TextField(placeholder, text: $text)
-                    .font(.system(size: 17, weight: .regular))
+                    .font(AppFont.bodyLarge)
                 
                 if let suffix = suffix {
                     Text(suffix)
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(Color.textMuted)
+                        .font(AppFont.bodyLarge)
+                        .foregroundStyle(Color.inkSecondary.opacity(0.6))
                 }
             }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 3)
-            )
+            .cardStyle()
             .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(showError ? Color.warmCoral.opacity(0.6) : Color.clear, lineWidth: 1.5)
+                RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
+                    .stroke(showError ? Color.peachDustDark.opacity(0.6) : Color.clear, lineWidth: 1.5)
             )
             
             if showError {
                 Text("This field is required")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(Color.warmCoral)
+                    .font(AppFont.caption)
+                    .foregroundStyle(Color.peachDustDark)
                     .padding(.leading, 4)
                     .transition(.opacity)
             }
@@ -547,24 +506,19 @@ struct DateField: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
                 Text(label)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(Color.textPrimary)
+                    .font(AppFont.body)
+                    .foregroundStyle(Color.inkPrimary)
                 if isRequired {
                     Text("*")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(Color.warmCoral)
+                        .font(AppFont.sectionTitle)
+                        .foregroundStyle(Color.peachDustDark)
                 }
             }
             
             DatePicker("", selection: $date, displayedComponents: .date)
                 .datePickerStyle(.compact)
-                .font(.system(size: 17))
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.white)
-                        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 3)
-                )
+                .font(AppFont.bodyLarge)
+                .cardStyle()
         }
     }
 }
@@ -580,9 +534,9 @@ struct FeedingTypeScreen: View {
     @State private var showDetail = false
     
     let options: [(type: FeedingType, icon: String, title: String, subtitle: String, color: Color)] = [
-        (.breast, "drop.fill", "Breastfeeding", "Nursing directly", Color.warmCoral),
-        (.formula, "fork.knife", "Formula", "Bottle feeding", Color.brandPrimary),
-        (.mixed, "arrow.triangle.2.circlepath", "Mixed", "Both methods", Color.warmLavender)
+        (.breast, "drop.fill", "Breastfeeding", "Nursing directly", Color.peachDustDark),
+        (.formula, "fork.knife", "Formula", "Bottle feeding", Color.almostAquaDark),
+        (.mixed, "arrow.triangle.2.circlepath", "Mixed", "Both methods", Color.orchidTintDark)
     ]
     
     var isComplete: Bool {
@@ -596,12 +550,12 @@ struct FeedingTypeScreen: View {
                 Button(action: onBack) {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(AppFont.bodyLarge)
                         Text("Back")
-                            .font(.system(size: 17, weight: .regular))
+                            .font(AppFont.bodyLarge)
                     }
-                    .foregroundStyle(Color.brandPrimary)
                 }
+                .ghostButton()
                 Spacer()
             }
             .padding(.horizontal, 24)
@@ -612,8 +566,8 @@ struct FeedingTypeScreen: View {
                     // Title
                     VStack(alignment: .leading, spacing: 4) {
                         Text("How are you feeding?")
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
-                            .foregroundStyle(Color.textPrimary)
+                            .font(AppFont.heroTitle)
+                            .foregroundStyle(Color.inkPrimary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 12)
@@ -646,7 +600,7 @@ struct FeedingTypeScreen: View {
                         .transition(.asymmetric(insertion: .opacity.combined(with: .move(edge: .trailing)), removal: .opacity))
                     }
                     
-                    Spacer().frame(height: 100)
+                    Spacer().frame(height: AppSpacing.xxl)
                 }
                 .padding(.horizontal, 24)
                 .opacity(appear ? 1 : 0)
@@ -656,18 +610,16 @@ struct FeedingTypeScreen: View {
             // Continue button (only when complete)
             Button(action: onContinue) {
                 Text("Continue")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(AppFont.bodyLarge)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 54)
-                    .background(isComplete ? Color.brandPrimary : Color.brandPrimary.opacity(0.4))
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .shadow(color: isComplete ? Color.brandPrimary.opacity(0.22) : Color.clear, radius: 12, x: 0, y: 4)
             }
+            .primaryButton()
+            .opacity(isComplete ? 1.0 : 0.4)
             .buttonStyle(RefinedPressEffect())
             .disabled(!isComplete)
-            .padding(.horizontal, 28)
-            .padding(.bottom, 36)
+            .padding(.horizontal, AppSpacing.xl)
+            .padding(.bottom, AppSpacing.xxl)
             .opacity(showDetail ? 1 : 0)
             .offset(y: showDetail ? 0 : 20)
             .animation(.spring(response: 0.3), value: isComplete)
@@ -696,18 +648,18 @@ struct FeedingOptionCard: View {
                         .frame(width: 52, height: 52)
                     
                     Image(systemName: icon)
-                        .font(.system(size: 22, weight: .semibold))
+                        .font(AppFont.screenTitle)
                         .foregroundStyle(isSelected ? color : color.opacity(0.8))
                 }
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.system(size: 17, weight: isSelected ? .semibold : .medium))
-                        .foregroundStyle(isSelected ? color : Color.textPrimary)
+                        .font(AppFont.bodyLarge)
+                        .foregroundStyle(isSelected ? color : Color.inkPrimary)
                     
                     Text(subtitle)
-                        .font(.system(size: 14))
-                        .foregroundStyle(isSelected ? color.opacity(0.7) : Color.textMuted)
+                        .font(AppFont.body)
+                        .foregroundStyle(isSelected ? color.opacity(0.7) : Color.inkSecondary.opacity(0.6))
                 }
                 
                 Spacer()
@@ -715,7 +667,7 @@ struct FeedingOptionCard: View {
                 // Selection indicator
                 ZStack {
                     Circle()
-                        .stroke(isSelected ? color : Color.gray.opacity(0.3), lineWidth: 2)
+                        .stroke(isSelected ? color : Color.inkSecondary.opacity(0.25), lineWidth: 2)
                         .frame(width: 24, height: 24)
                     
                     if isSelected {
@@ -724,21 +676,12 @@ struct FeedingOptionCard: View {
                             .frame(width: 24, height: 24)
                         
                         Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(AppFont.caption)
                             .foregroundStyle(.white)
                     }
                 }
             }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(isSelected ? color.opacity(0.06) : Color.white)
-                    .shadow(color: isSelected ? color.opacity(0.12) : Color.black.opacity(0.04), radius: isSelected ? 12 : 8, x: 0, y: isSelected ? 4 : 3)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(isSelected ? color.opacity(0.25) : Color.clear, lineWidth: 1.5)
-            )
+            .cardStyle()
         }
         .buttonStyle(.plain)
         .scaleEffect(isSelected ? 1.01 : 1.0)
@@ -773,8 +716,8 @@ struct FollowUpSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(question)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(Color.textPrimary)
+                .font(AppFont.sectionTitle)
+                .foregroundStyle(Color.inkPrimary)
                 .padding(.top, 8)
             
             VStack(spacing: 10) {
@@ -784,28 +727,15 @@ struct FollowUpSection: View {
                             selectedDetail = option.id
                         }
                     } label: {
-                        HStack(spacing: 12) {
-                            Image(systemName: option.icon)
-                                .font(.system(size: 17, weight: .semibold))
-                                .foregroundStyle(selectedDetail == option.id ? .white : Color.brandPrimary)
-                                .frame(width: 40, height: 40)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                        .fill(selectedDetail == option.id ? Color.white.opacity(0.2) : Color.brandPrimary.opacity(0.1))
-                                )
-                            
+                        if selectedDetail == option.id {
                             Text(option.title)
-                                .font(.system(size: 16, weight: selectedDetail == option.id ? .semibold : .medium))
-                                .foregroundStyle(selectedDetail == option.id ? .white : Color.textPrimary)
-                            
-                            Spacer()
+                                .font(AppFont.bodyLarge)
+                                .tagActive()
+                        } else {
+                            Text(option.title)
+                                .font(AppFont.bodyLarge)
+                                .tagInactive()
                         }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .fill(selectedDetail == option.id ? Color.brandPrimary : Color.white)
-                                .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 3)
-                        )
                     }
                     .buttonStyle(.plain)
                     .scaleEffect(selectedDetail == option.id ? 1.01 : 1.0)
@@ -813,6 +743,7 @@ struct FollowUpSection: View {
                 }
             }
         }
+        .cardStyle()
     }
 }
 
@@ -831,12 +762,12 @@ struct CompletionScreen: View {
                 Button(action: onBack) {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(AppFont.bodyLarge)
                         Text("Back")
-                            .font(.system(size: 17, weight: .regular))
+                            .font(AppFont.bodyLarge)
                     }
-                    .foregroundStyle(Color.brandPrimary)
                 }
+                .ghostButton()
                 Spacer()
             }
             .padding(.horizontal, 24)
@@ -847,46 +778,43 @@ struct CompletionScreen: View {
             // Success animation
             ZStack {
                 Circle()
-                    .stroke(Color.brandPrimary.opacity(0.15), lineWidth: 2)
+                    .stroke(Color.almostAquaDark.opacity(0.15), lineWidth: 2)
                     .frame(width: 200, height: 200)
                     .scaleEffect(1 + (pulse ? 0.1 : 0))
                 
                 Circle()
-                    .fill(Color.brandPrimary.opacity(0.06))
+                    .fill(Color.almostAquaDark.opacity(0.06))
                     .frame(width: 180, height: 180)
                     .scaleEffect(1 + (pulse ? 0.08 : 0))
                 
                 Circle()
-                    .fill(Color.brandPrimary.opacity(0.08))
+                    .fill(Color.almostAquaDark.opacity(0.08))
                     .frame(width: 140, height: 140)
                 
                 ZStack {
                     Circle()
-                        .fill(
-                            LinearGradient(colors: [Color.white, Color.white.opacity(0.95)], startPoint: .top, endPoint: .bottom)
-                        )
+                        .fill(Color.backgroundCard)
                         .frame(width: 90, height: 90)
-                        .shadow(color: Color.brandPrimary.opacity(0.25), radius: 20, x: 0, y: 8)
                     
                     Image(systemName: "checkmark")
-                        .font(.system(size: 38, weight: .bold))
-                        .foregroundStyle(Color.brandPrimary)
+                        .font(AppFont.serif(38))
+                        .foregroundStyle(Color.almostAquaDark)
                 }
                 .scaleEffect(appear ? 1 : 0)
             }
-            .padding(.bottom, 48)
+            .padding(.bottom, AppSpacing.xxl)
             
             // Text
             VStack(spacing: 12) {
                 Text("You're all set")
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.textPrimary)
+                    .font(AppFont.heroTitle)
+                    .foregroundStyle(Color.inkPrimary)
                     .opacity(appear ? 1 : 0)
                     .offset(y: appear ? 0 : 20)
                 
                 Text("Let's start tracking your\nbaby's next feed")
-                    .font(.system(size: 17, weight: .regular))
-                    .foregroundStyle(Color.textSecondary)
+                    .font(AppFont.bodyLarge)
+                    .foregroundStyle(Color.inkSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
                     .opacity(appear ? 1 : 0)
@@ -899,22 +827,17 @@ struct CompletionScreen: View {
             Button(action: onStart) {
                 HStack(spacing: 10) {
                     Text("Start tracking")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(AppFont.bodyLarge)
                     Image(systemName: "arrow.right")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(AppFont.bodyLarge)
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .frame(height: 58)
-                .background(
-                    LinearGradient(colors: [Color.brandPrimary, Color.brandPrimary.opacity(0.9)], startPoint: .top, endPoint: .bottom)
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .shadow(color: Color.brandPrimary.opacity(0.35), radius: 20, x: 0, y: 8)
             }
+            .primaryButton()
             .buttonStyle(RefinedPressEffect())
-            .padding(.horizontal, 28)
-            .padding(.bottom, 36)
+            .padding(.horizontal, AppSpacing.xl)
+            .padding(.bottom, AppSpacing.xxl)
             .opacity(appear ? 1 : 0)
             .offset(y: appear ? 0 : 20)
         }
@@ -925,69 +848,72 @@ struct CompletionScreen: View {
     }
 }
 
-// MARK: - Shapes
-struct OnboardingBottleShape: Shape {
+// MARK: - Decorative Shapes
+
+struct OrganicBlobShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
         let w = rect.width
         let h = rect.height
         
-        path.move(to: CGPoint(x: w * 0.32, y: h * 0.22))
-        path.addLine(to: CGPoint(x: w * 0.32, y: h * 0.35))
+        path.move(to: CGPoint(x: w * 0.5, y: 0))
         path.addCurve(
-            to: CGPoint(x: w * 0.18, y: h * 0.45),
-            control1: CGPoint(x: w * 0.32, y: h * 0.4),
-            control2: CGPoint(x: w * 0.22, y: h * 0.42)
+            to: CGPoint(x: w, y: h * 0.4),
+            control1: CGPoint(x: w * 0.85, y: 0),
+            control2: CGPoint(x: w, y: h * 0.15)
         )
-        path.addLine(to: CGPoint(x: w * 0.18, y: h * 0.88))
         path.addCurve(
-            to: CGPoint(x: w * 0.82, y: h * 0.88),
-            control1: CGPoint(x: w * 0.18, y: h * 0.98),
-            control2: CGPoint(x: w * 0.82, y: h * 0.98)
+            to: CGPoint(x: w * 0.55, y: h),
+            control1: CGPoint(x: w, y: h * 0.8),
+            control2: CGPoint(x: w * 0.75, y: h)
         )
-        path.addLine(to: CGPoint(x: w * 0.82, y: h * 0.45))
         path.addCurve(
-            to: CGPoint(x: w * 0.68, y: h * 0.35),
-            control1: CGPoint(x: w * 0.78, y: h * 0.42),
-            control2: CGPoint(x: w * 0.68, y: h * 0.4)
+            to: CGPoint(x: 0, y: h * 0.6),
+            control1: CGPoint(x: w * 0.25, y: h),
+            control2: CGPoint(x: 0, y: h * 0.85)
         )
-        path.addLine(to: CGPoint(x: w * 0.68, y: h * 0.22))
         path.addCurve(
-            to: CGPoint(x: w * 0.32, y: h * 0.22),
-            control1: CGPoint(x: w * 0.68, y: h * 0.15),
-            control2: CGPoint(x: w * 0.32, y: h * 0.15)
+            to: CGPoint(x: w * 0.5, y: 0),
+            control1: CGPoint(x: 0, y: h * 0.2),
+            control2: CGPoint(x: w * 0.15, y: 0)
         )
         path.closeSubpath()
         return path
     }
 }
 
-struct OnboardingWaveLiquid: Shape {
-    let fillLevel: CGFloat
-    let wavePhase: CGFloat
-    
+struct StarShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
-        let waterLevel = rect.height * (1 - fillLevel)
-        let width = rect.width
+        let c = CGPoint(x: rect.midX, y: rect.midY)
+        let outer = min(rect.width, rect.height) / 2
+        let inner = outer * 0.4
         
-        path.move(to: CGPoint(x: 0, y: rect.height))
-        path.addLine(to: CGPoint(x: 0, y: waterLevel))
-        
-        for x in stride(from: 0, to: width, by: 3) {
-            let relativeX = x / width
-            let sine = sin(relativeX * .pi * 3 + wavePhase)
-            let y = waterLevel + sine * 3
-            path.addLine(to: CGPoint(x: x, y: y))
+        for i in 0..<8 {
+            let angle = CGFloat(i) * .pi / 4 - .pi / 2
+            let r = i % 2 == 0 ? outer : inner
+            let pt = CGPoint(x: c.x + r * cos(angle), y: c.y + r * sin(angle))
+            if i == 0 {
+                path.move(to: pt)
+            } else {
+                path.addLine(to: pt)
+            }
         }
-        
-        path.addLine(to: CGPoint(x: width, y: rect.height))
         path.closeSubpath()
         return path
     }
 }
 
 // MARK: - Button Style
+struct GlassPressEffect: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .brightness(configuration.isPressed ? -0.06 : 0)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
 struct RefinedPressEffect: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -997,19 +923,7 @@ struct RefinedPressEffect: ButtonStyle {
     }
 }
 
-// MARK: - Colors
-private extension Color {
-    static var brandPrimary: Color { Color(hex: "2D6A5E") }
-    static var warmCoral: Color { Color(hex: "D4897A") }
-    static var warmLavender: Color { Color(hex: "9B8CB5") }
-    static var textPrimary: Color { Color(hex: "1A1A1A") }
-    static var textSecondary: Color { Color(hex: "5A5A5A") }
-    static var textMuted: Color { Color(hex: "7A7A7A") }
-    
 
-    
-
-}
 
 #Preview {
     OnboardingView()

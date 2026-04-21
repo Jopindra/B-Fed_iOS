@@ -17,27 +17,27 @@ struct LogFeedView: View {
             VStack(spacing: 0) {
                 // Number Scrubber Area
                 VStack(spacing: 20) {
-                    Spacer().frame(height: 60)
+                    Spacer().frame(height: AppSpacing.xxl)
                     
                     // Amount Display with Drag
                     AmountScrubber(amount: $amount, isDragging: $isDragging)
                     
                     // Per-feed guidance
                     Text(perFeedGuidance)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .font(AppFont.body)
+                        .foregroundStyle(Color.inkSecondary)
                         .opacity(isDragging ? 0 : 1)
                     
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
-                .background(Color(hex: "F2F2F7"))
+                .background(Color.backgroundBase)
                 
                 // Bottom Controls
                 VStack(spacing: 20) {
                     // Handle
                     RoundedRectangle(cornerRadius: 2.5)
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(Color.inkSecondary.opacity(0.3))
                         .frame(width: 36, height: 5)
                         .padding(.top, 12)
                     
@@ -49,8 +49,8 @@ struct LogFeedView: View {
                             Image(systemName: "stopwatch")
                             Text(showingTimer ? "Hide Timer" : "Track Duration")
                         }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(Color.emerald)
+                        .font(AppFont.body)
+                        .foregroundStyle(Color.almostAquaDark)
                     }
                     
                     if showingTimer {
@@ -60,20 +60,15 @@ struct LogFeedView: View {
                     // Save Button with gentle press
                     Button(action: saveFeed) {
                         Text("Save Feed")
-                            .font(.headline.weight(.semibold))
-                            .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 56)
-                            .background(Color.emerald)
-                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                            .shadow(color: Color.emerald.opacity(0.15), radius: 6, x: 0, y: 2)
                     }
+                    .primaryButton()
                     .buttonStyle(GentlePressEffect())
                     .padding(.bottom, 8)
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 20)
-                .background(Color.white)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.bottom, AppSpacing.lg)
+                .background(Color.backgroundCard)
             }
             .navigationTitle("Log Feed")
             
@@ -120,14 +115,14 @@ struct AmountScrubber: View {
             // Amount Display
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text("\(Int(amount))")
-                    .font(.system(size: 96, weight: .light, design: .rounded))
-                    .foregroundStyle(.primary)
+                    .font(AppFont.serif(96))
+                    .foregroundStyle(Color.inkPrimary)
                     .monospacedDigit()
                     .scaleEffect(scale)
                 
                 Text("ml")
-                    .font(.system(size: 28, weight: .light))
-                    .foregroundStyle(.secondary)
+                    .font(AppFont.serif(28))
+                    .foregroundStyle(Color.inkSecondary)
             }
             .gesture(
                 DragGesture()
@@ -137,8 +132,8 @@ struct AmountScrubber: View {
             
             // Helper
             Text("Swipe to adjust")
-                .font(.subheadline)
-                .foregroundStyle(.secondary.opacity(0.7))
+                .font(AppFont.body)
+                .foregroundStyle(Color.inkSecondary.opacity(0.7))
                 .opacity(isDragging ? 0 : 1)
         }
     }
@@ -235,24 +230,22 @@ struct TimerView: View {
     var body: some View {
         HStack {
             Text(displayTime)
-                .font(.system(size: 32, weight: .medium, design: .rounded))
+                .font(AppFont.sans(32, weight: .medium))
                 .monospacedDigit()
             
             Spacer()
             
             Button(action: toggleTimer) {
                 Image(systemName: isRunning ? "stop.fill" : "play.fill")
-                    .font(.title3)
-                    .foregroundStyle(isRunning ? .white : Color.emerald)
+                    .font(AppFont.bodyLarge)
+                    .foregroundStyle(isRunning ? .white : Color.almostAquaDark)
                     .frame(width: 50, height: 50)
-                    .background(isRunning ? Color.red.opacity(0.9) : Color.emerald.opacity(0.1))
+                    .background(isRunning ? Color.peachDustDark.opacity(0.9) : Color.almostAquaDark.opacity(0.1))
                     .clipShape(Circle())
             }
             .buttonStyle(GentlePressEffect())
         }
-        .padding()
-        .background(Color(hex: "EBEBF0"))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .cardStyle()
     }
     
     private func toggleTimer() {
@@ -268,12 +261,7 @@ struct TimerView: View {
     }
 }
 
-// MARK: - Color Extension
-private extension Color {
-    static var emerald: Color {
-        Color(red: 0.18, green: 0.44, blue: 0.37)
-    }
-}
+
 
 #Preview {
     LogFeedView()

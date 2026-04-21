@@ -14,8 +14,40 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="blob-tr">
+                                <rect key="frame" x="236" y="-40" width="220" height="220"/>
+                                <color key="backgroundColor" red="0.90980392156862744" green="0.7686274509803922" blue="0.69019607843137254" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="220" id="blob-tr-w"/>
+                                    <constraint firstAttribute="height" constant="220" id="blob-tr-h"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="blob-br">
+                                <rect key="frame" x="293" y="692" width="100" height="100"/>
+                                <color key="backgroundColor" red="0.7686274509803922" green="0.7372549019607844" blue="0.80392156862745101" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="blob-br-w"/>
+                                    <constraint firstAttribute="height" constant="100" id="blob-br-h"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="B-Fed" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="app-title">
+                                <rect key="frame" x="121" y="389.66666666666669" width="151" height="48"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="40"/>
+                                <color key="textColor" red="0.1803921568627451" green="0.16078431372549021" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
-                        <color key="backgroundColor" red="0.99215686274509807" green="0.9882352941176471" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.98039215686274506" green="0.98039215686274506" blue="0.97254901960784312" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="blob-tr" firstAttribute="trailing" secondItem="Ze5-6b-2t3" secondAttribute="trailing" constant="-20" id="c-blob-tr-1"/>
+                            <constraint firstItem="blob-tr" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" constant="-40" id="c-blob-tr-2"/>
+                            <constraint firstItem="blob-br" firstAttribute="trailing" secondItem="Ze5-6b-2t3" secondAttribute="trailing" constant="-40" id="c-blob-br-1"/>
+                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="bottom" secondItem="blob-br" secondAttribute="bottom" constant="60" id="c-blob-br-2"/>
+                            <constraint firstItem="app-title" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="c-title-1"/>
+                            <constraint firstItem="app-title" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="c-title-2"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>

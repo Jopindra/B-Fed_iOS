@@ -61,7 +61,7 @@ struct StatisticsView: View {
                 .padding()
             }
             .navigationTitle("Statistics")
-            .background(Color(hex: "F2F2F7"))
+            .background(Color.backgroundBase)
             .onAppear {
                 updateStats()
             }
@@ -80,16 +80,13 @@ struct StatisticsView: View {
                             selectedPeriod = period
                         }
                     } label: {
-                        Text(period.rawValue)
-                            .font(.subheadline)
-                            .fontWeight(selectedPeriod == period ? .semibold : .regular)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(selectedPeriod == period ? Color.blue : Color(hex: "787880").opacity(0.2))
-                            )
-                            .foregroundStyle(selectedPeriod == period ? .white : .primary)
+                        if selectedPeriod == period {
+                            Text(period.rawValue)
+                                .tagActive()
+                        } else {
+                            Text(period.rawValue)
+                                .tagInactive()
+                        }
                     }
                 }
             }
@@ -106,7 +103,7 @@ struct StatisticsView: View {
                 value: "\(stats.totalFeeds)",
                 subtitle: String(format: "%.1f per day", stats.feedsPerDay),
                 icon: "number.circle.fill",
-                color: .blue
+                color: Color.peachDustDark
             )
             
             StatCard(
@@ -114,7 +111,7 @@ struct StatisticsView: View {
                 value: String(format: "%.0f", stats.totalAmount),
                 subtitle: "milliliters",
                 icon: "drop.circle.fill",
-                color: .green
+                color: Color.almostAquaDark
             )
             
             StatCard(
@@ -122,7 +119,7 @@ struct StatisticsView: View {
                 value: String(format: "%.0f", stats.averageAmount),
                 subtitle: "per feed",
                 icon: "chart.line.uptrend.xyaxis.circle.fill",
-                color: .orange
+                color: Color.orchidTintDark
             )
             
             StatCard(
@@ -130,7 +127,7 @@ struct StatisticsView: View {
                 value: stats.averageDurationFormatted,
                 subtitle: "per feed",
                 icon: "clock.circle.fill",
-                color: .purple
+                color: Color.orchidTintDark
             )
         }
     }
@@ -138,14 +135,14 @@ struct StatisticsView: View {
     private var amountChart: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Daily Amount")
-                .font(.headline)
+                .font(AppFont.sectionTitle)
             
             Chart(dailyData, id: \.date) { data in
                 BarMark(
                     x: .value("Date", data.date, unit: .day),
                     y: .value("Amount", data.amount)
                 )
-                .foregroundStyle(Color.blue.gradient)
+                .foregroundStyle(Color.peachDustDark.gradient)
                 .cornerRadius(4)
             }
             .frame(height: 180)
@@ -156,35 +153,33 @@ struct StatisticsView: View {
                 }
             }
         }
-        .padding()
-        .background(Color(hex: "EBEBF0"))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .cardStyle()
     }
     
     private var feedsChart: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Daily Feed Count")
-                .font(.headline)
+                .font(AppFont.sectionTitle)
             
             Chart(dailyData, id: \.date) { data in
                 LineMark(
                     x: .value("Date", data.date, unit: .day),
                     y: .value("Feeds", data.feeds)
                 )
-                .foregroundStyle(Color.green)
+                .foregroundStyle(Color.almostAquaDark)
                 .lineStyle(StrokeStyle(lineWidth: 3))
                 
                 AreaMark(
                     x: .value("Date", data.date, unit: .day),
                     y: .value("Feeds", data.feeds)
                 )
-                .foregroundStyle(Color.green.opacity(0.1))
+                .foregroundStyle(Color.almostAquaDark.opacity(0.1))
                 
                 PointMark(
                     x: .value("Date", data.date, unit: .day),
                     y: .value("Feeds", data.feeds)
                 )
-                .foregroundStyle(Color.green)
+                .foregroundStyle(Color.almostAquaDark)
                 .symbolSize(50)
             }
             .frame(height: 180)
@@ -195,16 +190,14 @@ struct StatisticsView: View {
                 }
             }
         }
-        .padding()
-        .background(Color(hex: "EBEBF0"))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .cardStyle()
     }
     
     private func detailedStats(stats: FeedStatistics) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Detailed Statistics")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+                .font(AppFont.sectionTitle)
+                .foregroundStyle(Color.inkSecondary)
             
             VStack(spacing: 0) {
                 StatRow(title: "Largest Feed", value: String(format: "%.0f ml", stats.maxFeedAmount))
@@ -213,27 +206,25 @@ struct StatisticsView: View {
                 Divider()
                 StatRow(title: "Total Duration", value: formatTotalDuration(stats))
             }
-            .background(Color(hex: "EBEBF0"))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .cardStyle()
         }
     }
     
     private var emptyState: some View {
         VStack(spacing: 16) {
             Image(systemName: "chart.bar")
-                .font(.system(size: 60))
-                .foregroundStyle(.secondary)
+                .font(AppFont.sans(60, weight: .regular))
+                .foregroundStyle(Color.inkSecondary)
             
             Text("No Data Yet")
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(AppFont.screenTitle)
             
             Text("Start logging feeds to see your statistics here.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(AppFont.body)
+                .foregroundStyle(Color.inkSecondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(.top, 60)
+        .padding(.top, AppSpacing.xxl)
     }
     
     private func updateStats() {
@@ -292,7 +283,7 @@ struct StatCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: icon)
-                    .font(.title2)
+                    .font(AppFont.bodyLarge)
                     .foregroundStyle(color)
                 
                 Spacer()
@@ -300,22 +291,19 @@ struct StatCard: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(value)
-                    .font(.title)
-                    .fontWeight(.bold)
+                    .font(AppFont.serif(28))
                 
                 Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(AppFont.caption)
+                    .foregroundStyle(Color.inkSecondary)
             }
             
             Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(AppFont.caption)
+                .foregroundStyle(Color.inkSecondary)
         }
-        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(hex: "EBEBF0"))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .cardStyle()
     }
 }
 
@@ -327,13 +315,12 @@ struct StatRow: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(.subheadline)
+                .font(AppFont.body)
             
             Spacer()
             
             Text(value)
-                .font(.subheadline)
-                .fontWeight(.semibold)
+                .font(AppFont.sectionTitle)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
