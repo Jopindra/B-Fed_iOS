@@ -31,7 +31,7 @@ struct ContentView: View {
         .sheet(isPresented: $showingLogFeedSheet) {
             LogFeedView()
         }
-        .sheet(isPresented: $showingOnboarding) {
+        .fullScreenCover(isPresented: $showingOnboarding) {
             OnboardingView()
         }
         .onAppear {

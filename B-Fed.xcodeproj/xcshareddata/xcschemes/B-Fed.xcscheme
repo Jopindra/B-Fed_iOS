@@ -15,7 +15,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BFed"
+               BlueprintIdentifier = "6772EC0E5D0CA05E04DDDB49"
                BuildableName = "B-Fed.app"
                BlueprintName = "B-Fed"
                ReferencedContainer = "container:B-Fed.xcodeproj">
@@ -45,7 +45,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BFed"
+            BlueprintIdentifier = "6772EC0E5D0CA05E04DDDB49"
             BuildableName = "B-Fed.app"
             BlueprintName = "B-Fed"
             ReferencedContainer = "container:B-Fed.xcodeproj">
@@ -61,7 +61,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BFed"
+            BlueprintIdentifier = "6772EC0E5D0CA05E04DDDB49"
             BuildableName = "B-Fed.app"
             BlueprintName = "B-Fed"
             ReferencedContainer = "container:B-Fed.xcodeproj">
