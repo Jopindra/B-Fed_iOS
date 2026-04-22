@@ -55,22 +55,23 @@ struct WelcomeScreen: View {
 
                 // MARK: Floating topic tags
                 ZStack(alignment: .topLeading) {
-                    TagPill(text: "TRACKING")
-                        .rotationEffect(.degrees(-2))
-                        .offset(x: 18, y: 72)
-
                     TagPill(text: "INSIGHTS")
                         .rotationEffect(.degrees(3))
-                        .offset(x: 188, y: 44)
+                        .offset(x: 200, y: 60)
 
-                    TagPill(text: "PATTERNS")
-                        .rotationEffect(.degrees(-1))
-                        .offset(x: 28, y: 118)
+                    TagPill(text: "TRACKING")
+                        .rotationEffect(.degrees(-2))
+                        .offset(x: 24, y: 108)
 
                     TagPill(text: "GROWTH")
                         .rotationEffect(.degrees(2))
-                        .offset(x: 192, y: 100)
+                        .offset(x: 190, y: 130)
+
+                    TagPill(text: "PATTERNS")
+                        .rotationEffect(.degrees(-1))
+                        .offset(x: 36, y: 152)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .opacity(appearPhase >= 3 ? 1 : 0)
                 .offset(y: appearPhase >= 3 ? 0 : 12)
 
@@ -104,18 +105,15 @@ struct WelcomeScreen: View {
 
                     // Get started button
                     Button(action: onContinue) {
-                        ZStack {
+                        HStack(spacing: 0) {
                             Text("Get started")
                                 .font(AppFont.sans(14, weight: .semibold))
                                 .foregroundStyle(.white)
-
-                            HStack {
-                                Spacer()
-                                Text("→")
-                                    .font(AppFont.sans(18, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                    .padding(.trailing, 18)
-                            }
+                            Spacer()
+                            Text("→")
+                                .font(AppFont.sans(18, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .padding(.trailing, 18)
                         }
                         .frame(width: geometry.size.width - 36, height: 52)
                         .background(Color.inkPrimary)
