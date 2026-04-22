@@ -78,11 +78,11 @@ struct WelcomeScreen: View {
                 VStack(alignment: .leading, spacing: 0) {
                     // Headline
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("Feel confident")
+                        Text("Every feed,")
                             .frame(height: 38, alignment: .top)
-                        Text("feeding your")
+                        Text("a little")
                             .frame(height: 38, alignment: .top)
-                        Text("baby")
+                        Text("easier.")
                             .frame(height: 38, alignment: .top)
                     }
                     .font(AppFont.serif(32))
