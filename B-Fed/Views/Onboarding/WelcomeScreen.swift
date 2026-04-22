@@ -4,7 +4,6 @@ import SwiftData
 // MARK: - Screen 1: Welcome
 struct WelcomeScreen: View {
     let onContinue: () -> Void
-    @State private var appearPhase = 0
 
     var body: some View {
         GeometryReader { geometry in
@@ -20,7 +19,6 @@ struct WelcomeScreen: View {
                         .offset(x: 22, y: -18)
                 }
                 .position(x: geometry.size.width / 2, y: 80)
-                .opacity(appearPhase >= 1 ? 1 : 0)
 
                 // MARK: Peach accent (bottom-right)
                 ZStack {
@@ -32,7 +30,6 @@ struct WelcomeScreen: View {
                         .frame(width: 160, height: 160)
                 }
                 .position(x: geometry.size.width, y: geometry.size.height)
-                .opacity(appearPhase >= 1 ? 1 : 0)
 
                 // MARK: Page indicator dots
                 HStack(spacing: 8) {
@@ -50,8 +47,6 @@ struct WelcomeScreen: View {
                         .frame(width: 5, height: 5)
                 }
                 .position(x: 51.5, y: 28.5)
-                .opacity(appearPhase >= 2 ? 1 : 0)
-                .offset(y: appearPhase >= 2 ? 0 : 8)
 
                 // MARK: Floating topic tags
                 ZStack(alignment: .topLeading) {
@@ -72,8 +67,6 @@ struct WelcomeScreen: View {
                         .offset(x: 36, y: 152)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .opacity(appearPhase >= 3 ? 1 : 0)
-                .offset(y: appearPhase >= 3 ? 0 : 12)
 
                 // MARK: Bottom content
                 VStack(alignment: .leading, spacing: 0) {
@@ -89,8 +82,6 @@ struct WelcomeScreen: View {
                     .font(AppFont.serif(32))
                     .foregroundStyle(Color.inkPrimary)
                     .padding(.bottom, 16)
-                    .opacity(appearPhase >= 4 ? 1 : 0)
-                    .offset(y: appearPhase >= 4 ? 0 : 14)
 
                     // Subtext
                     VStack(alignment: .leading, spacing: 0) {
@@ -100,8 +91,6 @@ struct WelcomeScreen: View {
                     .font(AppFont.sans(12))
                     .foregroundStyle(Color.inkSecondary)
                     .padding(.bottom, 24)
-                    .opacity(appearPhase >= 4 ? 1 : 0)
-                    .offset(y: appearPhase >= 4 ? 0 : 10)
 
                     // Get started button
                     Button(action: onContinue) {
@@ -132,13 +121,6 @@ struct WelcomeScreen: View {
                 .padding(.top, geometry.size.height * 0.44)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
-        }
-        .onAppear {
-            withAnimation(.easeOut(duration: 0.6)) { appearPhase = 1 }
-            withAnimation(.easeOut(duration: 0.5).delay(0.15)) { appearPhase = 2 }
-            withAnimation(.easeOut(duration: 0.5).delay(0.3)) { appearPhase = 3 }
-            withAnimation(.easeOut(duration: 0.5).delay(0.45)) { appearPhase = 4 }
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.82).delay(0.6)) { appearPhase = 5 }
         }
     }
 }
