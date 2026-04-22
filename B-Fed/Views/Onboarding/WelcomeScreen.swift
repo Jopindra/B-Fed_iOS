@@ -13,25 +13,25 @@ struct WelcomeScreen: View {
                 ZStack {
                     Ellipse()
                         .fill(Color.peachDust)
-                        .frame(width: 460, height: 460)
+                        .frame(width: 300, height: 600)
                     Ellipse()
                         .fill(Color.peachLemonBridge)
-                        .frame(width: 384, height: 384)
+                        .frame(width: 252, height: 500)
                     Ellipse()
                         .fill(Color.lemonIcing)
-                        .frame(width: 312, height: 312)
+                        .frame(width: 204, height: 400)
                     Ellipse()
                         .fill(Color.almostAquaLight)
-                        .frame(width: 240, height: 240)
+                        .frame(width: 156, height: 300)
                     Ellipse()
                         .fill(Color.orchidTintLight)
-                        .frame(width: 168, height: 168)
+                        .frame(width: 108, height: 200)
                     Ellipse()
                         .fill(Color(hex: "F0EDF2"))
-                        .frame(width: 96, height: 96)
+                        .frame(width: 60, height: 100)
                 }
                 .position(x: geometry.size.width, y: 0)
-                .opacity(appearPhase >= 1 ? 1 : 0)
+                .opacity(appearPhase >= 1 ? 0.6 : 0)
 
                 // MARK: Wash overlay
                 Color.backgroundBase
@@ -42,14 +42,14 @@ struct WelcomeScreen: View {
                 // MARK: Crescent moon
                 ZStack {
                     Ellipse()
-                        .fill(Color.lemonIcing.opacity(0.92))
-                        .frame(width: 124, height: 124)
+                        .fill(Color.lemonIcing.opacity(0.90))
+                        .frame(width: 110, height: 110)
                     Ellipse()
                         .fill(Color.backgroundBase)
-                        .frame(width: 88, height: 88)
-                        .offset(x: 18, y: -18)
+                        .frame(width: 82, height: 82)
+                        .offset(x: 22, y: -22)
                 }
-                .position(x: geometry.size.width - 90, y: 95)
+                .position(x: geometry.size.width - 100, y: geometry.size.height * 0.33)
                 .opacity(appearPhase >= 2 ? 1 : 0)
                 .offset(y: appearPhase >= 2 ? 0 : 10)
 
@@ -76,19 +76,19 @@ struct WelcomeScreen: View {
                 ZStack {
                     TagPill(text: "TRACKING")
                         .rotationEffect(.degrees(-2))
-                        .position(x: 70, y: 90)
+                        .position(x: geometry.size.width * 0.12, y: geometry.size.height * 0.38)
 
                     TagPill(text: "INSIGHTS")
                         .rotationEffect(.degrees(3))
-                        .position(x: geometry.size.width - 70, y: 60)
+                        .position(x: geometry.size.width * 0.55, y: geometry.size.height * 0.28)
 
                     TagPill(text: "PATTERNS")
                         .rotationEffect(.degrees(-1))
-                        .position(x: 110, y: 150)
+                        .position(x: geometry.size.width * 0.20, y: geometry.size.height * 0.46)
 
                     TagPill(text: "GROWTH")
                         .rotationEffect(.degrees(2))
-                        .position(x: geometry.size.width - 100, y: 120)
+                        .position(x: geometry.size.width * 0.52, y: geometry.size.height * 0.42)
                 }
                 .opacity(appearPhase >= 3 ? 1 : 0)
                 .offset(y: appearPhase >= 3 ? 0 : 12)
@@ -151,8 +151,8 @@ struct WelcomeScreen: View {
                         .offset(y: appearPhase >= 5 ? 0 : 10)
                 }
                 .padding(.leading, 20)
-                .padding(.bottom, 50)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                .padding(.top, geometry.size.height * 0.60)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
         .onAppear {
