@@ -9,66 +9,47 @@ struct WelcomeScreen: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // MARK: Sunrise arc layers
+                // MARK: Lemon crescent (top-centre)
                 ZStack {
-                    Ellipse()
-                        .fill(Color.peachDust)
-                        .frame(width: 300, height: 600)
-                    Ellipse()
-                        .fill(Color.peachLemonBridge)
-                        .frame(width: 252, height: 500)
-                    Ellipse()
-                        .fill(Color.lemonIcing)
-                        .frame(width: 204, height: 400)
-                    Ellipse()
-                        .fill(Color.almostAquaLight)
-                        .frame(width: 156, height: 300)
-                    Ellipse()
-                        .fill(Color.orchidTintLight)
-                        .frame(width: 108, height: 200)
-                    Ellipse()
-                        .fill(Color(hex: "F0EDF2"))
-                        .frame(width: 60, height: 100)
-                }
-                .position(x: geometry.size.width, y: 0)
-                .opacity(appearPhase >= 1 ? 0.6 : 0)
-
-                // MARK: Wash overlay
-                Color.backgroundBase
-                    .opacity(0.38)
-                    .ignoresSafeArea()
-                    .opacity(appearPhase >= 1 ? 1 : 0)
-
-                // MARK: Crescent moon
-                ZStack {
-                    Ellipse()
-                        .fill(Color.lemonIcing.opacity(0.90))
-                        .frame(width: 110, height: 110)
-                    Ellipse()
+                    Circle()
+                        .fill(Color.lemonIcing.opacity(0.75))
+                        .frame(width: 220, height: 220)
+                    Circle()
                         .fill(Color.backgroundBase)
-                        .frame(width: 82, height: 82)
-                        .offset(x: 22, y: -22)
+                        .frame(width: 180, height: 180)
+                        .offset(x: 22, y: -18)
                 }
-                .position(x: geometry.size.width - 100, y: geometry.size.height * 0.33)
-                .opacity(appearPhase >= 2 ? 1 : 0)
-                .offset(y: appearPhase >= 2 ? 0 : 10)
+                .position(x: geometry.size.width / 2, y: -36)
+                .opacity(appearPhase >= 1 ? 1 : 0)
+
+                // MARK: Peach accent (bottom-right)
+                ZStack {
+                    Ellipse()
+                        .fill(Color.peachDust.opacity(0.35))
+                        .frame(width: 240, height: 240)
+                    Ellipse()
+                        .fill(Color.orchidTint.opacity(0.40))
+                        .frame(width: 160, height: 160)
+                }
+                .position(x: geometry.size.width, y: geometry.size.height)
+                .opacity(appearPhase >= 1 ? 1 : 0)
 
                 // MARK: Page indicator dots
-                HStack(spacing: 10) {
-                    RoundedRectangle(cornerRadius: 3.5, style: .continuous)
+                HStack(spacing: 8) {
+                    RoundedRectangle(cornerRadius: 2.5, style: .continuous)
                         .fill(Color.inkPrimary)
-                        .frame(width: 38, height: 7)
+                        .frame(width: 28, height: 5)
                     Circle()
                         .fill(Color.inkPrimary.opacity(0.22))
-                        .frame(width: 7, height: 7)
+                        .frame(width: 5, height: 5)
                     Circle()
                         .fill(Color.inkPrimary.opacity(0.22))
-                        .frame(width: 7, height: 7)
+                        .frame(width: 5, height: 5)
                     Circle()
                         .fill(Color.inkPrimary.opacity(0.22))
-                        .frame(width: 7, height: 7)
+                        .frame(width: 5, height: 5)
                 }
-                .position(x: 62.5, y: 29.5)
+                .position(x: 51.5, y: 28.5)
                 .opacity(appearPhase >= 2 ? 1 : 0)
                 .offset(y: appearPhase >= 2 ? 0 : 8)
 
@@ -76,19 +57,19 @@ struct WelcomeScreen: View {
                 ZStack {
                     TagPill(text: "TRACKING")
                         .rotationEffect(.degrees(-2))
-                        .position(x: geometry.size.width * 0.12, y: geometry.size.height * 0.38)
+                        .position(x: 6, y: 54)
 
                     TagPill(text: "INSIGHTS")
-                        .rotationEffect(.degrees(3))
-                        .position(x: geometry.size.width * 0.55, y: geometry.size.height * 0.28)
+                        .rotationEffect(.degrees(2))
+                        .position(x: 84, y: 34)
 
                     TagPill(text: "PATTERNS")
                         .rotationEffect(.degrees(-1))
-                        .position(x: geometry.size.width * 0.20, y: geometry.size.height * 0.46)
+                        .position(x: 12, y: 80)
 
                     TagPill(text: "GROWTH")
                         .rotationEffect(.degrees(2))
-                        .position(x: geometry.size.width * 0.52, y: geometry.size.height * 0.42)
+                        .position(x: 84, y: 70)
                 }
                 .opacity(appearPhase >= 3 ? 1 : 0)
                 .offset(y: appearPhase >= 3 ? 0 : 12)
@@ -98,12 +79,15 @@ struct WelcomeScreen: View {
                     // Headline
                     VStack(alignment: .leading, spacing: 0) {
                         Text("Feel confident")
+                            .frame(height: 38, alignment: .top)
                         Text("feeding your")
+                            .frame(height: 38, alignment: .top)
                         Text("baby")
+                            .frame(height: 38, alignment: .top)
                     }
                     .font(AppFont.serif(32))
                     .foregroundStyle(Color.inkPrimary)
-                    .padding(.bottom, 16)
+                    .padding(.bottom, 14)
                     .opacity(appearPhase >= 4 ? 1 : 0)
                     .offset(y: appearPhase >= 4 ? 0 : 14)
 
@@ -114,7 +98,7 @@ struct WelcomeScreen: View {
                     }
                     .font(AppFont.sans(12))
                     .foregroundStyle(Color.inkSecondary)
-                    .padding(.bottom, 28)
+                    .padding(.bottom, 24)
                     .opacity(appearPhase >= 4 ? 1 : 0)
                     .offset(y: appearPhase >= 4 ? 0 : 10)
 
@@ -127,10 +111,10 @@ struct WelcomeScreen: View {
 
                             HStack {
                                 Spacer()
-                                Image(systemName: "arrow.right")
-                                    .font(AppFont.sans(14, weight: .semibold))
+                                Text("→")
+                                    .font(AppFont.sans(18, weight: .semibold))
                                     .foregroundStyle(.white)
-                                    .padding(.trailing, 16)
+                                    .padding(.trailing, 18)
                             }
                         }
                         .frame(width: geometry.size.width - 36, height: 52)
@@ -151,7 +135,7 @@ struct WelcomeScreen: View {
                         .offset(y: appearPhase >= 5 ? 0 : 10)
                 }
                 .padding(.leading, 20)
-                .padding(.top, geometry.size.height * 0.60)
+                .padding(.top, geometry.size.height * 0.52)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
@@ -171,70 +155,14 @@ struct TagPill: View {
 
     var body: some View {
         Text(text)
-            .font(AppFont.sans(10, weight: .bold))
+            .font(AppFont.sans(8, weight: .bold))
             .textCase(.uppercase)
-            .tracking(0.7)
+            .tracking(0.5)
             .foregroundStyle(Color.inkPrimary)
-            .frame(height: 28)
-            .padding(.horizontal, 14)
+            .frame(height: 22)
+            .padding(.horizontal, 10)
             .background(Color.backgroundCard)
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-    }
-}
-
-// MARK: - Decorative Shapes (retained for module compatibility)
-
-struct OrganicBlobShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let w = rect.width
-        let h = rect.height
-
-        path.move(to: CGPoint(x: w * 0.5, y: 0))
-        path.addCurve(
-            to: CGPoint(x: w, y: h * 0.4),
-            control1: CGPoint(x: w * 0.85, y: 0),
-            control2: CGPoint(x: w, y: h * 0.15)
-        )
-        path.addCurve(
-            to: CGPoint(x: w * 0.55, y: h),
-            control1: CGPoint(x: w, y: h * 0.8),
-            control2: CGPoint(x: w * 0.75, y: h)
-        )
-        path.addCurve(
-            to: CGPoint(x: 0, y: h * 0.6),
-            control1: CGPoint(x: w * 0.25, y: h),
-            control2: CGPoint(x: 0, y: h * 0.85)
-        )
-        path.addCurve(
-            to: CGPoint(x: w * 0.5, y: 0),
-            control1: CGPoint(x: 0, y: h * 0.2),
-            control2: CGPoint(x: w * 0.15, y: 0)
-        )
-        path.closeSubpath()
-        return path
-    }
-}
-
-struct StarShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let c = CGPoint(x: rect.midX, y: rect.midY)
-        let outer = min(rect.width, rect.height) / 2
-        let inner = outer * 0.4
-
-        for i in 0..<8 {
-            let angle = CGFloat(i) * .pi / 4 - .pi / 2
-            let r = i % 2 == 0 ? outer : inner
-            let pt = CGPoint(x: c.x + r * cos(angle), y: c.y + r * sin(angle))
-            if i == 0 {
-                path.move(to: pt)
-            } else {
-                path.addLine(to: pt)
-            }
-        }
-        path.closeSubpath()
-        return path
+            .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
     }
 }
 
