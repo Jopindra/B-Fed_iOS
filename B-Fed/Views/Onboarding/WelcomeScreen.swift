@@ -13,13 +13,13 @@ struct WelcomeScreen: View {
                 ZStack {
                     Circle()
                         .fill(Color.lemonIcing.opacity(0.75))
-                        .frame(width: 220, height: 220)
+                        .frame(width: 200, height: 200)
                     Circle()
                         .fill(Color.backgroundBase)
                         .frame(width: 180, height: 180)
                         .offset(x: 22, y: -18)
                 }
-                .position(x: geometry.size.width / 2, y: -36)
+                .position(x: geometry.size.width / 2, y: 80)
                 .opacity(appearPhase >= 1 ? 1 : 0)
 
                 // MARK: Peach accent (bottom-right)
@@ -88,7 +88,7 @@ struct WelcomeScreen: View {
                     }
                     .font(AppFont.serif(32))
                     .foregroundStyle(Color.inkPrimary)
-                    .padding(.bottom, 14)
+                    .padding(.bottom, 16)
                     .opacity(appearPhase >= 4 ? 1 : 0)
                     .offset(y: appearPhase >= 4 ? 0 : 14)
 
@@ -133,7 +133,7 @@ struct WelcomeScreen: View {
                         .offset(y: appearPhase >= 5 ? 0 : 10)
                 }
                 .padding(.leading, 20)
-                .padding(.top, geometry.size.height * 0.52)
+                .padding(.top, geometry.size.height * 0.54)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
