@@ -12,13 +12,13 @@ struct WelcomeScreen: View {
                 ZStack {
                     Circle()
                         .fill(Color.lemonIcing.opacity(0.75))
-                        .frame(width: 200, height: 200)
+                        .frame(width: 180, height: 180)
                     Circle()
                         .fill(Color.backgroundBase)
                         .frame(width: 180, height: 180)
                         .offset(x: 22, y: -18)
                 }
-                .position(x: geometry.size.width / 2, y: 80)
+                .position(x: geometry.size.width / 2, y: 50)
 
                 // MARK: Peach accent (bottom-right)
                 ZStack {
@@ -46,25 +46,28 @@ struct WelcomeScreen: View {
                         .fill(Color.inkPrimary.opacity(0.22))
                         .frame(width: 5, height: 5)
                 }
-                .position(x: 51.5, y: 28.5)
+                .position(
+                    x: 57.5,
+                    y: geometry.safeAreaInsets.top + 22.5
+                )
 
                 // MARK: Floating topic tags
                 ZStack(alignment: .topLeading) {
                     TagPill(text: "INSIGHTS")
                         .rotationEffect(.degrees(3))
-                        .offset(x: 200, y: 60)
+                        .offset(x: 200, y: geometry.size.height * 0.16)
 
                     TagPill(text: "TRACKING")
                         .rotationEffect(.degrees(-2))
-                        .offset(x: 24, y: 108)
+                        .offset(x: 24, y: geometry.size.height * 0.24)
 
                     TagPill(text: "GROWTH")
                         .rotationEffect(.degrees(2))
-                        .offset(x: 190, y: 130)
+                        .offset(x: 190, y: geometry.size.height * 0.34)
 
                     TagPill(text: "PATTERNS")
                         .rotationEffect(.degrees(-1))
-                        .offset(x: 36, y: 152)
+                        .offset(x: 40, y: geometry.size.height * 0.42)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
@@ -98,11 +101,12 @@ struct WelcomeScreen: View {
                             Text("Get started")
                                 .font(AppFont.sans(14, weight: .semibold))
                                 .foregroundStyle(.white)
+                                .padding(.leading, 24)
                             Spacer()
                             Text("→")
                                 .font(AppFont.sans(18, weight: .semibold))
                                 .foregroundStyle(.white)
-                                .padding(.trailing, 18)
+                                .padding(.trailing, 24)
                         }
                         .frame(width: geometry.size.width - 36, height: 52)
                         .background(Color.inkPrimary)
@@ -118,7 +122,7 @@ struct WelcomeScreen: View {
                         .frame(width: geometry.size.width - 36, alignment: .center)
                 }
                 .padding(.leading, 20)
-                .padding(.top, geometry.size.height * 0.44)
+                .padding(.top, geometry.size.height * 0.52)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
