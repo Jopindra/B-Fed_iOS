@@ -119,21 +119,17 @@ struct WelcomeScreen: View {
                         .background(Color.inkPrimary)
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.borderless)
                     .padding(.bottom, 16)
-                    .opacity(appearPhase >= 5 ? 1 : 0)
-                    .offset(y: appearPhase >= 5 ? 0 : 14)
 
                     // Sign in link
                     Text("Already have an account? Sign in")
                         .font(AppFont.sans(11))
                         .foregroundStyle(Color.orchidTintDark)
                         .frame(width: geometry.size.width - 36, alignment: .center)
-                        .opacity(appearPhase >= 5 ? 1 : 0)
-                        .offset(y: appearPhase >= 5 ? 0 : 10)
                 }
                 .padding(.leading, 20)
-                .padding(.top, geometry.size.height * 0.54)
+                .padding(.top, geometry.size.height * 0.44)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
         }
