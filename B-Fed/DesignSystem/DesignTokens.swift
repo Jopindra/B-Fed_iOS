@@ -31,6 +31,14 @@ extension Color {
     static let peachDustLight  = Color(hex: "F5E6DE")
     static let peachDustDark   = Color(hex: "C49070")
 
+    // Bridge – Peach Dust → Lemon Icing arc transition
+    static let peachLemonBridge = Color(hex: "EDD5C0")
+
+    // Pantone 11-0515 Lemon Icing
+    static let lemonIcing       = Color(hex: "EEE8C8")
+    static let lemonIcingLight  = Color(hex: "F7F4E3")
+    static let lemonIcingDark   = Color(hex: "C8BE7A")
+
     // Secondary – Pantone 13-6006 Almost Aqua
     static let almostAqua      = Color(hex: "B8CCBA")
     static let almostAquaLight = Color(hex: "DDE9DE")
