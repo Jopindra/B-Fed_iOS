@@ -54,22 +54,22 @@ struct WelcomeScreen: View {
                 .offset(y: appearPhase >= 2 ? 0 : 8)
 
                 // MARK: Floating topic tags
-                ZStack {
+                ZStack(alignment: .topLeading) {
                     TagPill(text: "TRACKING")
                         .rotationEffect(.degrees(-2))
-                        .position(x: 48, y: 54)
+                        .offset(x: 18, y: 72)
 
                     TagPill(text: "INSIGHTS")
-                        .rotationEffect(.degrees(2))
-                        .position(x: 84, y: 34)
+                        .rotationEffect(.degrees(3))
+                        .offset(x: 188, y: 44)
 
                     TagPill(text: "PATTERNS")
                         .rotationEffect(.degrees(-1))
-                        .position(x: 54, y: 80)
+                        .offset(x: 28, y: 118)
 
                     TagPill(text: "GROWTH")
                         .rotationEffect(.degrees(2))
-                        .position(x: 84, y: 70)
+                        .offset(x: 192, y: 100)
                 }
                 .opacity(appearPhase >= 3 ? 1 : 0)
                 .offset(y: appearPhase >= 3 ? 0 : 12)
