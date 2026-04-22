@@ -4,7 +4,9 @@ import SwiftData
 // MARK: - Onboarding View
 struct OnboardingView: View {
     @Environment(FeedStore.self) private var feedStore
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    
+    var onComplete: (() -> Void)?
     
     // Form Data
     @State private var parentName: String = ""
@@ -67,6 +69,9 @@ struct OnboardingView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            feedStore.setModelContext(modelContext)
         }
     }
     
@@ -141,7 +146,7 @@ struct OnboardingView: View {
             feedingType: feedingType ?? .formula
         )
         feedStore.saveBabyProfile(profile)
-        dismiss()
+        onComplete?()
     }
 }
 
@@ -179,6 +184,6 @@ struct ProgressStepper: View {
 
 
 #Preview {
-    OnboardingView()
+    OnboardingView(onComplete: {})
         .environment(FeedStore())
 }

@@ -60,6 +60,7 @@ class FeedStore {
         modelContext?.insert(profile)
         save()
         babyProfile = profile
+        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
     }
     
     var hasCompletedOnboarding: Bool {

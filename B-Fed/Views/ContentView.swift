@@ -6,7 +6,6 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedTab = 0
     @State private var showingLogFeedSheet = false
-    @State private var showingOnboarding = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -32,15 +31,8 @@ struct ContentView: View {
         .sheet(isPresented: $showingLogFeedSheet) {
             LogFeedView()
         }
-        .fullScreenCover(isPresented: $showingOnboarding) {
-            OnboardingView()
-        }
         .onAppear {
             feedStore.setModelContext(modelContext)
-            
-            if !feedStore.hasCompletedOnboarding {
-                showingOnboarding = true
-            }
         }
     }
 }
