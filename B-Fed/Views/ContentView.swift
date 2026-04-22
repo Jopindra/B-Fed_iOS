@@ -38,11 +38,8 @@ struct ContentView: View {
         .onAppear {
             feedStore.setModelContext(modelContext)
             
-            // Check if onboarding is needed
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                if !feedStore.hasCompletedOnboarding {
-                    showingOnboarding = true
-                }
+            if !feedStore.hasCompletedOnboarding {
+                showingOnboarding = true
             }
         }
     }
