@@ -196,12 +196,10 @@ struct EditFeedView: View {
                     Toggle("Set End Time", isOn: $useDuration)
                     
                     if useDuration {
-                        if let _ = endTime {
-                            DatePicker("End Time", selection: Binding(
-                                get: { endTime ?? startTime },
-                                set: { endTime = $0 }
-                            ))
-                        }
+                        DatePicker("End Time", selection: Binding(
+                            get: { endTime ?? startTime },
+                            set: { endTime = $0 }
+                        ))
                         
                         HStack {
                             Text("Duration")

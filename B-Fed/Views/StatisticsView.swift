@@ -7,33 +7,6 @@ struct StatisticsView: View {
     @State private var stats: FeedStatistics?
     @State private var dailyData: [(date: Date, feeds: Int, amount: Double)] = []
     
-    enum TimePeriod: String, CaseIterable {
-        case today = "Today"
-        case last7Days = "Last 7 Days"
-        case last30Days = "Last 30 Days"
-        case allTime = "All Time"
-        
-        var dateInterval: DateInterval {
-            let calendar = Calendar.current
-            let now = Date()
-            
-            switch self {
-            case .today:
-                let start = calendar.startOfDay(for: now)
-                return DateInterval(start: start, end: now)
-            case .last7Days:
-                let start = calendar.date(byAdding: .day, value: -7, to: now)!
-                return DateInterval(start: start, end: now)
-            case .last30Days:
-                let start = calendar.date(byAdding: .day, value: -30, to: now)!
-                return DateInterval(start: start, end: now)
-            case .allTime:
-                let start = calendar.date(byAdding: .year, value: -10, to: now)!
-                return DateInterval(start: start, end: now)
-            }
-        }
-    }
-    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -252,7 +225,8 @@ struct StatisticsView: View {
             let totalAmount = dayFeeds.reduce(0) { $0 + $1.amount }
             data.append((currentDate, dayFeeds.count, totalAmount))
             
-            currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate)!
+            guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
+            currentDate = nextDate
         }
         
         return data

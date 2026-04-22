@@ -78,7 +78,7 @@ struct FirstTimeDashboardView: View {
                     .primaryButton()
                 }
                 .buttonStyle(GentlePressEffect())
-                .padding(.horizontal, 24)
+                .padding(.horizontal, AppSpacing.xl)
                 
                 Spacer(minLength: 100)
             }
@@ -673,12 +673,6 @@ struct FeedRow: View {
         .cardStyle()
     }
 }
-
-enum TimePeriod {
-    case today, last7Days
-}
-
-
 
 #Preview {
     DashboardView()

@@ -103,7 +103,7 @@ class FeedStore {
         
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: date)
-        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
         
         let descriptor = FetchDescriptor<Feed>(
             predicate: #Predicate {
@@ -139,7 +139,7 @@ class FeedStore {
         let feeds = fetchFeeds(for: date)
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: date)
-        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
         
         return FeedStatistics(
             feeds: feeds,
@@ -150,7 +150,7 @@ class FeedStore {
     func getStatistics(from startDate: Date, to endDate: Date) -> FeedStatistics {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: startDate)
-        let endOfDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: endDate))!
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: endDate)) ?? endDate
         
         let descriptor = FetchDescriptor<Feed>(
             predicate: #Predicate {

@@ -103,6 +103,7 @@ struct MonthView: View {
     }
     
     init() {
+        // TODO: Replace sample data with real feed data from FeedStore
         _monthData = State(initialValue: generateSampleMonthData())
     }
     
