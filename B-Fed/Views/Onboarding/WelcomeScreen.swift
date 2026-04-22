@@ -57,7 +57,7 @@ struct WelcomeScreen: View {
                 ZStack {
                     TagPill(text: "TRACKING")
                         .rotationEffect(.degrees(-2))
-                        .position(x: 6, y: 54)
+                        .position(x: 48, y: 54)
 
                     TagPill(text: "INSIGHTS")
                         .rotationEffect(.degrees(2))
@@ -65,7 +65,7 @@ struct WelcomeScreen: View {
 
                     TagPill(text: "PATTERNS")
                         .rotationEffect(.degrees(-1))
-                        .position(x: 12, y: 80)
+                        .position(x: 54, y: 80)
 
                     TagPill(text: "GROWTH")
                         .rotationEffect(.degrees(2))
