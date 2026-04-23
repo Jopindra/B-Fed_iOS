@@ -1,163 +1,207 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Tag Style
+extension Text {
+    func tagStyle() -> some View {
+        self
+            .font(AppFont.sans(10, weight: .bold))
+            .textCase(.uppercase)
+            .tracking(0.5)
+            .foregroundStyle(Color.inkPrimary)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
+    }
+}
+
 // MARK: - Screen 1: Welcome
 struct WelcomeScreen: View {
     let onContinue: () -> Void
 
     var body: some View {
         GeometryReader { geometry in
-            let safeTop = geometry.safeAreaInsets.top
-            let safeBottom = geometry.safeAreaInsets.bottom
-            let width = geometry.size.width
-            let height = geometry.size.height
-
-            ZStack(alignment: .bottom) {
-                // MARK: Background — fills entire screen edge-to-edge
+            ZStack {
+                // MARK: Background
                 Color.backgroundBase
+                    .ignoresSafeArea(.all)
 
-                // MARK: Crescent (top-centre, proportional)
+                // MARK: Background decorative shapes
                 ZStack {
-                    Circle()
-                        .fill(Color.lemonIcing.opacity(0.75))
-                        .frame(width: width * 0.55, height: width * 0.55)
-                    Circle()
-                        .fill(Color.backgroundBase)
-                        .frame(width: 180, height: 180)
-                        .offset(x: width * 0.12, y: -height * 0.06)
-                }
-                .position(x: width * 0.5, y: height * 0.18)
+                    // Lemon crescent top-centre
+                    ZStack {
+                        Circle()
+                            .fill(Color.lemonIcing.opacity(0.75))
+                            .frame(
+                                width: geometry.size.width * 0.55,
+                                height: geometry.size.width * 0.55
+                            )
+                        Circle()
+                            .fill(Color.backgroundBase)
+                            .frame(
+                                width: geometry.size.width * 0.43,
+                                height: geometry.size.width * 0.43
+                            )
+                            .offset(
+                                x: geometry.size.width * 0.11,
+                                y: -geometry.size.width * 0.07
+                            )
+                    }
+                    .position(
+                        x: geometry.size.width * 0.50,
+                        y: -geometry.size.width * 0.08
+                    )
 
-                // MARK: Peach accent (bottom-right)
-                ZStack {
+                    // Peach blob outer — bottom-right
                     Ellipse()
-                        .fill(Color.peachDust.opacity(0.35))
-                        .frame(width: 240, height: 240)
+                        .fill(Color.peachDust.opacity(0.45))
+                        .frame(
+                            width: geometry.size.width * 0.56,
+                            height: geometry.size.width * 0.56
+                        )
+                        .position(
+                            x: geometry.size.width,
+                            y: geometry.size.height
+                        )
+
+                    // Peach blob inner — bottom-right
                     Ellipse()
-                        .fill(Color.orchidTint.opacity(0.40))
-                        .frame(width: 160, height: 160)
+                        .fill(Color.lemonIcing.opacity(0.50))
+                        .frame(
+                            width: geometry.size.width * 0.36,
+                            height: geometry.size.width * 0.36
+                        )
+                        .position(
+                            x: geometry.size.width,
+                            y: geometry.size.height
+                        )
+
+                    // Aqua blob — bottom-left
+                    Ellipse()
+                        .fill(Color.almostAquaLight.opacity(0.35))
+                        .frame(
+                            width: geometry.size.width * 0.28,
+                            height: geometry.size.width * 0.28
+                        )
+                        .position(
+                            x: 0,
+                            y: geometry.size.height
+                        )
                 }
-                .position(x: width, y: height)
+                .ignoresSafeArea(.all)
 
-                // MARK: Floating topic tags (upper zone, above headline)
-                ZStack(alignment: .topLeading) {
-                    TagPill(text: "INSIGHTS")
-                        .rotationEffect(.degrees(3))
-                        .offset(x: 200, y: height * 0.16)
-
-                    TagPill(text: "TRACKING")
-                        .rotationEffect(.degrees(-2))
-                        .offset(x: 24, y: height * 0.24)
-
-                    TagPill(text: "GROWTH")
-                        .rotationEffect(.degrees(2))
-                        .offset(x: 190, y: height * 0.34)
-
-                    TagPill(text: "PATTERNS")
-                        .rotationEffect(.degrees(-1))
-                        .offset(x: 40, y: height * 0.42)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-
-                // MARK: Main content (dots, headline, subtext)
+                // MARK: Foreground content
                 VStack(alignment: .leading, spacing: 0) {
-                    // Page indicator dots — 20 pt below status bar
+                    // Page indicator dots
                     HStack(spacing: 8) {
-                        RoundedRectangle(cornerRadius: 2.5, style: .continuous)
+                        Capsule()
                             .fill(Color.inkPrimary)
                             .frame(width: 28, height: 5)
-                        Circle()
-                            .fill(Color.inkPrimary.opacity(0.22))
-                            .frame(width: 5, height: 5)
-                        Circle()
-                            .fill(Color.inkPrimary.opacity(0.22))
-                            .frame(width: 5, height: 5)
-                        Circle()
-                            .fill(Color.inkPrimary.opacity(0.22))
-                            .frame(width: 5, height: 5)
+                        ForEach(0..<3) { _ in
+                            Circle()
+                                .fill(Color.inkPrimary.opacity(0.22))
+                                .frame(width: 5, height: 5)
+                        }
                     }
-                    .padding(.bottom, 16)
+                    .padding(.top, geometry.safeAreaInsets.top + 20)
+                    .padding(.leading, 20)
 
-                    // Spacer pushes headline down to ~52 % of screen height
+                    // Floating topic tags
+                    ZStack(alignment: .topLeading) {
+                        Color.clear
+                            .frame(height: geometry.size.height * 0.38)
+
+                        Text("INSIGHTS")
+                            .tagStyle()
+                            .offset(
+                                x: geometry.size.width * 0.55,
+                                y: geometry.size.height * 0.04
+                            )
+                            .rotationEffect(.degrees(3))
+
+                        Text("TRACKING")
+                            .tagStyle()
+                            .offset(
+                                x: geometry.size.width * 0.08,
+                                y: geometry.size.height * 0.10
+                            )
+                            .rotationEffect(.degrees(-2))
+
+                        Text("GROWTH")
+                            .tagStyle()
+                            .offset(
+                                x: geometry.size.width * 0.52,
+                                y: geometry.size.height * 0.17
+                            )
+                            .rotationEffect(.degrees(2))
+
+                        Text("PATTERNS")
+                            .tagStyle()
+                            .offset(
+                                x: geometry.size.width * 0.10,
+                                y: geometry.size.height * 0.22
+                            )
+                            .rotationEffect(.degrees(-1))
+                    }
+
                     Spacer()
-                        .frame(height: max(0, height * 0.52 - (safeTop + 20 + 5 + 16)))
 
                     // Headline
-                    VStack(alignment: .leading, spacing: 0) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text("Every feed,")
-                            .frame(height: 38, alignment: .top)
                         Text("a little")
-                            .frame(height: 38, alignment: .top)
                         Text("easier.")
-                            .frame(height: 38, alignment: .top)
                     }
-                    .font(AppFont.serif(32))
-                    .foregroundStyle(Color.inkPrimary)
-                    .padding(.bottom, 16)
+                    .font(AppFont.serif(38))
+                    .foregroundColor(Color.inkPrimary)
+                    .padding(.horizontal, 20)
 
                     // Subtext
-                    VStack(alignment: .leading, spacing: 0) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("Track feeds, spot patterns,")
                         Text("feel supported every step.")
                     }
-                    .font(AppFont.sans(12))
-                    .foregroundStyle(Color.inkSecondary)
+                    .font(AppFont.sans(15, weight: .regular))
+                    .foregroundColor(Color.inkSecondary)
+                    .padding(.top, 16)
+                    .padding(.horizontal, 20)
 
-                    // Fill remaining space so content stays anchored to top
                     Spacer()
-                }
-                .padding(.top, safeTop + 20)
-                .padding(.horizontal, 20)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
-                // MARK: Bottom CTA — pinned above bottom safe area
-                VStack(spacing: 16) {
-                    Button(action: onContinue) {
-                        HStack(spacing: 0) {
-                            Text("Get started")
-                                .font(AppFont.sans(14, weight: .semibold))
-                                .foregroundStyle(.white)
-                                .padding(.leading, 24)
-                            Spacer()
-                            Text("→")
-                                .font(AppFont.sans(18, weight: .semibold))
-                                .foregroundStyle(.white)
-                                .padding(.trailing, 24)
+                    // Bottom CTA
+                    VStack(spacing: 12) {
+                        Button(action: onContinue) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 14)
+                                    .fill(Color.inkPrimary)
+                                    .frame(height: 52)
+                                HStack {
+                                    Text("Get started")
+                                        .font(AppFont.sans(14, weight: .semibold))
+                                        .foregroundColor(.white)
+                                        .padding(.leading, 24)
+                                    Spacer()
+                                    Text("→")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 18))
+                                        .padding(.trailing, 24)
+                                }
+                            }
                         }
+                        .buttonStyle(.plain)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(Color.inkPrimary)
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    }
-                    .buttonStyle(.borderless)
 
-                    Text("Already have an account? Sign in")
-                        .font(AppFont.sans(11))
-                        .foregroundStyle(Color.orchidTintDark)
+                        Text("Already have an account? Sign in")
+                            .font(AppFont.sans(11))
+                            .foregroundColor(Color.orchidTintDark)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                    .padding(.horizontal, 18)
+                    .padding(.bottom, geometry.safeAreaInsets.bottom + 24)
                 }
-                .padding(.horizontal, 18)
-                .padding(.bottom, safeBottom + 20)
-                .background(Color.backgroundBase)
             }
         }
-        .ignoresSafeArea(.all)
-    }
-}
-
-// MARK: - Tag Pill
-struct TagPill: View {
-    let text: String
-
-    var body: some View {
-        Text(text)
-            .font(AppFont.sans(8, weight: .bold))
-            .textCase(.uppercase)
-            .tracking(0.5)
-            .foregroundStyle(Color.inkPrimary)
-            .frame(height: 22)
-            .padding(.horizontal, 10)
-            .background(Color.backgroundCard)
-            .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
     }
 }
 
