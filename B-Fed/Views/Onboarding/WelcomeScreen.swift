@@ -7,18 +7,26 @@ struct WelcomeScreen: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
-                // MARK: Lemon crescent (top-centre)
+            let safeTop = geometry.safeAreaInsets.top
+            let safeBottom = geometry.safeAreaInsets.bottom
+            let width = geometry.size.width
+            let height = geometry.size.height
+
+            ZStack(alignment: .bottom) {
+                // MARK: Background — fills entire screen edge-to-edge
+                Color.backgroundBase
+
+                // MARK: Crescent (top-centre, proportional)
                 ZStack {
                     Circle()
                         .fill(Color.lemonIcing.opacity(0.75))
-                        .frame(width: 180, height: 180)
+                        .frame(width: width * 0.55, height: width * 0.55)
                     Circle()
                         .fill(Color.backgroundBase)
                         .frame(width: 180, height: 180)
-                        .offset(x: 22, y: -18)
+                        .offset(x: width * 0.12, y: -height * 0.06)
                 }
-                .position(x: geometry.size.width / 2, y: 50)
+                .position(x: width * 0.5, y: height * 0.18)
 
                 // MARK: Peach accent (bottom-right)
                 ZStack {
@@ -29,50 +37,51 @@ struct WelcomeScreen: View {
                         .fill(Color.orchidTint.opacity(0.40))
                         .frame(width: 160, height: 160)
                 }
-                .position(x: geometry.size.width, y: geometry.size.height)
+                .position(x: width, y: height)
 
-                // MARK: Page indicator dots
-                HStack(spacing: 8) {
-                    RoundedRectangle(cornerRadius: 2.5, style: .continuous)
-                        .fill(Color.inkPrimary)
-                        .frame(width: 28, height: 5)
-                    Circle()
-                        .fill(Color.inkPrimary.opacity(0.22))
-                        .frame(width: 5, height: 5)
-                    Circle()
-                        .fill(Color.inkPrimary.opacity(0.22))
-                        .frame(width: 5, height: 5)
-                    Circle()
-                        .fill(Color.inkPrimary.opacity(0.22))
-                        .frame(width: 5, height: 5)
-                }
-                .position(
-                    x: 57.5,
-                    y: geometry.safeAreaInsets.top + 22.5
-                )
-
-                // MARK: Floating topic tags
+                // MARK: Floating topic tags (upper zone, above headline)
                 ZStack(alignment: .topLeading) {
                     TagPill(text: "INSIGHTS")
                         .rotationEffect(.degrees(3))
-                        .offset(x: 200, y: geometry.size.height * 0.16)
+                        .offset(x: 200, y: height * 0.16)
 
                     TagPill(text: "TRACKING")
                         .rotationEffect(.degrees(-2))
-                        .offset(x: 24, y: geometry.size.height * 0.24)
+                        .offset(x: 24, y: height * 0.24)
 
                     TagPill(text: "GROWTH")
                         .rotationEffect(.degrees(2))
-                        .offset(x: 190, y: geometry.size.height * 0.34)
+                        .offset(x: 190, y: height * 0.34)
 
                     TagPill(text: "PATTERNS")
                         .rotationEffect(.degrees(-1))
-                        .offset(x: 40, y: geometry.size.height * 0.42)
+                        .offset(x: 40, y: height * 0.42)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
-                // MARK: Bottom content
+                // MARK: Main content (dots, headline, subtext)
                 VStack(alignment: .leading, spacing: 0) {
+                    // Page indicator dots — 20 pt below status bar
+                    HStack(spacing: 8) {
+                        RoundedRectangle(cornerRadius: 2.5, style: .continuous)
+                            .fill(Color.inkPrimary)
+                            .frame(width: 28, height: 5)
+                        Circle()
+                            .fill(Color.inkPrimary.opacity(0.22))
+                            .frame(width: 5, height: 5)
+                        Circle()
+                            .fill(Color.inkPrimary.opacity(0.22))
+                            .frame(width: 5, height: 5)
+                        Circle()
+                            .fill(Color.inkPrimary.opacity(0.22))
+                            .frame(width: 5, height: 5)
+                    }
+                    .padding(.bottom, 16)
+
+                    // Spacer pushes headline down to ~52 % of screen height
+                    Spacer()
+                        .frame(height: max(0, height * 0.52 - (safeTop + 20 + 5 + 16)))
+
                     // Headline
                     VStack(alignment: .leading, spacing: 0) {
                         Text("Every feed,")
@@ -93,9 +102,16 @@ struct WelcomeScreen: View {
                     }
                     .font(AppFont.sans(12))
                     .foregroundStyle(Color.inkSecondary)
-                    .padding(.bottom, 24)
 
-                    // Get started button
+                    // Fill remaining space so content stays anchored to top
+                    Spacer()
+                }
+                .padding(.top, safeTop + 20)
+                .padding(.horizontal, 20)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+
+                // MARK: Bottom CTA — pinned above bottom safe area
+                VStack(spacing: 16) {
                     Button(action: onContinue) {
                         HStack(spacing: 0) {
                             Text("Get started")
@@ -108,24 +124,23 @@ struct WelcomeScreen: View {
                                 .foregroundStyle(.white)
                                 .padding(.trailing, 24)
                         }
-                        .frame(width: geometry.size.width - 36, height: 52)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
                         .background(Color.inkPrimary)
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     }
                     .buttonStyle(.borderless)
-                    .padding(.bottom, 16)
 
-                    // Sign in link
                     Text("Already have an account? Sign in")
                         .font(AppFont.sans(11))
                         .foregroundStyle(Color.orchidTintDark)
-                        .frame(width: geometry.size.width - 36, alignment: .center)
                 }
-                .padding(.leading, 20)
-                .padding(.top, geometry.size.height * 0.52)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .padding(.horizontal, 18)
+                .padding(.bottom, safeBottom + 20)
+                .background(Color.backgroundBase)
             }
         }
+        .ignoresSafeArea(.all)
     }
 }
 

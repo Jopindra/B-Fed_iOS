@@ -29,47 +29,53 @@ struct OnboardingView: View {
             ZStack {
                 WarmBackground()
                 
-                VStack(spacing: 0) {
-                    ProgressStepper(currentStep: currentStep, totalSteps: 4)
-                    
-                    ZStack {
-                        Group {
-                            switch currentStep {
-                            case 0:
-                                WelcomeScreen { advanceToStep(1, width: geometry.size.width) }
-                            case 1:
-                                ParentBabyFormScreen(
-                                    parentName: $parentName,
-                                    parentEmail: $parentEmail,
-                                    parentDOB: $parentDOB,
-                                    country: $country,
-                                    babyName: $babyName,
-                                    babyDOB: $babyDOB,
-                                    babyWeight: $babyWeight,
-                                    showingValidationErrors: $showingValidationErrors,
-                                    onContinue: { validateAndProceed(width: geometry.size.width) },
-                                    onBack: { goBackToStep(0, width: geometry.size.width) }
-                                )
-                            case 2:
-                                FeedingTypeScreen(
-                                    feedingType: $feedingType,
-                                    onContinue: { advanceToStep(3, width: geometry.size.width) },
-                                    onBack: { goBackToStep(1, width: geometry.size.width) }
-                                )
-                            case 3:
-                                CompletionScreen(
-                                    onStart: { completeOnboarding() },
-                                    onBack: { goBackToStep(2, width: geometry.size.width) }
-                                )
-                            default:
-                                EmptyView()
-                            }
+                ZStack {
+                    Group {
+                        switch currentStep {
+                        case 0:
+                            WelcomeScreen { advanceToStep(1, width: geometry.size.width) }
+                        case 1:
+                            ParentBabyFormScreen(
+                                parentName: $parentName,
+                                parentEmail: $parentEmail,
+                                parentDOB: $parentDOB,
+                                country: $country,
+                                babyName: $babyName,
+                                babyDOB: $babyDOB,
+                                babyWeight: $babyWeight,
+                                showingValidationErrors: $showingValidationErrors,
+                                onContinue: { validateAndProceed(width: geometry.size.width) },
+                                onBack: { goBackToStep(0, width: geometry.size.width) }
+                            )
+                        case 2:
+                            FeedingTypeScreen(
+                                feedingType: $feedingType,
+                                onContinue: { advanceToStep(3, width: geometry.size.width) },
+                                onBack: { goBackToStep(1, width: geometry.size.width) }
+                            )
+                        case 3:
+                            CompletionScreen(
+                                onStart: { completeOnboarding() },
+                                onBack: { goBackToStep(2, width: geometry.size.width) }
+                            )
+                        default:
+                            EmptyView()
                         }
-                        .offset(x: slideOffset)
+                    }
+                    .offset(x: slideOffset)
+                }
+                
+                // Progress stepper overlay (hidden on welcome screen)
+                if currentStep > 0 {
+                    VStack {
+                        ProgressStepper(currentStep: currentStep, totalSteps: 4)
+                            .padding(.top, geometry.safeAreaInsets.top + 20)
+                        Spacer()
                     }
                 }
             }
         }
+        .ignoresSafeArea(.all)
         .onAppear {
             feedStore.setModelContext(modelContext)
         }
@@ -178,7 +184,6 @@ struct ProgressStepper: View {
                 }
             }
         }
-        .padding(.top, 48)
     }
 }
 
