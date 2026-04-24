@@ -54,10 +54,10 @@ struct WelcomeScreen: View {
 
                     // Peach blob outer — bottom-right
                     Ellipse()
-                        .fill(Color.peachDust.opacity(0.45))
+                        .fill(Color.peachDust.opacity(0.80))
                         .frame(
-                            width: geometry.size.width * 0.56,
-                            height: geometry.size.width * 0.56
+                            width: geometry.size.width * 0.38,
+                            height: geometry.size.width * 0.38
                         )
                         .position(
                             x: geometry.size.width,
@@ -66,10 +66,10 @@ struct WelcomeScreen: View {
 
                     // Peach blob inner — bottom-right
                     Ellipse()
-                        .fill(Color.lemonIcing.opacity(0.50))
+                        .fill(Color.lemonIcing.opacity(0.85))
                         .frame(
-                            width: geometry.size.width * 0.36,
-                            height: geometry.size.width * 0.36
+                            width: geometry.size.width * 0.26,
+                            height: geometry.size.width * 0.26
                         )
                         .position(
                             x: geometry.size.width,
@@ -78,14 +78,26 @@ struct WelcomeScreen: View {
 
                     // Aqua blob — bottom-left
                     Ellipse()
-                        .fill(Color.almostAquaLight.opacity(0.35))
+                        .fill(Color.almostAquaLight.opacity(0.75))
                         .frame(
-                            width: geometry.size.width * 0.28,
-                            height: geometry.size.width * 0.28
+                            width: geometry.size.width * 0.24,
+                            height: geometry.size.width * 0.24
                         )
                         .position(
                             x: 0,
                             y: geometry.size.height
+                        )
+
+                    // Orchid accent blob
+                    Ellipse()
+                        .fill(Color.orchidTint.opacity(0.50))
+                        .frame(
+                            width: geometry.size.width * 0.16,
+                            height: geometry.size.width * 0.16
+                        )
+                        .position(
+                            x: geometry.size.width * 0.15,
+                            y: geometry.size.height * 0.75
                         )
                 }
                 .ignoresSafeArea(.all)
@@ -103,7 +115,7 @@ struct WelcomeScreen: View {
                                 .frame(width: 6, height: 6)
                         }
                     }
-                    .padding(.top, geometry.safeAreaInsets.top + 20)
+                    .padding(.top, geometry.safeAreaInsets.top + 16)
                     .padding(.leading, 20)
 
                     // Floating topic tags
@@ -144,7 +156,8 @@ struct WelcomeScreen: View {
                             .rotationEffect(.degrees(-1))
                     }
 
-                    Spacer()
+                    Color.clear
+                        .frame(height: geometry.size.height * 0.04)
 
                     // Headline
                     VStack(alignment: .leading, spacing: 4) {
@@ -170,18 +183,19 @@ struct WelcomeScreen: View {
                     // Bottom CTA
                     VStack(spacing: 14) {
                         ZStack {
-                            RoundedRectangle(cornerRadius: 14)
+                            RoundedRectangle(cornerRadius: 16)
                                 .fill(Color.inkPrimary)
-                                .frame(height: 52)
+                                .frame(height: 58)
                             HStack {
                                 Text("Get started")
-                                    .font(AppFont.sans(14, weight: .semibold))
+                                    .font(AppFont.sans(17, weight: .semibold))
+                                    .tracking(0.3)
                                     .foregroundColor(.white)
                                     .padding(.leading, 24)
                                 Spacer()
                                 Text("→")
                                     .foregroundColor(.white)
-                                    .font(.system(size: 18))
+                                    .font(.system(size: 20))
                                     .padding(.trailing, 24)
                             }
                         }
