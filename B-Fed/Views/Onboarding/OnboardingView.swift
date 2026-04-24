@@ -63,7 +63,9 @@ struct OnboardingView: View {
                         }
                     }
                     .offset(x: slideOffset)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
+                .ignoresSafeArea(.all)
                 
                 // Progress stepper overlay (hidden on welcome screen)
                 if currentStep > 0 {

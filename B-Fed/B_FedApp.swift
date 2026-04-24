@@ -37,18 +37,16 @@ struct B_FedApp: App {
     
     var body: some Scene {
         WindowGroup {
-            Group {
-                if showOnboarding {
-                    OnboardingView(onComplete: {
-                        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-                        showOnboarding = false
-                    })
+            if showOnboarding {
+                OnboardingView(onComplete: {
+                    UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                    showOnboarding = false
+                })
+                .environment(feedStore)
+                .ignoresSafeArea(.all)
+            } else {
+                ContentView()
                     .environment(feedStore)
-                    .ignoresSafeArea(.all)
-                } else {
-                    ContentView()
-                        .environment(feedStore)
-                }
             }
         }
         .modelContainer(for: [Feed.self, BabyProfile.self])

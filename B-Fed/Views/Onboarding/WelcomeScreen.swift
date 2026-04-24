@@ -23,8 +23,7 @@ struct WelcomeScreen: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // MARK: Background
-                Color.backgroundBase
+                Color(hex: "FAFAF8")
                     .ignoresSafeArea(.all)
 
                 // MARK: Background decorative shapes
@@ -50,7 +49,7 @@ struct WelcomeScreen: View {
                     }
                     .position(
                         x: geometry.size.width * 0.50,
-                        y: -geometry.size.width * 0.08
+                        y: geometry.size.width * 0.08
                     )
 
                     // Peach blob outer — bottom-right
@@ -95,13 +94,13 @@ struct WelcomeScreen: View {
                 VStack(alignment: .leading, spacing: 0) {
                     // Page indicator dots
                     HStack(spacing: 8) {
-                        Capsule()
+                        RoundedRectangle(cornerRadius: 3)
                             .fill(Color.inkPrimary)
-                            .frame(width: 28, height: 5)
+                            .frame(width: 24, height: 6)
                         ForEach(0..<3) { _ in
                             Circle()
-                                .fill(Color.inkPrimary.opacity(0.22))
-                                .frame(width: 5, height: 5)
+                                .fill(Color.inkPrimary.opacity(0.35))
+                                .frame(width: 6, height: 6)
                         }
                     }
                     .padding(.top, geometry.safeAreaInsets.top + 20)
@@ -157,51 +156,52 @@ struct WelcomeScreen: View {
                     .foregroundColor(Color.inkPrimary)
                     .padding(.horizontal, 20)
 
-                    // Subtext
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Track feeds, spot patterns,")
                         Text("feel supported every step.")
                     }
-                    .font(AppFont.sans(15, weight: .regular))
-                    .foregroundColor(Color.inkSecondary)
+                    .font(.custom("DMSans-Regular", size: 15))
+                    .foregroundColor(Color(hex: "5A5555"))
                     .padding(.top, 16)
                     .padding(.horizontal, 20)
 
                     Spacer()
 
                     // Bottom CTA
-                    VStack(spacing: 12) {
-                        Button(action: onContinue) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 14)
-                                    .fill(Color.inkPrimary)
-                                    .frame(height: 52)
-                                HStack {
-                                    Text("Get started")
-                                        .font(AppFont.sans(14, weight: .semibold))
-                                        .foregroundColor(.white)
-                                        .padding(.leading, 24)
-                                    Spacer()
-                                    Text("→")
-                                        .foregroundColor(.white)
-                                        .font(.system(size: 18))
-                                        .padding(.trailing, 24)
-                                }
+                    VStack(spacing: 14) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 14)
+                                .fill(Color.inkPrimary)
+                                .frame(height: 52)
+                            HStack {
+                                Text("Get started")
+                                    .font(AppFont.sans(14, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .padding(.leading, 24)
+                                Spacer()
+                                Text("→")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 18))
+                                    .padding(.trailing, 24)
                             }
                         }
-                        .buttonStyle(.plain)
                         .frame(maxWidth: .infinity)
+                        .onTapGesture { onContinue() }
 
                         Text("Already have an account? Sign in")
-                            .font(AppFont.sans(11))
-                            .foregroundColor(Color.orchidTintDark)
+                            .font(.custom("DMSans-Regular", size: 11))
+                            .foregroundColor(Color(hex: "8A7E96"))
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .padding(.horizontal, 18)
-                    .padding(.bottom, geometry.safeAreaInsets.bottom + 24)
+                    .padding(.bottom, max(geometry.safeAreaInsets.bottom, 34) + 16)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
+            .ignoresSafeArea(.all)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .ignoresSafeArea(.all)
     }
 }
 
