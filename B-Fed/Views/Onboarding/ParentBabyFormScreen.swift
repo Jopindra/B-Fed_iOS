@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - Screen 2: Parent & Baby Form
+// MARK: - Screen 2: About You Form
 struct ParentBabyFormScreen: View {
     @Binding var parentName: String
     @Binding var parentEmail: String
@@ -15,239 +15,215 @@ struct ParentBabyFormScreen: View {
     let onBack: () -> Void
     
     @FocusState private var focusedField: Field?
-    @State private var appear = false
     
     enum Field: Hashable {
-        case parentName, parentEmail, country, babyName, babyWeight
+        case parentName, parentEmail
     }
     
-    var isValid: Bool {
-        !parentName.isEmpty &&
-        !parentEmail.isEmpty &&
-        parentEmail.contains("@") &&
-        !country.isEmpty &&
-        !babyName.isEmpty &&
-        !babyWeight.isEmpty
-    }
+    let countries = [
+        "Australia", "Canada", "France", "Germany", "India",
+        "Ireland", "Italy", "Japan", "Netherlands", "New Zealand",
+        "Singapore", "Spain", "United Kingdom", "United States"
+    ]
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Navigation header with back button
-            HStack {
-                Button(action: onBack) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(AppFont.bodyLarge)
-                        Text("Back")
-                            .font(AppFont.bodyLarge)
-                    }
-                }
-                .ghostButton()
-                Spacer()
-            }
-            .padding(.horizontal, AppSpacing.xl)
-            .padding(.top, 8)
-            
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
-                    // Header
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("About you")
-                            .font(AppFont.heroTitle)
-                            .foregroundStyle(Color.inkPrimary)
-                        Text("This helps us personalise your experience")
-                            .font(AppFont.bodyLarge)
-                            .foregroundStyle(Color.inkSecondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 12)
+        GeometryReader { geometry in
+            ZStack {
+                Color(hex: "FAFAF8")
+                    .ignoresSafeArea(.all)
+                
+                // Background blobs
+                ZStack {
+                    Ellipse()
+                        .fill(Color.peachDust.opacity(0.40))
+                        .frame(width: 180, height: 180)
+                        .position(x: geometry.size.width, y: 0)
                     
-                    // Parent section
-                    VStack(alignment: .leading, spacing: 16) {
-                        SectionHeader(title: "Parent", icon: "person.fill")
+                    Ellipse()
+                        .fill(Color.lemonIcing.opacity(0.50))
+                        .frame(width: 110, height: 110)
+                        .position(x: geometry.size.width, y: 0)
+                    
+                    Ellipse()
+                        .fill(Color.almostAquaLight.opacity(0.50))
+                        .frame(width: 110, height: 110)
+                        .position(x: 0, y: geometry.size.height)
+                }
+                .ignoresSafeArea(.all)
+                
+                // Content
+                VStack(alignment: .leading, spacing: 0) {
+                    // Header row
+                    HStack {
+                        Button(action: onBack) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.white)
+                                    .frame(width: 32, height: 32)
+                                Text("‹")
+                                    .font(AppFont.sans(18, weight: .medium))
+                                    .foregroundColor(Color.inkPrimary)
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
                         
-                        FormField(
+                        Spacer()
+                        
+                        // Progress indicator
+                        HStack(spacing: 8) {
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(Color.inkPrimary)
+                                .frame(width: 16, height: 6)
+                            ForEach(0..<3) { _ in
+                                Circle()
+                                    .fill(Color.inkPrimary.opacity(0.20))
+                                    .frame(width: 6, height: 6)
+                            }
+                        }
+                    }
+                    
+                    // Title block
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("About you")
+                            .font(AppFont.serif(26))
+                            .foregroundColor(Color.inkPrimary)
+                        Text("Just a few details to get started")
+                            .font(AppFont.sans(13, weight: .regular))
+                            .foregroundColor(Color.inkSecondary)
+                    }
+                    .padding(.top, 32)
+                    
+                    // Form fields
+                    VStack(alignment: .leading, spacing: 16) {
+                        // Field 1: Your name
+                        formField(
                             label: "Your name",
-                            text: $parentName,
                             placeholder: "e.g. Sarah",
-                            isRequired: true,
-                            showError: showingValidationErrors && parentName.isEmpty
+                            text: $parentName,
+                            keyboard: .namePhonePad
                         )
                         .focused($focusedField, equals: .parentName)
                         
-                        FormField(
+                        // Field 2: Email address
+                        formField(
                             label: "Email address",
-                            text: $parentEmail,
                             placeholder: "e.g. sarah@email.com",
-                            isRequired: true,
-                            showError: showingValidationErrors && (parentEmail.isEmpty || !parentEmail.contains("@"))
+                            text: $parentEmail,
+                            keyboard: .emailAddress,
+                            isRequired: true
                         )
                         .focused($focusedField, equals: .parentEmail)
                         
-                        DateField(
-                            label: "Date of birth",
-                            date: $parentDOB,
-                            isRequired: false
-                        )
-                        
-                        FormField(
-                            label: "Country",
-                            text: $country,
-                            placeholder: "e.g. Australia",
-                            isRequired: true,
-                            showError: showingValidationErrors && country.isEmpty
-                        )
-                        .focused($focusedField, equals: .country)
+                        // Field 3: Country
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Country")
+                                .font(AppFont.sans(12, weight: .semibold))
+                                .foregroundColor(Color.inkPrimary)
+                            
+                            Menu {
+                                ForEach(countries, id: \.self) { c in
+                                    Button(c) {
+                                        country = c
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Text(country.isEmpty ? "e.g. Australia" : country)
+                                        .font(AppFont.sans(13, weight: .regular))
+                                        .foregroundColor(country.isEmpty ? Color.orchidTint : Color.inkPrimary)
+                                    Spacer()
+                                    Text("⌄")
+                                        .font(AppFont.sans(13, weight: .medium))
+                                        .foregroundColor(Color.inkSecondary)
+                                }
+                                .padding(.horizontal, 16)
+                                .frame(height: 48)
+                                .frame(maxWidth: .infinity)
+                                .background(Color.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                                )
+                            }
+                        }
                     }
+                    .padding(.top, 24)
                     
-                    // Baby section
-                    VStack(alignment: .leading, spacing: 16) {
-                        SectionHeader(title: "Baby", icon: "heart.fill")
+                    Spacer()
+                    
+                    // Button block
+                    VStack(spacing: 12) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 14)
+                                .fill(Color.inkPrimary)
+                                .frame(height: 54)
+                            HStack {
+                                Text("Continue")
+                                    .font(AppFont.sans(15, weight: .semibold))
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Text("→")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 18))
+                                    .padding(.trailing, 22)
+                            }
+                            .padding(.horizontal, 24)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .onTapGesture {
+                            // Provide sensible defaults for fields no longer collected
+                            if babyName.isEmpty { babyName = "Baby" }
+                            if babyWeight.isEmpty { babyWeight = "3.5" }
+                            onContinue()
+                        }
                         
-                        FormField(
-                            label: "Name or nickname",
-                            text: $babyName,
-                            placeholder: "e.g. Lily",
-                            isRequired: true,
-                            showError: showingValidationErrors && babyName.isEmpty
-                        )
-                        .focused($focusedField, equals: .babyName)
-                        
-                        DateField(
-                            label: "Date of birth",
-                            date: $babyDOB,
-                            isRequired: true
-                        )
-                        
-                        FormField(
-                            label: "Weight (kg)",
-                            text: $babyWeight,
-                            placeholder: "e.g. 3.5",
-                            isRequired: true,
-                            showError: showingValidationErrors && babyWeight.isEmpty,
-                            suffix: "kg"
-                        )
-                        .focused($focusedField, equals: .babyWeight)
+                        Text("You can update these anytime")
+                            .font(AppFont.sans(11, weight: .regular))
+                            .foregroundColor(Color(hex: "8A7E96"))
+                            .frame(maxWidth: .infinity, alignment: .center)
                     }
-                    
-                    Spacer().frame(height: AppSpacing.xxl)
                 }
-                .padding(.horizontal, AppSpacing.xl)
-                .opacity(appear ? 1 : 0)
-                .offset(y: appear ? 0 : 20)
+                .padding(.top, geometry.safeAreaInsets.top + 12)
+                .padding(.bottom, geometry.safeAreaInsets.bottom + 24)
+                .padding(.horizontal, 18)
             }
-            
-            // CTA
-            Button(action: onContinue) {
-                Text("Continue")
-                    .font(AppFont.bodyLarge)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-            }
-            .primaryButton()
-            .opacity(isValid ? 1.0 : 0.4)
-            .buttonStyle(GentlePressEffect())
-            .disabled(!isValid && showingValidationErrors)
-            .padding(.horizontal, AppSpacing.xl)
-            .padding(.bottom, AppSpacing.xxl)
-            .animation(.easeOut(duration: 0.2), value: isValid)
-        }
-        .onAppear {
-            withAnimation(.easeOut(duration: 0.4).delay(0.1)) { appear = true }
         }
     }
-}
-
-// MARK: - Section Header
-struct SectionHeader: View {
-    let title: String
-    let icon: String
     
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(AppFont.body)
-                .foregroundStyle(Color.almostAquaDark)
-            Text(title)
-                .font(AppFont.sectionTitle)
-                .foregroundStyle(Color.inkPrimary)
-            Spacer()
-        }
-        .padding(.top, 8)
-    }
-}
-
-// MARK: - Form Field
-struct FormField: View {
-    let label: String
-    @Binding var text: String
-    let placeholder: String
-    var isRequired: Bool = false
-    var showError: Bool = false
-    var suffix: String? = nil
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
+    private func formField(
+        label: String,
+        placeholder: String,
+        text: Binding<String>,
+        keyboard: UIKeyboardType = .default,
+        isRequired: Bool = false
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 2) {
                 Text(label)
-                    .font(AppFont.body)
-                    .foregroundStyle(Color.inkPrimary)
+                    .font(AppFont.sans(12, weight: .semibold))
+                    .foregroundColor(Color.inkPrimary)
                 if isRequired {
                     Text("*")
-                        .font(AppFont.sectionTitle)
-                        .foregroundStyle(Color.peachDustDark)
+                        .font(AppFont.sans(12, weight: .semibold))
+                        .foregroundColor(Color.peachDustDark)
                 }
             }
             
-            HStack {
-                TextField(placeholder, text: $text)
-                    .font(AppFont.bodyLarge)
-                
-                if let suffix = suffix {
-                    Text(suffix)
-                        .font(AppFont.bodyLarge)
-                        .foregroundStyle(Color.inkSecondary.opacity(0.6))
-                }
-            }
-            .cardStyle()
-            .overlay(
-                RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
-                    .stroke(showError ? Color.peachDustDark.opacity(0.6) : Color.clear, lineWidth: 1.5)
-            )
-            
-            if showError {
-                Text("This field is required")
-                    .font(AppFont.caption)
-                    .foregroundStyle(Color.peachDustDark)
-                    .padding(.leading, 4)
-                    .transition(.opacity)
-            }
-        }
-    }
-}
-
-struct DateField: View {
-    let label: String
-    @Binding var date: Date
-    var isRequired: Bool = false
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text(label)
-                    .font(AppFont.body)
-                    .foregroundStyle(Color.inkPrimary)
-                if isRequired {
-                    Text("*")
-                        .font(AppFont.sectionTitle)
-                        .foregroundStyle(Color.peachDustDark)
-                }
-            }
-            
-            DatePicker("", selection: $date, displayedComponents: .date)
-                .datePickerStyle(.compact)
-                .font(AppFont.bodyLarge)
-                .cardStyle()
+            TextField(placeholder, text: text)
+                .font(AppFont.sans(13, weight: .regular))
+                .foregroundColor(Color.inkPrimary)
+                .keyboardType(keyboard)
+                .autocapitalization(.words)
+                .padding(.horizontal, 16)
+                .frame(height: 48)
+                .frame(maxWidth: .infinity)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                )
         }
     }
 }

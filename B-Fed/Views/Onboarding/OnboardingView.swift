@@ -126,12 +126,7 @@ struct OnboardingView: View {
     }
     
     private func validateAndProceed(width: CGFloat) {
-        let isValid = !parentName.isEmpty &&
-                     !parentEmail.isEmpty &&
-                     parentEmail.contains("@") &&
-                     !country.isEmpty &&
-                     !babyName.isEmpty &&
-                     !babyWeight.isEmpty
+        let isValid = !parentEmail.isEmpty && parentEmail.contains("@")
         
         if isValid {
             advanceToStep(2, width: width)
