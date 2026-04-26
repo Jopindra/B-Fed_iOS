@@ -204,6 +204,8 @@ struct PopulatedDashboardView: View {
                     InsightsSection()
                 }
                 
+                TipsSection()
+                
                 RecentFeedsSection()
             }
             .padding(.horizontal, 16)
@@ -679,6 +681,100 @@ struct FeedRow: View {
             Spacer()
         }
         .cardStyle()
+    }
+}
+
+// MARK: - Tips Section
+struct TipsSection: View {
+    @Environment(FeedStore.self) private var feedStore
+    @Query(sort: \Feed.startTime, order: .reverse) private var feeds: [Feed]
+    @State private var tips: [Tip] = []
+    
+    var body: some View {
+        let visibleTips = tips.filter { !DismissedTipStore.isDismissed($0.id) }
+        
+        if !visibleTips.isEmpty {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                Text("A gentle note")
+                    .font(AppFont.sectionTitle)
+                    .foregroundStyle(Color.inkSecondary)
+                
+                VStack(spacing: AppSpacing.md) {
+                    ForEach(visibleTips) { tip in
+                        TipBubble(tip: tip) {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                DismissedTipStore.dismiss(tip.id)
+                                tips.removeAll { $0.id == tip.id }
+                            }
+                        }
+                    }
+                }
+            }
+            .onAppear {
+                tips = TipEngine.tips(for: feedStore.babyProfile, feeds: feeds)
+            }
+        }
+    }
+}
+
+// MARK: - Tip Bubble
+struct TipBubble: View {
+    let tip: Tip
+    let onDismiss: () -> Void
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: AppSpacing.md) {
+            Image(systemName: iconName)
+                .font(AppFont.sans(14, weight: .medium))
+                .foregroundStyle(tintColor)
+                .frame(width: 32, height: 32)
+                .background(tintColor.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(tip.text)
+                    .font(AppFont.body)
+                    .foregroundStyle(Color.inkPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            Spacer()
+            
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(AppFont.sans(12, weight: .medium))
+                    .foregroundStyle(Color.inkSecondary.opacity(0.5))
+                    .frame(width: 28, height: 28)
+            }
+            .accessibilityLabel("Dismiss tip")
+        }
+        .padding(AppSpacing.md)
+        .background(Color.backgroundCard)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
+                .stroke(tintColor.opacity(0.15), lineWidth: 1)
+        )
+    }
+    
+    private var iconName: String {
+        switch tip.category {
+        case .reassurance: return "heart.fill"
+        case .practical: return "lightbulb.fill"
+        case .night: return "moon.fill"
+        case .formula: return "drop.fill"
+        case .newborn: return "sparkles"
+        }
+    }
+    
+    private var tintColor: Color {
+        switch tip.category {
+        case .reassurance: return Color.peachDustDark
+        case .practical: return Color.almostAquaDark
+        case .night: return Color.orchidTintDark
+        case .formula: return Color.almostAquaDark
+        case .newborn: return Color.peachDustDark
+        }
     }
 }
 
