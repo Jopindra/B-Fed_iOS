@@ -49,23 +49,22 @@ struct B_FedApp: App {
                     .environment(feedStore)
             }
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(createModelContainer())
+    }
+    
+    private func createModelContainer() -> ModelContainer {
+        let schema = Schema([Feed.self, BabyProfile.self])
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            cloudKitDatabase: .automatic
+        )
+        
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            return try! ModelContainer(for: schema, configurations: [fallbackConfig])
+        }
     }
 }
-
-// MARK: - Shared Model Container
-@MainActor
-let sharedModelContainer: ModelContainer = {
-    let schema = Schema([Feed.self, BabyProfile.self])
-    let modelConfiguration = ModelConfiguration(
-        schema: schema,
-        isStoredInMemoryOnly: false,
-        cloudKitDatabase: .automatic
-    )
-    
-    do {
-        return try ModelContainer(for: schema, configurations: [modelConfiguration])
-    } catch {
-        fatalError("Could not create ModelContainer: \(error)")
-    }
-}()

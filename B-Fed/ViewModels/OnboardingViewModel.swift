@@ -4,7 +4,6 @@ import SwiftData
 // MARK: - Onboarding View Model
 /// Centralised state and logic for the onboarding flow.
 /// Extracted from the view layer for testability.
-@MainActor
 @Observable
 class OnboardingViewModel {
     // MARK: Form State

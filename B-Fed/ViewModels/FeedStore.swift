@@ -140,6 +140,7 @@ class FeedStore {
         )
         modelContext?.insert(feed)
         persist()
+        syncWidgetData()
         return feed
     }
     
@@ -161,6 +162,7 @@ class FeedStore {
         }
         modelContext?.delete(feed)
         persist()
+        syncWidgetData()
     }
 
     func updateFeed(_ feed: Feed, amount: Double, startTime: Date, endTime: Date?, notes: String, completed: Bool? = nil) {
@@ -172,6 +174,7 @@ class FeedStore {
             feed.completed = completed
         }
         persist()
+        syncWidgetData()
     }
 
     // MARK: - Fetch Operations
@@ -289,6 +292,18 @@ class FeedStore {
     func getInsights() -> [String] {
         let feeds = fetchAllFeeds()
         return FeedingIntelligence.insights(from: feeds, profile: babyProfile)
+    }
+
+    // MARK: - Widget Sync
+
+    private func syncWidgetData() {
+        let today = clock.currentTime
+        let stats = getStatistics(for: today)
+        WidgetDataStore.update(
+            feedCount: stats.totalFeeds,
+            totalAmount: stats.totalAmount,
+            babyName: babyProfile?.babyName ?? "Baby"
+        )
     }
 
     // MARK: - Persistence

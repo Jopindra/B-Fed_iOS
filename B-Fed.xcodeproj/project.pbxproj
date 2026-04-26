@@ -23,6 +23,7 @@
 		1DEA548060002611EA2A70FD /* BabyDOBScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A477DF49EF79B9D935D770A /* BabyDOBScreen.swift */; };
 		203106382CD7D987C0FD8685 /* OnboardingStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D3448E555A451B80DFF444C /* OnboardingStepView.swift */; };
 		20B812988E677540CB532A7B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F5882D1DB5476847D0C7932 /* Foundation.framework */; };
+		31D6AF9138E0E5D8226BC86A /* WidgetDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A25DD8104577E541C4E4D6 /* WidgetDataStore.swift */; };
 		366858B9855266FA268C92F2 /* FeedStatisticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5302F0B4575FBB4C0E9DBAF2 /* FeedStatisticsTests.swift */; };
 		3816CACF909FC65DFC1EC264 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9910F7EC7D2773B315A75012 /* Clock.swift */; };
 		40539E84DFD83544B734F29D /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F10765D68BFFCB33063561B /* Feed.swift */; };
@@ -38,6 +39,8 @@
 		676D825C6026623B8DB9655F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C1281980D7FBE29E3F229AA /* Assets.xcassets */; };
 		6c43d50f-2756-4f1a-a67e-9d5eeb3aebe8 /* FeedingTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71d71260-ff2a-435f-8d6f-e33aac394f6e /* FeedingTypeScreen.swift */; };
 		70C234E20B1E1949E09F4FDB /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AB493AA05AC9FBBA75C5B8E /* SwiftUI.framework */; };
+		72A9F783FC02EA9708791D6F /* B_FedWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44850DA8F17DE250148E262 /* B_FedWidgetBundle.swift */; };
+		76273B0AB4E71CFA78506005 /* B_FedWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D35CCB19D278F4F311FB628 /* B_FedWidget.swift */; };
 		7826BE0BD2141388654CED15 /* ErrorLoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2EBE0229D07D5C6A817F79 /* ErrorLoggerTests.swift */; };
 		808079B6EA370452E7F50E86 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E146A87B301CC81AF85DE9 /* OnboardingViewModel.swift */; };
 		81105BAB031A8BCD12B42286 /* FeedingIntelligence.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B7546ACA4EA8B8133C3335 /* FeedingIntelligence.swift */; };
@@ -45,6 +48,7 @@
 		8477469E970D4E9589890A44 /* ParentNameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96B7C0861F56EA464ABBE57E /* ParentNameScreen.swift */; };
 		86F07724208CDCEFE0C59B64 /* FeedExporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26FBB29087018371CB6D7B26 /* FeedExporterTests.swift */; };
 		87e46af2-f899-4bab-a1de-4f12c5e25fd9 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0f432e1e-4134-45b0-accb-73f8de7978c0 /* OnboardingView.swift */; };
+		8B8F4D5087E329BE7E3F4A65 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F5882D1DB5476847D0C7932 /* Foundation.framework */; };
 		92044EA1B472BA1ACFE8BAC2 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7594D47BEFE0EEB9FF4AAA4 /* Components.swift */; };
 		9667A1ED9D45618B090D1760 /* B_FedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A97414FBCBD7082300079 /* B_FedTests.swift */; };
 		9BE6E32904F6641CBE5DE4D6 /* FeedHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74FE31E2064A7FD6C5F9B5C5 /* FeedHistoryView.swift */; };
@@ -112,9 +116,11 @@
 		339B2BBB37A9377BB7BF3069 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		381CA11D2E6B14D6A5BCC5E8 /* MotionSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSystem.swift; sourceTree = "<group>"; };
 		3D3448E555A451B80DFF444C /* OnboardingStepView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingStepView.swift; sourceTree = "<group>"; };
+		3D35CCB19D278F4F311FB628 /* B_FedWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = B_FedWidget.swift; sourceTree = "<group>"; };
 		3D55F0745B420EDB2A53CF68 /* ClockTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClockTests.swift; sourceTree = "<group>"; };
 		43F63710F9490B6F87119710 /* ParentEmailScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParentEmailScreen.swift; sourceTree = "<group>"; };
 		4B7D7E8AEC437348FC715451 /* ReassuranceEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReassuranceEngineTests.swift; sourceTree = "<group>"; };
+		4DB760F9629AC05A36DBAC8C /* B-FedWidgetExtension */ = {isa = PBXFileReference; includeInIndex = 0; path = "B-FedWidgetExtension"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EAD4DA8428240B08BD7085C /* SwiftData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftData.framework; path = System/Library/Frameworks/SwiftData.framework; sourceTree = SDKROOT; };
 		4F10765D68BFFCB33063561B /* Feed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feed.swift; sourceTree = "<group>"; };
 		4F5882D1DB5476847D0C7932 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -125,6 +131,8 @@
 		5D219A9A5C7B46CFD7C22166 /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5D6914A61740E396FBA80F0C /* LogFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFeedView.swift; sourceTree = "<group>"; };
 		60A22CD03A1067792CD8808D /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		65A25DD8104577E541C4E4D6 /* WidgetDataStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetDataStore.swift; sourceTree = "<group>"; };
+		69BA16D65BE85773A703D4EB /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6B545582BAE353E76872FC1A /* MonthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthView.swift; sourceTree = "<group>"; };
 		71d71260-ff2a-435f-8d6f-e33aac394f6e /* FeedingTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FeedingTypeScreen.swift; path = "B-Fed/Views/Onboarding/FeedingTypeScreen.swift"; sourceTree = SOURCE_ROOT; };
 		74FE31E2064A7FD6C5F9B5C5 /* FeedHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedHistoryView.swift; sourceTree = "<group>"; };
@@ -146,6 +154,7 @@
 		AB2FF14CBB7085C43BF0EF12 /* FeedExporter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedExporter.swift; sourceTree = "<group>"; };
 		B4A07527ACF80A45BF7CB042 /* BottleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottleView.swift; sourceTree = "<group>"; };
 		B8E74DF6B602FF617445B611 /* DMSerifDisplay-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "DMSerifDisplay-Regular.ttf"; path = "B-Fed/Fonts/DMSerifDisplay-Regular.ttf"; sourceTree = SOURCE_ROOT; };
+		BB24DC99A00E9FA38C617D33 /* FeedActivityAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedActivityAttributes.swift; sourceTree = "<group>"; };
 		CD0213EB933A0AA14E6B1A14 /* ErrorLogger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ErrorLogger.swift; sourceTree = "<group>"; };
 		CE29BE284D8E7CDFA377A125 /* B-Fed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "B-Fed.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D11A4B54AA4F034F77BC62D5 /* CountryScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CountryScreen.swift; sourceTree = "<group>"; };
@@ -154,6 +163,7 @@
 		E1B7546ACA4EA8B8133C3335 /* FeedingIntelligence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedingIntelligence.swift; sourceTree = "<group>"; };
 		E3F4CA06FF7D57AC53791BF3 /* FeedingIntelligenceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedingIntelligenceTests.swift; sourceTree = "<group>"; };
 		F364C9087236371DFEBAB287 /* FeedStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedStoreTests.swift; sourceTree = "<group>"; };
+		F44850DA8F17DE250148E262 /* B_FedWidgetBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = B_FedWidgetBundle.swift; sourceTree = "<group>"; };
 		F482A372343472AFB6E974A6 /* BabyWeightScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BabyWeightScreen.swift; sourceTree = "<group>"; };
 		F7594D47BEFE0EEB9FF4AAA4 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Components.swift; path = "B-Fed/DesignSystem/Components.swift"; sourceTree = SOURCE_ROOT; };
 		FA4744FBB7046A2E0228682F /* DMSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "DMSans-Medium.ttf"; path = "B-Fed/Fonts/DMSans-Medium.ttf"; sourceTree = SOURCE_ROOT; };
@@ -168,6 +178,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				20B812988E677540CB532A7B /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4EC0EEA9BB6C1507FD4C8DD3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B8F4D5087E329BE7E3F4A65 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,6 +280,7 @@
 				19764ADA2F9718B300F2F7D7 /* Recovered References */,
 				09B6E83F019F8D0110921DF2 /* Frameworks */,
 				ADDABCCC0E81818E007ED7D4 /* B-FedTests */,
+				87B3D8E054C06ABBFE10FA08 /* B-FedWidget */,
 			);
 			sourceTree = "<group>";
 		};
@@ -283,6 +302,7 @@
 				285CA5CE45A15AD68F89E454 /* FeedTimerService.swift */,
 				0A235895192C119F4A6BF75B /* TipEngine.swift */,
 				AB2FF14CBB7085C43BF0EF12 /* FeedExporter.swift */,
+				65A25DD8104577E541C4E4D6 /* WidgetDataStore.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -293,8 +313,20 @@
 				9970E660B4FEF4122FDE6C12 /* BabyProfile.swift */,
 				edb600d8-4fbe-40e9-8408-7fb0584bf4c6 /* TimePeriod.swift */,
 				4F10765D68BFFCB33063561B /* Feed.swift */,
+				BB24DC99A00E9FA38C617D33 /* FeedActivityAttributes.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		87B3D8E054C06ABBFE10FA08 /* B-FedWidget */ = {
+			isa = PBXGroup;
+			children = (
+				3D35CCB19D278F4F311FB628 /* B_FedWidget.swift */,
+				F44850DA8F17DE250148E262 /* B_FedWidgetBundle.swift */,
+				69BA16D65BE85773A703D4EB /* Info.plist */,
+			);
+			name = "B-FedWidget";
+			path = "B-FedWidget";
 			sourceTree = "<group>";
 		};
 		94F1AFF6C59834BBB3FD7169 /* DesignSystem */ = {
@@ -374,6 +406,7 @@
 			children = (
 				CE29BE284D8E7CDFA377A125 /* B-Fed.app */,
 				FEB08BBC74F4A5E0F9681B8E /* B-FedTests.xctest */,
+				4DB760F9629AC05A36DBAC8C /* B-FedWidgetExtension */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -422,6 +455,23 @@
 			productReference = CE29BE284D8E7CDFA377A125 /* B-Fed.app */;
 			productType = "com.apple.product-type.application";
 		};
+		7E623045FF1826E83B79FEB3 /* B-FedWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 029AACACA038D7D584BCE252 /* Build configuration list for PBXNativeTarget "B-FedWidgetExtension" */;
+			buildPhases = (
+				EA93E0CD7713102027FBD98A /* Sources */,
+				4EC0EEA9BB6C1507FD4C8DD3 /* Frameworks */,
+				CE5BA26EFBFE0E422D955344 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "B-FedWidgetExtension";
+			productName = "B-FedWidgetExtension";
+			productReference = 4DB760F9629AC05A36DBAC8C /* B-FedWidgetExtension */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		CEF784A70E3C33165CBDE376 /* B-FedTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3DFFA4A74AD0EB269EA9ECE0 /* Build configuration list for PBXNativeTarget "B-FedTests" */;
@@ -464,6 +514,7 @@
 			targets = (
 				6772EC0E5D0CA05E04DDDB49 /* B-Fed */,
 				CEF784A70E3C33165CBDE376 /* B-FedTests */,
+				7E623045FF1826E83B79FEB3 /* B-FedWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -481,6 +532,13 @@
 				C2E74325AF8D09A342B7124E /* DMSans-SemiBold.ttf in Resources */,
 				097dbedb-c291-407c-b762-bbd6c6685de7 /* DMSans-Bold.ttf in Resources */,
 				BC1F4EAB95FB1C001F767D58 /* DMSerifDisplay-Regular.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE5BA26EFBFE0E422D955344 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,6 +595,7 @@
 				AFA709335C1B3E788EE359E6 /* SettingsView.swift in Sources */,
 				49CF7C77B27DD52D50B507DC /* FeedExporter.swift in Sources */,
 				0E6B0666FA17FDD252364D04 /* ActivityView.swift in Sources */,
+				31D6AF9138E0E5D8226BC86A /* WidgetDataStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,6 +620,15 @@
 				1D7404E2D1BBD17791DF4891 /* TipEngineTests.swift in Sources */,
 				FFC7DDFDA917C890732D447C /* SettingsViewModelTests.swift in Sources */,
 				86F07724208CDCEFE0C59B64 /* FeedExporterTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EA93E0CD7713102027FBD98A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76273B0AB4E71CFA78506005 /* B_FedWidget.swift in Sources */,
+				72A9F783FC02EA9708791D6F /* B_FedWidgetBundle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -599,6 +667,30 @@
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
+		};
+		70F6DA9C046D9A15C21BAA82 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = "B-FedWidget/B-FedWidgetExtension.entitlements";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "B-FedWidget/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bfed.B-Fed.widget";
+				PRODUCT_NAME = "B-FedWidget";
+				SDKROOT = iphoneos;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		8C4BEBFC520D7BEED5E3D80D /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -671,6 +763,29 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AB13F8EED419E1C75EA01DF4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = "B-FedWidget/B-FedWidgetExtension.entitlements";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "B-FedWidget/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bfed.B-Fed.widget";
+				PRODUCT_NAME = "B-FedWidget";
+				SDKROOT = iphoneos;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -770,6 +885,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		029AACACA038D7D584BCE252 /* Build configuration list for PBXNativeTarget "B-FedWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70F6DA9C046D9A15C21BAA82 /* Release */,
+				AB13F8EED419E1C75EA01DF4 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3DFFA4A74AD0EB269EA9ECE0 /* Build configuration list for PBXNativeTarget "B-FedTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
