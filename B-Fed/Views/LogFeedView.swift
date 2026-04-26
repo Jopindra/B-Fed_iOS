@@ -14,12 +14,26 @@ struct LogFeedView: View {
         feedStore.perFeedGuide.display
     }
     
+    private var bottleFillLevel: CGFloat {
+        let guide = feedStore.perFeedGuide
+        let target = Double(guide.typical.max)
+        guard target > 0 else { return 0 }
+        let percentage = amount / target
+        return CGFloat(min(percentage, 1.0))
+    }
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 // Number Scrubber Area
                 VStack(spacing: 20) {
                     Spacer().frame(height: AppSpacing.xxl)
+                    
+                    // Bottle Fill Preview
+                    BottleFillPreview(fillLevel: bottleFillLevel)
+                        .frame(width: 80, height: 130)
+                        .opacity(isDragging ? 1 : 0.6)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: bottleFillLevel)
                     
                     // Amount Display with Drag
                     AmountScrubber(amount: $amount, isDragging: $isDragging)
@@ -46,17 +60,22 @@ struct LogFeedView: View {
                     // Timer Toggle
                     Button {
                         showingTimer.toggle()
+                        if showingTimer {
+                            feedStore.startFeedTimer()
+                        } else {
+                            feedStore.resetFeedTimer()
+                        }
                     } label: {
                         HStack {
-                            Image(systemName: "stopwatch")
-                            Text(showingTimer ? "Hide Timer" : "Track Duration")
+                            Image(systemName: feedStore.isTimerRunning ? "stopwatch.fill" : "stopwatch")
+                            Text(timerButtonTitle)
                         }
                         .font(AppFont.body)
                         .foregroundStyle(Color.almostAquaDark)
                     }
                     
                     if showingTimer {
-                        TimerView()
+                        FeedTimerView()
                     }
                     
                     // Save Button with gentle press
@@ -79,14 +98,21 @@ struct LogFeedView: View {
                 #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        feedStore.resetFeedTimer()
+                        dismiss()
+                    }
                 }
             }
             .onAppear {
-                // Pre-fill with middle of typical range
                 let guide = feedStore.perFeedGuide
                 let midPoint = (guide.typical.min + guide.typical.max) / 2
                 amount = Double(midPoint)
+            }
+            .onDisappear {
+                if !showingConfirmation {
+                    feedStore.resetFeedTimer()
+                }
             }
             .fullScreenCover(isPresented: $showingConfirmation) {
                 FeedConfirmationView(
@@ -95,6 +121,15 @@ struct LogFeedView: View {
                 )
             }
         }
+    }
+    
+    private var timerButtonTitle: String {
+        if feedStore.isTimerRunning {
+            let mins = Int(feedStore.timerElapsed) / 60
+            let secs = Int(feedStore.timerElapsed) % 60
+            return String(format: "Tracking %02d:%02d", mins, secs)
+        }
+        return showingTimer ? "Stop Tracking" : "Track Duration"
     }
     
     private func saveFeed() {
@@ -244,13 +279,36 @@ struct AmountScrubber: View {
     }
 }
 
-// MARK: - Timer View
-struct TimerView: View {
-    @State private var isRunning = false
-    @State private var elapsed: TimeInterval = 0
-    @State private var timer: Timer?
+// MARK: - Bottle Fill Preview
+struct BottleFillPreview: View {
+    let fillLevel: CGFloat
+    @State private var wavePhase: CGFloat = 0
+    
+    var body: some View {
+        ZStack {
+            BottleGlassShape()
+                .fill(Color.white.opacity(0.6))
+            
+            LiquidWithWave(fillLevel: fillLevel, phase: wavePhase)
+                .clipShape(BottleGlassShape())
+            
+            BottleGlassShape()
+                .stroke(Color.white.opacity(0.6), lineWidth: 2)
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 2.5).repeatForever(autoreverses: false)) {
+                wavePhase = .pi * 2
+            }
+        }
+    }
+}
+
+// MARK: - Feed Timer View
+struct FeedTimerView: View {
+    @Environment(FeedStore.self) private var feedStore
     
     var displayTime: String {
+        let elapsed = feedStore.timerElapsed
         let mins = Int(elapsed) / 60
         let secs = Int(elapsed) % 60
         return String(format: "%02d:%02d", mins, secs)
@@ -266,32 +324,24 @@ struct TimerView: View {
             Spacer()
             
             Button(action: toggleTimer) {
-                Image(systemName: isRunning ? "stop.fill" : "play.fill")
+                Image(systemName: feedStore.isTimerRunning ? "stop.fill" : "play.fill")
                     .font(AppFont.bodyLarge)
-                    .foregroundStyle(isRunning ? .white : Color.almostAquaDark)
+                    .foregroundStyle(feedStore.isTimerRunning ? .white : Color.almostAquaDark)
                     .frame(width: 50, height: 50)
-                    .background(isRunning ? Color.peachDustDark.opacity(0.9) : Color.almostAquaDark.opacity(0.1))
+                    .background(feedStore.isTimerRunning ? Color.peachDustDark.opacity(0.9) : Color.almostAquaDark.opacity(0.1))
                     .clipShape(Circle())
             }
             .buttonStyle(GentlePressEffect())
-            .accessibilityLabel(isRunning ? "Stop timer" : "Start timer")
+            .accessibilityLabel(feedStore.isTimerRunning ? "Stop timer" : "Start timer")
         }
         .cardStyle()
-        .onDisappear {
-            timer?.invalidate()
-            timer = nil
-        }
     }
     
     private func toggleTimer() {
-        if isRunning {
-            timer?.invalidate()
-            isRunning = false
+        if feedStore.isTimerRunning {
+            _ = feedStore.stopFeedTimer()
         } else {
-            isRunning = true
-            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                elapsed += 1
-            }
+            feedStore.startFeedTimer()
         }
     }
 }

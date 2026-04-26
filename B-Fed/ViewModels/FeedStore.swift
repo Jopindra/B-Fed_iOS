@@ -8,9 +8,12 @@ class FeedStore {
     private var modelContext: ModelContext?
     private let clock: Clock
     private let logger: ErrorLogger
+    private let timerService: FeedTimerService
 
     var activeFeed: Feed?
     var babyProfile: BabyProfile?
+    var timerElapsed: TimeInterval { timerService.elapsed }
+    var isTimerRunning: Bool { timerService.isRunning }
 
     var currentTime: Date { clock.currentTime }
 
@@ -26,9 +29,14 @@ class FeedStore {
 
     // MARK: - Initialization
 
-    init(clock: Clock = LiveClock(), logger: ErrorLogger = PrintErrorLogger()) {
+    init(
+        clock: Clock = LiveClock(),
+        logger: ErrorLogger = PrintErrorLogger(),
+        timerService: FeedTimerService = LiveFeedTimerService()
+    ) {
         self.clock = clock
         self.logger = logger
+        self.timerService = timerService
     }
 
     // MARK: - Setup
@@ -69,8 +77,17 @@ class FeedStore {
     // MARK: - CRUD Operations
 
     func createFeed(amount: Double, startTime: Date = Date(), notes: String = "", completed: Bool = true) -> Feed {
+        var endTime: Date? = nil
+        if timerService.isRunning {
+            let duration = timerService.stop()
+            if duration > 0 {
+                endTime = startTime.addingTimeInterval(duration)
+            }
+        }
+        
         let feed = Feed(
             startTime: startTime,
+            endTime: endTime,
             amount: amount,
             unit: .milliliters,
             notes: notes,
@@ -79,6 +96,18 @@ class FeedStore {
         modelContext?.insert(feed)
         persist()
         return feed
+    }
+    
+    func startFeedTimer() {
+        timerService.start()
+    }
+    
+    func stopFeedTimer() -> TimeInterval {
+        timerService.stop()
+    }
+    
+    func resetFeedTimer() {
+        timerService.reset()
     }
 
     func deleteFeed(_ feed: Feed) {

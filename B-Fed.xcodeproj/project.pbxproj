@@ -58,9 +58,11 @@
 		C2E74325AF8D09A342B7124E /* DMSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8D764835BD84CEF803FE6416 /* DMSans-SemiBold.ttf */; };
 		C3037773233F3359C1DD2E56 /* BabyProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9970E660B4FEF4122FDE6C12 /* BabyProfile.swift */; };
 		C98FBBA8BCF84D1DF0616178 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D561E3E5C8CFE2ADE1036188 /* ContentView.swift */; };
+		D4FE65F907DE89E3CFE35D78 /* FeedTimerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285CA5CE45A15AD68F89E454 /* FeedTimerService.swift */; };
 		E53842C09C65D3AAEB57A40B /* FeedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF65069AC1BC2BCB1BAEB83 /* FeedTests.swift */; };
 		E89B6329184C56CB58F5149F /* OnboardingBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1159EA40A3EB935678C4E93E /* OnboardingBackground.swift */; };
 		EE10F926F5FE285D3A5E7F7D /* ErrorLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0213EB933A0AA14E6B1A14 /* ErrorLogger.swift */; };
+		EEEB16832A0FA0E8C70D7CD3 /* FeedTimerServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AEC21C17A63EA7DA5272654 /* FeedTimerServiceTests.swift */; };
 		EF6F4B298B769C1BDA1116DD /* CountryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11A4B54AA4F034F77BC62D5 /* CountryScreen.swift */; };
 		F92DF5BB2FDC0C00BE49A0AC /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC9826D2ADE9A48C5032C7A /* StatisticsView.swift */; };
 		F976596167B4E546F1E1F6C9 /* OnboardingPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57D19CEAC465D2DD6513915F /* OnboardingPreview.swift */; };
@@ -92,6 +94,7 @@
 		1CC9826D2ADE9A48C5032C7A /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		1FBF10B15A97C81872900E3A /* B_FedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = B_FedApp.swift; sourceTree = "<group>"; };
 		28409E4E7637CC3A6C6ECEB6 /* BabyBottleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyBottleView.swift; sourceTree = "<group>"; };
+		285CA5CE45A15AD68F89E454 /* FeedTimerService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedTimerService.swift; sourceTree = "<group>"; };
 		2D67C3F2E588694B7C2CB4F0 /* BabyNameScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BabyNameScreen.swift; sourceTree = "<group>"; };
 		2D9A97414FBCBD7082300079 /* B_FedTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = B_FedTests.swift; sourceTree = "<group>"; };
 		2E3B426E9B4BB18D45365505 /* DMSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "DMSans-Light.ttf"; path = "B-Fed/Fonts/DMSans-Light.ttf"; sourceTree = SOURCE_ROOT; };
@@ -115,6 +118,7 @@
 		74FE31E2064A7FD6C5F9B5C5 /* FeedHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedHistoryView.swift; sourceTree = "<group>"; };
 		77E146A87B301CC81AF85DE9 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		7C1281980D7FBE29E3F229AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8AEC21C17A63EA7DA5272654 /* FeedTimerServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedTimerServiceTests.swift; sourceTree = "<group>"; };
 		8D764835BD84CEF803FE6416 /* DMSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "DMSans-SemiBold.ttf"; path = "B-Fed/Fonts/DMSans-SemiBold.ttf"; sourceTree = SOURCE_ROOT; };
 		9096749449356EC030DB829A /* OnboardingValidationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingValidationTests.swift; sourceTree = "<group>"; };
 		939AF6362F487B90EEDF7DD7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -257,6 +261,7 @@
 				E1B7546ACA4EA8B8133C3335 /* FeedingIntelligence.swift */,
 				9910F7EC7D2773B315A75012 /* Clock.swift */,
 				CD0213EB933A0AA14E6B1A14 /* ErrorLogger.swift */,
+				285CA5CE45A15AD68F89E454 /* FeedTimerService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -305,6 +310,7 @@
 				96F62B613846CFF9FCADA08C /* DesignTokensTests.swift */,
 				9F20D87A3369A6869A3E31D7 /* BabyProfileTests.swift */,
 				F364C9087236371DFEBAB287 /* FeedStoreTests.swift */,
+				8AEC21C17A63EA7DA5272654 /* FeedTimerServiceTests.swift */,
 			);
 			name = "B-FedTests";
 			path = "B-FedTests";
@@ -499,6 +505,7 @@
 				A268D4AA348E6F427B19FD06 /* ParentEmailScreen.swift in Sources */,
 				203106382CD7D987C0FD8685 /* OnboardingStepView.swift in Sources */,
 				8208805501EF0ADEFB6C54D4 /* BabyNameScreen.swift in Sources */,
+				D4FE65F907DE89E3CFE35D78 /* FeedTimerService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -519,6 +526,7 @@
 				AD83E8608D396EDBF16151BA /* DesignTokensTests.swift in Sources */,
 				6361C05D277200A21ABF7C7C /* BabyProfileTests.swift in Sources */,
 				0EBE4B9CD2F8B9670332F95E /* FeedStoreTests.swift in Sources */,
+				EEEB16832A0FA0E8C70D7CD3 /* FeedTimerServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
