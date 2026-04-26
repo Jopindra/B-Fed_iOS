@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "B-Fed",
+    defaultLocalization: "en",
     platforms: [.iOS(.v17), .macOS(.v14)],
     products: [
         .library(name: "BFed", targets: ["BFed"])
@@ -12,13 +13,17 @@ let package = Package(
             name: "BFed",
             path: "B-Fed",
             exclude: [
-                "Info.plist",
-                "Views/SevenDaysView.swift"
+                "Info.plist"
             ],
             resources: [
                 .process("Resources")
             ],
             swiftSettings: []
+        ),
+        .testTarget(
+            name: "BFedTests",
+            dependencies: ["BFed"],
+            path: "B-FedTests"
         )
     ]
 )

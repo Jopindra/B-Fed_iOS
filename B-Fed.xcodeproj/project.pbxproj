@@ -11,6 +11,7 @@
 		01B7B4478FA018AB6CC5E736 /* MonthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B545582BAE353E76872FC1A /* MonthView.swift */; };
 		0564EBCB3D3C8901246304B3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F498CCDBBC87BA90134277 /* Foundation.framework */; };
 		097dbedb-c291-407c-b762-bbd6c6685de7 /* DMSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0daafb27-83c0-4ff4-abc9-3bb8d3957fa4 /* DMSans-Bold.ttf */; };
+		0EBE4B9CD2F8B9670332F95E /* FeedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F364C9087236371DFEBAB287 /* FeedStoreTests.swift */; };
 		149d0dd3-f29a-42c0-b8e1-74c340b2e373 /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = e6d636de-218b-49e6-b7ec-c3ecd453328e /* WelcomeScreen.swift */; };
 		168E404D189ECD7A67CB2FC6 /* BottleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4A07527ACF80A45BF7CB042 /* BottleView.swift */; };
 		16C366F7237F3F6FCB886085 /* OnboardingValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1305A0F2C7B662E6284F5C6A /* OnboardingValidation.swift */; };
@@ -131,6 +132,7 @@
 		D561E3E5C8CFE2ADE1036188 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E1B7546ACA4EA8B8133C3335 /* FeedingIntelligence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedingIntelligence.swift; sourceTree = "<group>"; };
 		E3F4CA06FF7D57AC53791BF3 /* FeedingIntelligenceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedingIntelligenceTests.swift; sourceTree = "<group>"; };
+		F364C9087236371DFEBAB287 /* FeedStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedStoreTests.swift; sourceTree = "<group>"; };
 		F482A372343472AFB6E974A6 /* BabyWeightScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BabyWeightScreen.swift; sourceTree = "<group>"; };
 		F7594D47BEFE0EEB9FF4AAA4 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Components.swift; path = "B-Fed/DesignSystem/Components.swift"; sourceTree = SOURCE_ROOT; };
 		FA4744FBB7046A2E0228682F /* DMSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "DMSans-Medium.ttf"; path = "B-Fed/Fonts/DMSans-Medium.ttf"; sourceTree = SOURCE_ROOT; };
@@ -302,6 +304,7 @@
 				4B7D7E8AEC437348FC715451 /* ReassuranceEngineTests.swift */,
 				96F62B613846CFF9FCADA08C /* DesignTokensTests.swift */,
 				9F20D87A3369A6869A3E31D7 /* BabyProfileTests.swift */,
+				F364C9087236371DFEBAB287 /* FeedStoreTests.swift */,
 			);
 			name = "B-FedTests";
 			path = "B-FedTests";
@@ -515,6 +518,7 @@
 				1DD467DFCA81740635CAE960 /* ReassuranceEngineTests.swift in Sources */,
 				AD83E8608D396EDBF16151BA /* DesignTokensTests.swift in Sources */,
 				6361C05D277200A21ABF7C7C /* BabyProfileTests.swift in Sources */,
+				0EBE4B9CD2F8B9670332F95E /* FeedStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

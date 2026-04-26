@@ -1,6 +1,7 @@
 import XCTest
 @testable import B_Fed
 
+@MainActor
 final class OnboardingViewModelTests: XCTestCase {
 
     var viewModel: OnboardingViewModel!
