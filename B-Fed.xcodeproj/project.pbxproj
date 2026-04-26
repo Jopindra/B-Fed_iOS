@@ -61,6 +61,7 @@
 		C3037773233F3359C1DD2E56 /* BabyProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9970E660B4FEF4122FDE6C12 /* BabyProfile.swift */; };
 		C98FBBA8BCF84D1DF0616178 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D561E3E5C8CFE2ADE1036188 /* ContentView.swift */; };
 		D4FE65F907DE89E3CFE35D78 /* FeedTimerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285CA5CE45A15AD68F89E454 /* FeedTimerService.swift */; };
+		DEF653CE77B288EDC841D9C1 /* BottlePrepGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5FBF6676AF5D7651F93E4E /* BottlePrepGuideView.swift */; };
 		E53842C09C65D3AAEB57A40B /* FeedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF65069AC1BC2BCB1BAEB83 /* FeedTests.swift */; };
 		E89B6329184C56CB58F5149F /* OnboardingBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1159EA40A3EB935678C4E93E /* OnboardingBackground.swift */; };
 		EE10F926F5FE285D3A5E7F7D /* ErrorLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0213EB933A0AA14E6B1A14 /* ErrorLogger.swift */; };
@@ -122,6 +123,7 @@
 		77E146A87B301CC81AF85DE9 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		7C1281980D7FBE29E3F229AA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8AEC21C17A63EA7DA5272654 /* FeedTimerServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedTimerServiceTests.swift; sourceTree = "<group>"; };
+		8C5FBF6676AF5D7651F93E4E /* BottlePrepGuideView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BottlePrepGuideView.swift; sourceTree = "<group>"; };
 		8C75BD3F1EDC0EB005E761B2 /* TipEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TipEngineTests.swift; sourceTree = "<group>"; };
 		8D764835BD84CEF803FE6416 /* DMSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "DMSans-SemiBold.ttf"; path = "B-Fed/Fonts/DMSans-SemiBold.ttf"; sourceTree = SOURCE_ROOT; };
 		9096749449356EC030DB829A /* OnboardingValidationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingValidationTests.swift; sourceTree = "<group>"; };
@@ -345,6 +347,7 @@
 				0f432e1e-4134-45b0-accb-73f8de7978c0 /* OnboardingView.swift */,
 				e6d636de-218b-49e6-b7ec-c3ecd453328e /* WelcomeScreen.swift */,
 				EE0BAD7AD8D083A7D56A20E7 /* Onboarding */,
+				8C5FBF6676AF5D7651F93E4E /* BottlePrepGuideView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -513,6 +516,7 @@
 				8208805501EF0ADEFB6C54D4 /* BabyNameScreen.swift in Sources */,
 				D4FE65F907DE89E3CFE35D78 /* FeedTimerService.swift in Sources */,
 				AA196917AF11BF71C9A99040 /* TipEngine.swift in Sources */,
+				DEF653CE77B288EDC841D9C1 /* BottlePrepGuideView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

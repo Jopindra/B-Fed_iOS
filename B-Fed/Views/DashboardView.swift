@@ -207,6 +207,8 @@ struct PopulatedDashboardView: View {
                 TipsSection()
                 
                 RecentFeedsSection()
+                
+                PrepGuideLink()
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
@@ -681,6 +683,53 @@ struct FeedRow: View {
             Spacer()
         }
         .cardStyle()
+    }
+}
+
+// MARK: - Prep Guide Link
+struct PrepGuideLink: View {
+    @State private var showingPrepGuide = false
+    
+    var body: some View {
+        Button {
+            showingPrepGuide = true
+        } label: {
+            HStack(spacing: AppSpacing.md) {
+                Image(systemName: "drop.fill")
+                    .font(AppFont.sans(14, weight: .medium))
+                    .foregroundStyle(Color.almostAquaDark)
+                    .frame(width: 32, height: 32)
+                    .background(Color.almostAquaDark.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Bottle Prep Guide")
+                        .font(AppFont.body)
+                        .foregroundStyle(Color.inkPrimary)
+                    Text("Step-by-step safety guide")
+                        .font(AppFont.caption)
+                        .foregroundStyle(Color.inkSecondary)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(AppFont.caption)
+                    .foregroundStyle(Color.inkSecondary.opacity(0.5))
+            }
+            .padding(AppSpacing.md)
+            .background(Color.backgroundCard)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
+                    .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Open bottle preparation guide")
+        .sheet(isPresented: $showingPrepGuide) {
+            BottlePrepGuideView()
+        }
     }
 }
 
