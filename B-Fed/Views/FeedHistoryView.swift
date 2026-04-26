@@ -9,59 +9,29 @@ struct FeedHistoryView: View {
     @State private var showingDeleteConfirmation = false
     @State private var feedToDelete: Feed?
     
-    private var groupedFeeds: [(String, [Feed])] {
+    private var groupedFeeds: [(String, [(String, [Feed])])] {
         let calendar = Calendar.current
-        let grouped = Dictionary(grouping: feeds) { feed in
-            let date = calendar.startOfDay(for: feed.startTime)
-            return formatDate(date)
+        let dateGrouped = Dictionary(grouping: feeds) { feed in
+            calendar.startOfDay(for: feed.startTime)
         }
-        return grouped.sorted { $0.key > $1.key }
+        
+        return dateGrouped.keys.sorted { $0 > $1 }.map { date in
+            let dayFeeds = dateGrouped[date] ?? []
+            let timeGrouped = groupByTimeOfDay(dayFeeds)
+            return (formatDate(date), timeGrouped)
+        }
     }
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(groupedFeeds, id: \.0) { dateString, dayFeeds in
-                    Section {
-                        ForEach(dayFeeds) { feed in
-                            FeedHistoryRow(feed: feed)
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) {
-                                        feedToDelete = feed
-                                        showingDeleteConfirmation = true
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                    
-                                    Button {
-                                        feedToEdit = feed
-                                    } label: {
-                                        Label("Edit", systemImage: "pencil")
-                                    }
-                                    .tint(Color.orchidTintDark)
-                                }
-                        }
-                    } header: {
-                        HStack {
-                            Text(dateString)
-                                .font(AppFont.sectionTitle)
-                                .textCase(nil)
-                            
-                            Spacer()
-                            
-                            Text("\(dayFeeds.count) feeds • \(Int(dayFeeds.reduce(0) { $0 + $1.amount }))ml")
-                                .font(AppFont.caption)
-                                .foregroundStyle(Color.inkSecondary)
-                        }
-                    }
+            Group {
+                if feeds.isEmpty {
+                    EmptyHistoryView()
+                } else {
+                    timelineList
                 }
             }
-            
-            #if os(iOS)
-            .listStyle(.insetGrouped)
-            #endif
             .navigationTitle("History")
-            
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
             #endif
@@ -81,6 +51,49 @@ struct FeedHistoryView: View {
         }
     }
     
+    private var timelineList: some View {
+        List {
+            ForEach(groupedFeeds, id: \.0) { dateString, timeGroups in
+                Section {
+                    ForEach(timeGroups, id: \.0) { timeLabel, groupFeeds in
+                        TimeGroupSection(
+                            timeLabel: timeLabel,
+                            feeds: groupFeeds,
+                            feedToEdit: $feedToEdit,
+                            feedToDelete: $feedToDelete,
+                            showingDeleteConfirmation: $showingDeleteConfirmation
+                        )
+                    }
+                } header: {
+                    DateSectionHeader(dateString: dateString, feedCount: timeGroups.flatMap { $0.1 }.count)
+                }
+            }
+        }
+        #if os(iOS)
+        .listStyle(.insetGrouped)
+        #endif
+    }
+    
+    private func groupByTimeOfDay(_ feeds: [Feed]) -> [(String, [Feed])] {
+        let calendar = Calendar.current
+        let sorted = feeds.sorted { $0.startTime > $1.startTime }
+        
+        let grouped = Dictionary(grouping: sorted) { feed -> String in
+            let hour = calendar.component(.hour, from: feed.startTime)
+            switch hour {
+            case 6..<12: return "Morning"
+            case 12..<17: return "Afternoon"
+            case 17..<21: return "Evening"
+            default: return "Night"
+            }
+        }
+        
+        let order = ["Morning", "Afternoon", "Evening", "Night"]
+        return order.compactMap { key in
+            grouped[key].map { (key, $0) }
+        }
+    }
+    
     private func formatDate(_ date: Date) -> String {
         let calendar = Calendar.current
         if calendar.isDateInToday(date) {
@@ -93,27 +106,188 @@ struct FeedHistoryView: View {
     }
 }
 
-// MARK: - Feed History Row
-struct FeedHistoryRow: View {
-    let feed: Feed
+// MARK: - Empty History View
+struct EmptyHistoryView: View {
+    var body: some View {
+        VStack(spacing: AppSpacing.xl) {
+            Spacer()
+            
+            ZStack {
+                Circle()
+                    .fill(Color.almostAquaDark.opacity(0.08))
+                    .frame(width: 120, height: 120)
+                
+                Image(systemName: "clock.arrow.circlepath")
+                    .font(AppFont.sans(40, weight: .light))
+                    .foregroundStyle(Color.almostAquaDark.opacity(0.5))
+            }
+            
+            Text("No feeds yet")
+                .font(AppFont.serif(24))
+                .foregroundStyle(Color.inkPrimary)
+            
+            Text("Your feeding timeline will appear here")
+                .font(AppFont.body)
+                .foregroundStyle(Color.inkSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, AppSpacing.xxl)
+            
+            Spacer()
+        }
+        .background(Color.backgroundBase)
+    }
+}
+
+// MARK: - Date Section Header
+struct DateSectionHeader: View {
+    let dateString: String
+    let feedCount: Int
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack {
+            Text(dateString)
+                .font(AppFont.sectionTitle)
+                .textCase(nil)
+            
+            Spacer()
+            
+            Text("\(feedCount) feed\(feedCount == 1 ? "" : "s")")
+                .font(AppFont.caption)
+                .foregroundStyle(Color.inkSecondary)
+        }
+    }
+}
+
+// MARK: - Time Group Section
+struct TimeGroupSection: View {
+    let timeLabel: String
+    let feeds: [Feed]
+    @Binding var feedToEdit: Feed?
+    @Binding var feedToDelete: Feed?
+    @Binding var showingDeleteConfirmation: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(timeLabel)
+                .font(AppFont.sans(11, weight: .semibold))
+                .foregroundStyle(Color.inkSecondary.opacity(0.7))
+                .padding(.leading, 62)
+                .padding(.bottom, AppSpacing.sm)
+            
+            ForEach(Array(feeds.enumerated()), id: \.element.id) { index, feed in
+                let isLast = index == feeds.count - 1
+                TimelineRow(
+                    feed: feed,
+                    isLast: isLast,
+                    feedToEdit: $feedToEdit,
+                    feedToDelete: $feedToDelete,
+                    showingDeleteConfirmation: $showingDeleteConfirmation
+                )
+            }
+        }
+        .padding(.vertical, AppSpacing.sm)
+    }
+}
+
+// MARK: - Timeline Row
+struct TimelineRow: View {
+    let feed: Feed
+    let isLast: Bool
+    @Binding var feedToEdit: Feed?
+    @Binding var feedToDelete: Feed?
+    @Binding var showingDeleteConfirmation: Bool
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            // Time column
             VStack(alignment: .trailing, spacing: 2) {
                 Text(feed.startTime, style: .time)
-                    .font(AppFont.bodyLarge)
+                    .font(AppFont.body)
                 
                 if let endTime = feed.endTime {
                     Text(endTime, style: .time)
                         .font(AppFont.caption)
-                        .foregroundStyle(Color.inkSecondary)
+                        .foregroundStyle(Color.inkSecondary.opacity(0.6))
                 }
             }
-            .frame(width: 55)
+            .frame(width: 50)
             
-            TimelineDot(isActive: feed.endTime == nil)
+            // Timeline connector
+            TimelineConnector(
+                isActive: feed.endTime == nil,
+                isCompleted: feed.completed,
+                isLast: isLast
+            )
+            .frame(width: 24)
             
-            VStack(alignment: .leading, spacing: 4) {
+            // Feed card
+            FeedTimelineCard(feed: feed)
+                .swipeActions(edge: .trailing) {
+                    Button(role: .destructive) {
+                        feedToDelete = feed
+                        showingDeleteConfirmation = true
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    
+                    Button {
+                        feedToEdit = feed
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                    .tint(Color.orchidTintDark)
+                }
+        }
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Timeline Connector
+struct TimelineConnector: View {
+    let isActive: Bool
+    let isCompleted: Bool
+    let isLast: Bool
+    
+    var body: some View {
+        ZStack {
+            // Vertical line
+            if !isLast {
+                Rectangle()
+                    .fill(Color.inkSecondary.opacity(0.15))
+                    .frame(width: 2)
+                    .frame(maxHeight: .infinity)
+            }
+            
+            // Dot
+            Circle()
+                .fill(dotColor)
+                .frame(width: 10, height: 10)
+                .overlay(
+                    Circle()
+                        .stroke(dotColor.opacity(0.3), lineWidth: 3)
+                )
+        }
+    }
+    
+    private var dotColor: Color {
+        if isActive {
+            return Color.peachDustDark
+        } else if !isCompleted {
+            return Color.peachDustDark.opacity(0.6)
+        } else {
+            return Color.almostAquaDark
+        }
+    }
+}
+
+// MARK: - Feed Timeline Card
+struct FeedTimelineCard: View {
+    let feed: Feed
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(feed.formattedAmount)
                     .font(AppFont.body)
                 
@@ -137,23 +311,17 @@ struct FeedHistoryRow: View {
                     }
                 }
             }
+            
+            Spacer()
         }
-        .padding(.vertical, 4)
-    }
-}
-
-// MARK: - Timeline Dot
-struct TimelineDot: View {
-    let isActive: Bool
-    
-    var body: some View {
-        Circle()
-            .fill(Color.almostAquaDark)
-            .frame(width: 10, height: 10)
-            .overlay(
-                Circle()
-                    .stroke(Color.almostAquaDark.opacity(0.3), lineWidth: 3)
-            )
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.vertical, AppSpacing.sm)
+        .background(Color.backgroundCard)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
+                .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+        )
     }
 }
 
@@ -171,6 +339,7 @@ struct EditFeedView: View {
     @State private var notes: String = ""
     @State private var useDuration = false
     @State private var durationMinutes: String = ""
+    @State private var completed: Bool = true
     
     init(feed: Feed) {
         self.feed = feed
@@ -222,6 +391,10 @@ struct EditFeedView: View {
                     }
                 }
                 
+                Section("Completion") {
+                    Toggle("Finished whole bottle", isOn: $completed)
+                }
+                
                 Section("Notes") {
                     TextEditor(text: $notes)
                         .frame(minHeight: 100)
@@ -236,7 +409,6 @@ struct EditFeedView: View {
                 }
             }
             .navigationTitle("Edit Feed")
-            
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -253,6 +425,7 @@ struct EditFeedView: View {
                 startTime = feed.startTime
                 endTime = feed.endTime
                 notes = feed.notes
+                completed = feed.completed
                 useDuration = feed.endTime != nil
                 
                 if let duration = feed.duration {
@@ -277,7 +450,8 @@ struct EditFeedView: View {
             amount: amountValue,
             startTime: startTime,
             endTime: newEndTime,
-            notes: notes
+            notes: notes,
+            completed: completed
         )
         
         dismiss()
