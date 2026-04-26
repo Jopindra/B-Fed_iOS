@@ -1,9 +1,13 @@
 import SwiftUI
+import SwiftData
 
 struct SettingsView: View {
     @Environment(FeedStore.self) private var feedStore
     @State private var viewModel = SettingsViewModel()
     @State private var showingResetConfirmation = false
+    @State private var showingShareSheet = false
+    @State private var shareItems: [Any] = []
+    @Query(sort: \Feed.startTime, order: .reverse) private var feeds: [Feed]
     
     var body: some View {
         NavigationStack {
@@ -23,6 +27,9 @@ struct SettingsView: View {
             #endif
             .onAppear {
                 viewModel.load(from: feedStore.babyProfile)
+            }
+            .sheet(isPresented: $showingShareSheet) {
+                ActivityView(activityItems: shareItems)
             }
             .alert("Reset All Data?", isPresented: $showingResetConfirmation) {
                 Button("Cancel", role: .cancel) { }
@@ -112,13 +119,13 @@ struct SettingsView: View {
     private var dataSection: some View {
         Section("Data") {
             Button {
-                showingResetConfirmation = true
+                exportHistory()
             } label: {
                 HStack {
-                    Image(systemName: "arrow.counterclockwise")
-                        .foregroundStyle(Color.peachDustDark)
-                    Text("Reset all data")
-                        .foregroundStyle(Color.peachDustDark)
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundStyle(Color.almostAquaDark)
+                    Text("Export feed history")
+                        .foregroundStyle(Color.inkPrimary)
                 }
             }
             
@@ -130,7 +137,24 @@ struct SettingsView: View {
                         .foregroundStyle(Color.inkPrimary)
                 }
             }
+            
+            Button {
+                showingResetConfirmation = true
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.counterclockwise")
+                        .foregroundStyle(Color.peachDustDark)
+                    Text("Reset all data")
+                        .foregroundStyle(Color.peachDustDark)
+                }
+            }
         }
+    }
+    
+    private func exportHistory() {
+        let text = FeedExporter.exportText(profile: feedStore.babyProfile, feeds: feeds)
+        shareItems = [text]
+        showingShareSheet = true
     }
 }
 
@@ -181,7 +205,8 @@ final class SettingsViewModel {
 }
 
 #Preview {
+    let store = FeedStore()
     SettingsView()
-        .environment(FeedStore())
+        .environment(store)
         .modelContainer(for: [Feed.self, BabyProfile.self], inMemory: true)
 }
