@@ -24,6 +24,7 @@
 		203106382CD7D987C0FD8685 /* OnboardingStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D3448E555A451B80DFF444C /* OnboardingStepView.swift */; };
 		20B812988E677540CB532A7B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F5882D1DB5476847D0C7932 /* Foundation.framework */; };
 		31D6AF9138E0E5D8226BC86A /* WidgetDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A25DD8104577E541C4E4D6 /* WidgetDataStore.swift */; };
+		35AABB5295F97D33443DE59F /* SharedModelContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D26F73E7C038F66C84B5D5 /* SharedModelContainer.swift */; };
 		366858B9855266FA268C92F2 /* FeedStatisticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5302F0B4575FBB4C0E9DBAF2 /* FeedStatisticsTests.swift */; };
 		3816CACF909FC65DFC1EC264 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9910F7EC7D2773B315A75012 /* Clock.swift */; };
 		40539E84DFD83544B734F29D /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F10765D68BFFCB33063561B /* Feed.swift */; };
@@ -166,6 +167,7 @@
 		F44850DA8F17DE250148E262 /* B_FedWidgetBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = B_FedWidgetBundle.swift; sourceTree = "<group>"; };
 		F482A372343472AFB6E974A6 /* BabyWeightScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BabyWeightScreen.swift; sourceTree = "<group>"; };
 		F7594D47BEFE0EEB9FF4AAA4 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Components.swift; path = "B-Fed/DesignSystem/Components.swift"; sourceTree = SOURCE_ROOT; };
+		F9D26F73E7C038F66C84B5D5 /* SharedModelContainer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedModelContainer.swift; sourceTree = "<group>"; };
 		FA4744FBB7046A2E0228682F /* DMSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "DMSans-Medium.ttf"; path = "B-Fed/Fonts/DMSans-Medium.ttf"; sourceTree = SOURCE_ROOT; };
 		FEB08BBC74F4A5E0F9681B8E /* B-FedTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; name = "B-FedTests.xctest"; path = "B-FedTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		e6d636de-218b-49e6-b7ec-c3ecd453328e /* WelcomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WelcomeScreen.swift; path = "B-Fed/Views/Onboarding/WelcomeScreen.swift"; sourceTree = SOURCE_ROOT; };
@@ -314,6 +316,7 @@
 				edb600d8-4fbe-40e9-8408-7fb0584bf4c6 /* TimePeriod.swift */,
 				4F10765D68BFFCB33063561B /* Feed.swift */,
 				BB24DC99A00E9FA38C617D33 /* FeedActivityAttributes.swift */,
+				F9D26F73E7C038F66C84B5D5 /* SharedModelContainer.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -596,6 +599,7 @@
 				49CF7C77B27DD52D50B507DC /* FeedExporter.swift in Sources */,
 				0E6B0666FA17FDD252364D04 /* ActivityView.swift in Sources */,
 				31D6AF9138E0E5D8226BC86A /* WidgetDataStore.swift in Sources */,
+				35AABB5295F97D33443DE59F /* SharedModelContainer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
