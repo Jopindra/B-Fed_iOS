@@ -31,6 +31,9 @@ struct MonthView: View {
             Spacer()
         }
         .background(Color.backgroundCard)
+        .onAppear {
+            loadMonthData()
+        }
     }
     
     // MARK: - Header
@@ -45,6 +48,7 @@ struct MonthView: View {
     
     private var monthTitle: String {
         let formatter = DateFormatter()
+        formatter.locale = Locale.current
         formatter.dateFormat = "MMMM"
         return formatter.string(from: currentMonth)
     }
@@ -102,34 +106,22 @@ struct MonthView: View {
         }
     }
     
-    init() {
-        // TODO: Replace sample data with real feed data from FeedStore
-        _monthData = State(initialValue: generateSampleMonthData())
-    }
-    
-    private func generateSampleMonthData() -> [DayCompletion] {
+    private func loadMonthData() {
         let calendar = Calendar.current
         let today = Date()
+        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth)) ?? today
+        let range = calendar.range(of: .day, in: .month, for: startOfMonth) ?? 1..<32
+        
         var data: [DayCompletion] = []
-        
-        // Generate ~30 days with realistic pattern
-        let loggedPattern = [
-            false, false, // prev month
-            true, true, true, false, true,  // week 1
-            true, true, true, true, false, true, // week 2
-            true, true, false, true, true, true,  // week 3
-            true, true, true, false, true, true,  // week 4
-            false, true, true, false, false, false, // week 5
-            false, false // next month
-        ]
-        
-        for (index, isLogged) in loggedPattern.enumerated() {
-            guard let date = calendar.date(byAdding: .day, value: index - 2, to: today) else { continue }
+        for day in range {
+            guard let date = calendar.date(byAdding: .day, value: day - 1, to: startOfMonth) else { continue }
+            let feeds = store.fetchFeeds(for: date)
+            let isLogged = !feeds.isEmpty
             let isToday = calendar.isDateInToday(date)
             data.append(DayCompletion(date: date, isLogged: isLogged, isToday: isToday))
         }
         
-        return data
+        monthData = data
     }
 }
 

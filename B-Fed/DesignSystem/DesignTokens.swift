@@ -82,12 +82,12 @@ enum AppFont {
         case .bold: name = "DMSans-Bold"
         default: name = "DMSans-Regular"
         }
-        return Font.custom(name, size: size)
+        return Font.custom(name, size: size, relativeTo: .body)
     }
 
     // DM Serif Display
     static func serif(_ size: CGFloat) -> Font {
-        Font.custom("DMSerifDisplay-Regular", size: size)
+        Font.custom("DMSerifDisplay-Regular", size: size, relativeTo: .body)
     }
 
     // Type scale
@@ -133,4 +133,19 @@ enum AppRadius {
     static let card: CGFloat   = 16
     static let hero: CGFloat   = 20
     static let pill: CGFloat   = 26
+}
+
+// MARK: - Metrics Tokens
+enum AppMetrics {
+    static let inputHeight: CGFloat = 58
+    static let toggleHeight: CGFloat = 48
+    static let buttonHeight: CGFloat = 54
+    static let borderOpacity: CGFloat = 0.07
+    static let borderWidth: CGFloat = 0.5
+    static let blobScaleLarge: CGFloat = 0.62
+    static let blobScaleMedium: CGFloat = 0.55
+    static let blobScaleSmall: CGFloat = 0.35
+    static let blobOpacityStrong: CGFloat = 0.80
+    static let blobOpacityMedium: CGFloat = 0.70
+    static let blobOpacitySubtle: CGFloat = 0.65
 }

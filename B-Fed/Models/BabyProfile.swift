@@ -19,6 +19,8 @@ class BabyProfile {
     var birthWeight: Double? // in grams
     var currentWeight: Double? // in grams
     var feedingType: FeedingType
+    var formulaBrand: String?
+    var formulaStage: FormulaStage?
     
     var createdAt: Date
     var updatedAt: Date
@@ -33,7 +35,9 @@ class BabyProfile {
         dateOfBirth: Date = Date(),
         birthWeight: Double? = nil,
         currentWeight: Double? = nil,
-        feedingType: FeedingType = .formula
+        feedingType: FeedingType = .formula,
+        formulaBrand: String? = nil,
+        formulaStage: FormulaStage? = nil
     ) {
         self.id = id
         self.parentName = parentName
@@ -45,6 +49,8 @@ class BabyProfile {
         self.birthWeight = birthWeight
         self.currentWeight = currentWeight
         self.feedingType = feedingType
+        self.formulaBrand = formulaBrand
+        self.formulaStage = formulaStage
         self.createdAt = Date()
         self.updatedAt = Date()
     }
@@ -115,6 +121,30 @@ enum FeedingType: String, Codable, CaseIterable {
 }
 
 // MARK: - Profile Status
+// MARK: - Formula Stage
+enum FormulaStage: String, Codable, CaseIterable {
+    case newborn = "newborn"
+    case stage1 = "stage1"
+    case stage2 = "stage2"
+    case stage3 = "stage3"
+    case toddler = "toddler"
+    
+    var displayName: String {
+        switch self {
+        case .newborn:
+            return "Newborn (0–6 months)"
+        case .stage1:
+            return "Stage 1 (0–6 months)"
+        case .stage2:
+            return "Stage 2 (6–12 months)"
+        case .stage3:
+            return "Stage 3 (1–2 years)"
+        case .toddler:
+            return "Toddler (2+ years)"
+        }
+    }
+}
+
 enum ProfileSetupStatus {
     case notStarted
     case needsOnboarding

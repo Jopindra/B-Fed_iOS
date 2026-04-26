@@ -196,6 +196,102 @@ struct ProgressBar: View {
     }
 }
 
+// MARK: - Onboarding Input Field
+
+struct OnboardingInputField: View {
+    let label: String?
+    let placeholder: String
+    @Binding var text: String
+    var keyboardType: UIKeyboardType = .default
+    var submitLabel: SubmitLabel = .return
+    var accessibilityIdentifier: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            if let label = label {
+                Text(label)
+                    .font(AppFont.sans(12, weight: .semibold))
+                    .foregroundColor(.inkPrimary)
+            }
+            TextField(label ?? "", text: $text, prompt: Text(placeholder).foregroundColor(.orchidTint))
+                .font(AppFont.sans(17))
+                .foregroundColor(.inkPrimary)
+                .keyboardType(keyboardType)
+                .submitLabel(submitLabel)
+                .ifLet(accessibilityIdentifier) { view, id in
+                    view.accessibilityIdentifier(id)
+                }
+                .padding(.horizontal, AppSpacing.lg)
+                .frame(height: AppMetrics.inputHeight)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
+                        .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                )
+        }
+    }
+}
+
+// MARK: - Unit Toggle
+
+struct UnitToggle: View {
+    @Binding var unit: String
+    let options: [(label: String, value: String)]
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(options, id: \.value) { option in
+                let isSelected = unit == option.value
+                Button(action: { unit = option.value }) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 11, style: .continuous)
+                            .fill(Color.inkPrimary)
+                            .padding(4)
+                            .opacity(isSelected ? 1 : 0)
+                        Text(option.label)
+                            .font(AppFont.sans(14, weight: .semibold))
+                            .foregroundColor(isSelected ? .white : .inkSecondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(option.label)
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
+            }
+        }
+        .frame(height: AppMetrics.toggleHeight)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+        )
+    }
+}
+
+// MARK: - Conditional Modifier Helper
+
+extension View {
+    @ViewBuilder
+    func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+
+    @ViewBuilder
+    func ifLet<T, Content: View>(_ value: T?, transform: (Self, T) -> Content) -> some View {
+        if let value = value {
+            transform(self, value)
+        } else {
+            self
+        }
+    }
+}
+
 // MARK: - Bottom Tab Bar Style
 
 struct TabBarStyle: ViewModifier {

@@ -7,19 +7,18 @@ import SwiftData
 @MainActor
 struct PreviewContainer<Content: View>: View {
     let content: Content
-    
+
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
-    
+
     var body: some View {
         content
             .environment(feedStore)
     }
-    
+
     private var feedStore: FeedStore {
         let store = FeedStore()
-        // Preview doesn't need a real model context for onboarding
         return store
     }
 }
@@ -32,53 +31,52 @@ struct PreviewContainer<Content: View>: View {
     }
 }
 
-#Preview("Form Screen") {
+#Preview("Parent Name Screen") {
     PreviewContainer {
-        ParentBabyFormScreen(
+        ParentNameScreen(
             parentName: .constant(""),
+            onBack: { },
+            onContinue: { }
+        )
+    }
+}
+
+#Preview("Parent Email Screen") {
+    PreviewContainer {
+        ParentEmailScreen(
             parentEmail: .constant(""),
-            parentDOB: .constant(Date()),
-            country: .constant(""),
-            babyName: .constant(""),
-            babyDOB: .constant(Date()),
-            babyWeight: .constant(""),
-            showingValidationErrors: .constant(false),
-            onContinue: { },
-            onBack: { }
+            onBack: { },
+            onContinue: { }
         )
     }
 }
 
-#Preview("Form Screen - With Data") {
+#Preview("Country Screen") {
     PreviewContainer {
-        ParentBabyFormScreen(
-            parentName: .constant("Sarah"),
-            parentEmail: .constant("sarah@email.com"),
-            parentDOB: .constant(Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date()),
-            country: .constant("Australia"),
-            babyName: .constant("Lily"),
-            babyDOB: .constant(Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()),
-            babyWeight: .constant("3.5"),
-            showingValidationErrors: .constant(false),
-            onContinue: { },
-            onBack: { }
+        CountryScreen(
+            country: .constant(""),
+            onBack: { },
+            onContinue: { }
         )
     }
 }
 
-#Preview("Form Screen - Validation Errors") {
+#Preview("Baby Name Screen") {
     PreviewContainer {
-        ParentBabyFormScreen(
-            parentName: .constant(""),
-            parentEmail: .constant("invalid"),
-            parentDOB: .constant(Date()),
-            country: .constant(""),
+        BabyNameScreen(
             babyName: .constant(""),
+            onBack: { },
+            onContinue: { }
+        )
+    }
+}
+
+#Preview("Baby DOB Screen") {
+    PreviewContainer {
+        BabyDOBScreen(
             babyDOB: .constant(Date()),
-            babyWeight: .constant(""),
-            showingValidationErrors: .constant(true),
-            onContinue: { },
-            onBack: { }
+            onBack: { },
+            onContinue: { }
         )
     }
 }
@@ -86,9 +84,11 @@ struct PreviewContainer<Content: View>: View {
 #Preview("Feeding Type Screen") {
     PreviewContainer {
         FeedingTypeScreen(
-            feedingType: .constant(nil),
-            onContinue: { },
-            onBack: { }
+            feedingType: .constant(""),
+            formulaBrand: .constant(""),
+            formulaStage: .constant(""),
+            onBack: { },
+            onContinue: { }
         )
     }
 }
@@ -96,9 +96,11 @@ struct PreviewContainer<Content: View>: View {
 #Preview("Feeding Type - Formula Selected") {
     PreviewContainer {
         FeedingTypeScreen(
-            feedingType: .constant(.formula),
-            onContinue: { },
-            onBack: { }
+            feedingType: .constant("formula"),
+            formulaBrand: .constant("Aptamil"),
+            formulaStage: .constant("stage1"),
+            onBack: { },
+            onContinue: { }
         )
     }
 }
@@ -106,17 +108,22 @@ struct PreviewContainer<Content: View>: View {
 #Preview("Feeding Type - Breast Selected") {
     PreviewContainer {
         FeedingTypeScreen(
-            feedingType: .constant(.breast),
-            onContinue: { },
-            onBack: { }
+            feedingType: .constant("breast"),
+            formulaBrand: .constant(""),
+            formulaStage: .constant(""),
+            onBack: { },
+            onContinue: { }
         )
     }
 }
 
-#Preview("Completion Screen") {
+#Preview("Baby Weight Screen") {
     PreviewContainer {
-        CompletionScreen(
-            onStart: { },
+        BabyWeightScreen(
+            birthWeight: .constant(""),
+            currentWeight: .constant(""),
+            weightUnit: .constant("kg"),
+            onContinue: { },
             onBack: { }
         )
     }
@@ -124,6 +131,6 @@ struct PreviewContainer<Content: View>: View {
 
 #Preview("Full Onboarding Flow") {
     PreviewContainer {
-        OnboardingView()
+        OnboardingView(onComplete: {})
     }
 }

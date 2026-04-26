@@ -662,11 +662,19 @@ struct FeedRow: View {
                 .frame(width: 50)
             
             Circle()
-                .fill(Color.almostAquaDark)
+                .fill(feed.completed ? Color.almostAquaDark : Color.peachDustDark.opacity(0.6))
                 .frame(width: 8, height: 8)
             
-            Text(feed.formattedAmount)
-                .font(AppFont.body)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(feed.formattedAmount)
+                    .font(AppFont.body)
+                
+                if !feed.completed {
+                    Text("Left some")
+                        .font(AppFont.caption)
+                        .foregroundStyle(Color.peachDustDark.opacity(0.9))
+                }
+            }
             
             Spacer()
         }

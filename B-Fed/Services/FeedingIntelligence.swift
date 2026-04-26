@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Feeding Intelligence
 /// Gentle, supportive feeding guidance without pressure
-class FeedingIntelligence {
+enum FeedingIntelligence {
     
     // MARK: - Daily Intake Calculation
     
@@ -100,12 +100,12 @@ class FeedingIntelligence {
         
         // On track
         if percentage >= 80 {
-            return ["You're right on track", "Doing great today", "Perfect progress"].randomElement()!
+            return ["You're right on track", "Doing great today", "Perfect progress"].randomElement() ?? "You're doing great"
         }
         
         // Getting there
         if percentage >= 50 {
-            return ["Building steadily", "You're doing fine", "Gentle progress"].randomElement()!
+            return ["Building steadily", "You're doing fine", "Gentle progress"].randomElement() ?? "You're doing great"
         }
         
         // Lower intake - provide reassurance
@@ -117,7 +117,7 @@ class FeedingIntelligence {
                 "You're responding perfectly to their needs",
                 "Some days are simply lighter — that's okay"
             ]
-            return reassurances.randomElement()!
+            return reassurances.randomElement() ?? "You're doing great"
         }
         
         return "You're doing great"
@@ -276,7 +276,7 @@ struct PerFeedGuide {
 
 // MARK: - Reassurance Engine
 
-struct ReassuranceEngine {
+enum ReassuranceEngine {
     
     /// Messages for low intake days
     static func lowIntakeReassurance() -> String {
@@ -287,7 +287,7 @@ struct ReassuranceEngine {
             "You're responding perfectly to their needs",
             "Some days are simply lighter — that's okay",
             "Baby leads, you follow — you're doing it right"
-        ].randomElement()!
+        ].randomElement() ?? "Frequent small feeds are completely normal"
     }
     
     /// Messages for consistent logging
@@ -297,7 +297,7 @@ struct ReassuranceEngine {
             "Great rhythm developing",
             "Consistency is emerging naturally",
             "You're finding your groove"
-        ].randomElement()!
+        ].randomElement() ?? "You're building a beautiful routine"
     }
     
     /// Messages for improving intake
@@ -307,7 +307,7 @@ struct ReassuranceEngine {
             "Baby is thriving",
             "Wonderful progress together",
             "You're both doing beautifully"
-        ].randomElement()!
+        ].randomElement() ?? "Great growth happening"
     }
     
     /// Messages after logging a feed
@@ -318,6 +318,6 @@ struct ReassuranceEngine {
             "Keep it up",
             "Well done",
             "Perfect"
-        ].randomElement()!
+        ].randomElement() ?? "Nice one"
     }
 }

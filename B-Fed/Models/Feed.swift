@@ -10,6 +10,7 @@ class Feed {
     var unit: FeedUnit
     var notes: String
     var createdAt: Date
+    var completed: Bool
     
     init(
         id: UUID = UUID(),
@@ -17,7 +18,8 @@ class Feed {
         endTime: Date? = nil,
         amount: Double,
         unit: FeedUnit = .milliliters,
-        notes: String = ""
+        notes: String = "",
+        completed: Bool = true
     ) {
         self.id = id
         self.startTime = startTime
@@ -26,6 +28,7 @@ class Feed {
         self.unit = unit
         self.notes = notes
         self.createdAt = Date()
+        self.completed = completed
     }
     
     /// Returns the duration of the feed in minutes

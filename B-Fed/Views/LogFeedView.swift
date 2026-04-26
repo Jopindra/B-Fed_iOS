@@ -7,6 +7,8 @@ struct LogFeedView: View {
     @State private var amount: Double = 90
     @State private var isDragging = false
     @State private var showingTimer = false
+    @State private var showingConfirmation = false
+    @State private var lastSavedFeed: Feed?
     
     private var perFeedGuidance: String {
         feedStore.perFeedGuide.display
@@ -86,13 +88,26 @@ struct LogFeedView: View {
                 let midPoint = (guide.typical.min + guide.typical.max) / 2
                 amount = Double(midPoint)
             }
+            .fullScreenCover(isPresented: $showingConfirmation) {
+                FeedConfirmationView(
+                    babyName: feedStore.babyProfile?.babyName ?? "your baby",
+                    onComplete: confirmFeed
+                )
+            }
         }
     }
     
     private func saveFeed() {
         guard amount > 0 else { return }
         
-        _ = feedStore.createFeed(amount: amount)
+        lastSavedFeed = feedStore.createFeed(amount: amount)
+        showingConfirmation = true
+    }
+    
+    private func confirmFeed(completed: Bool) {
+        if let feed = lastSavedFeed {
+            feedStore.updateFeed(feed, amount: feed.amount, startTime: feed.startTime, endTime: feed.endTime, notes: feed.notes, completed: completed)
+        }
         dismiss()
     }
 }
@@ -106,23 +121,27 @@ struct AmountScrubber: View {
     @State private var dragStartAmount: Double = 0
     @State private var scale: CGFloat = 1.0
     @State private var isHorizontalDrag: Bool = false
+    @State private var textInput: String = ""
+    @FocusState private var isTextFieldFocused: Bool
     
     private let magneticPoints = [60, 90, 120, 150, 180]
     private let magneticRange: Double = 5
     
     var body: some View {
         VStack(spacing: 12) {
-            // Amount Display
+            // Amount Display (drag gesture for sighted users)
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text("\(Int(amount))")
                     .font(AppFont.serif(96))
                     .foregroundStyle(Color.inkPrimary)
                     .monospacedDigit()
                     .scaleEffect(scale)
+                    .accessibilityHidden(true)
                 
                 Text("ml")
                     .font(AppFont.serif(28))
                     .foregroundStyle(Color.inkSecondary)
+                    .accessibilityHidden(true)
             }
             .gesture(
                 DragGesture()
@@ -130,11 +149,21 @@ struct AmountScrubber: View {
                     .onEnded(handleDragEnd)
             )
             
+            // Accessibility fallback: text field for VoiceOver / precise input
+            TextField("Amount in millilitres", value: $amount, format: .number)
+                .font(AppFont.sans(17))
+                .keyboardType(.numberPad)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 200)
+                .accessibilityLabel("Feed amount")
+                .accessibilityHint("Enter amount in millilitres")
+                .focused($isTextFieldFocused)
+            
             // Helper
             Text("Swipe to adjust")
                 .font(AppFont.body)
                 .foregroundStyle(Color.inkSecondary.opacity(0.7))
-                .opacity(isDragging ? 0 : 1)
+                .opacity(isDragging || isTextFieldFocused ? 0 : 1)
         }
     }
     
@@ -232,6 +261,7 @@ struct TimerView: View {
             Text(displayTime)
                 .font(AppFont.sans(32, weight: .medium))
                 .monospacedDigit()
+                .accessibilityLabel("Elapsed time: \(displayTime)")
             
             Spacer()
             
@@ -244,8 +274,13 @@ struct TimerView: View {
                     .clipShape(Circle())
             }
             .buttonStyle(GentlePressEffect())
+            .accessibilityLabel(isRunning ? "Stop timer" : "Start timer")
         }
         .cardStyle()
+        .onDisappear {
+            timer?.invalidate()
+            timer = nil
+        }
     }
     
     private func toggleTimer() {
@@ -262,6 +297,83 @@ struct TimerView: View {
 }
 
 
+
+// MARK: - Feed Confirmation View
+struct FeedConfirmationView: View {
+    let babyName: String
+    let onComplete: (Bool) -> Void
+    
+    var body: some View {
+        ZStack {
+            Color.backgroundBase.ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                Spacer().frame(height: AppSpacing.xxl)
+                
+                ZStack {
+                    Circle()
+                        .fill(Color.almostAquaDark.opacity(0.08))
+                        .frame(width: 140, height: 140)
+                    
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(AppFont.sans(56, weight: .light))
+                        .foregroundStyle(Color.almostAquaDark)
+                }
+                
+                Spacer().frame(height: AppSpacing.xl)
+                
+                Text("Feed logged")
+                    .font(AppFont.serif(28))
+                    .foregroundStyle(Color.inkPrimary)
+                
+                Spacer().frame(height: AppSpacing.md)
+                
+                Text("Did \(babyName) finish the whole bottle?")
+                    .font(AppFont.bodyLarge)
+                    .foregroundStyle(Color.inkSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, AppSpacing.xl)
+                
+                Spacer().frame(height: AppSpacing.xxl)
+                
+                VStack(spacing: AppSpacing.md) {
+                    Button {
+                        onComplete(true)
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "checkmark")
+                                .font(AppFont.body)
+                            Text("Yes, all of it")
+                                .font(AppFont.bodyLarge)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .primaryButton()
+                    }
+                    .buttonStyle(GentlePressEffect())
+                    .accessibilityLabel("Yes, finished whole bottle")
+                    
+                    Button {
+                        onComplete(false)
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "minus.circle")
+                                .font(AppFont.body)
+                            Text("Left some")
+                                .font(AppFont.bodyLarge)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .foregroundStyle(Color.inkSecondary)
+                        .padding(.vertical, AppSpacing.md)
+                    }
+                    .accessibilityLabel("No, left some milk")
+                }
+                .padding(.horizontal, AppSpacing.xl)
+                
+                Spacer(minLength: 60)
+            }
+        }
+    }
+}
 
 #Preview {
     LogFeedView()

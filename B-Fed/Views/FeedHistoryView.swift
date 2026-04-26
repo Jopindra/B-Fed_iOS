@@ -124,6 +124,12 @@ struct FeedHistoryRow: View {
                             .foregroundStyle(Color.inkSecondary)
                     }
                     
+                    if !feed.completed {
+                        Label("Left some", systemImage: "minus.circle")
+                            .font(AppFont.caption)
+                            .foregroundStyle(Color.peachDustDark.opacity(0.9))
+                    }
+                    
                     if !feed.notes.isEmpty {
                         Label("Note", systemImage: "text.alignleft")
                             .font(AppFont.caption)
