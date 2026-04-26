@@ -69,6 +69,51 @@ class FeedStore {
         babyProfile = profile
         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
     }
+    
+    func updateBabyProfile(
+        babyName: String? = nil,
+        feedingType: FeedingType? = nil,
+        formulaBrand: String? = nil,
+        formulaStage: FormulaStage? = nil,
+        currentWeight: Double? = nil,
+        parentName: String? = nil,
+        parentEmail: String? = nil
+    ) {
+        guard let profile = babyProfile else { return }
+        
+        if let babyName = babyName { profile.babyName = babyName }
+        if let feedingType = feedingType { profile.feedingType = feedingType }
+        if let formulaBrand = formulaBrand { profile.formulaBrand = formulaBrand }
+        if let formulaStage = formulaStage { profile.formulaStage = formulaStage }
+        if let currentWeight = currentWeight { profile.currentWeight = currentWeight }
+        if let parentName = parentName { profile.parentName = parentName }
+        if let parentEmail = parentEmail { profile.parentEmail = parentEmail }
+        
+        profile.updatedAt = Date()
+        persist()
+    }
+    
+    func deleteAllData() {
+        guard let context = modelContext else { return }
+        
+        let feedDescriptor = FetchDescriptor<Feed>()
+        let profileDescriptor = FetchDescriptor<BabyProfile>()
+        
+        do {
+            let feeds = try context.fetch(feedDescriptor)
+            feeds.forEach { context.delete($0) }
+            
+            let profiles = try context.fetch(profileDescriptor)
+            profiles.forEach { context.delete($0) }
+            
+            persist()
+            babyProfile = nil
+            UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
+            DismissedTipStore.reset()
+        } catch {
+            logger.log(error, context: "DeleteAllData")
+        }
+    }
 
     var hasCompletedOnboarding: Bool {
         babyProfile != nil

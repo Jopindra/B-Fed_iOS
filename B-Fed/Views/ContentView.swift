@@ -20,6 +20,12 @@ struct ContentView: View {
                     Label("History", systemImage: "list.bullet")
                 }
                 .tag(1)
+            
+            SettingsView()
+                .tabItem {
+                    Label("More", systemImage: "ellipsis")
+                }
+                .tag(2)
         }
         .tabBarStyled()
         .overlay(alignment: .bottom) {
