@@ -137,6 +137,7 @@
 		9096749449356EC030DB829A /* OnboardingValidationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingValidationTests.swift; sourceTree = "<group>"; };
 		919A072D0A2935D967BEF718 /* SettingsViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsViewModelTests.swift; sourceTree = "<group>"; };
 		939AF6362F487B90EEDF7DD7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9580075DA11062A5CBEF40E7 /* B-Fed.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = "B-Fed.entitlements"; sourceTree = "<group>"; };
 		96B7C0861F56EA464ABBE57E /* ParentNameScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParentNameScreen.swift; sourceTree = "<group>"; };
 		96F62B613846CFF9FCADA08C /* DesignTokensTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DesignTokensTests.swift; sourceTree = "<group>"; };
 		9910F7EC7D2773B315A75012 /* Clock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
@@ -248,6 +249,7 @@
 				939AF6362F487B90EEDF7DD7 /* Info.plist */,
 				173B47E39FCCFCA4144D73A1 /* Fonts */,
 				29F2926EEB262289AA942782 /* Utilities */,
+				9580075DA11062A5CBEF40E7 /* B-Fed.entitlements */,
 			);
 			path = "B-Fed";
 			sourceTree = "<group>";
@@ -579,6 +581,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "B-Fed/B-Fed.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -722,6 +725,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "B-Fed/B-Fed.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
