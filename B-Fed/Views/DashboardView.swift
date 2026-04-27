@@ -663,7 +663,9 @@ struct FeedRow: View {
         HStack(spacing: 12) {
             Text(feed.startTime, style: .time)
                 .font(AppFont.bodyLarge)
-                .frame(width: 50)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .frame(width: 58, alignment: .leading)
             
             Circle()
                 .fill(feed.completed ? Color.almostAquaDark : Color.peachDustDark.opacity(0.6))
@@ -737,30 +739,30 @@ struct PrepGuideLink: View {
 struct TipsSection: View {
     @Environment(FeedStore.self) private var feedStore
     @Query(sort: \Feed.startTime, order: .reverse) private var feeds: [Feed]
-    @State private var tips: [Tip] = []
+    @State private var dismissedIds: Set<String> = []
+    
+    private var tips: [Tip] {
+        let allTips = TipEngine.tips(for: feedStore.babyProfile, feeds: feeds)
+        return allTips.filter { !dismissedIds.contains($0.id) && !DismissedTipStore.isDismissed($0.id) }
+    }
     
     var body: some View {
-        let visibleTips = tips.filter { !DismissedTipStore.isDismissed($0.id) }
-        
-        if !visibleTips.isEmpty {
+        if !tips.isEmpty {
             VStack(alignment: .leading, spacing: AppSpacing.md) {
                 Text("A gentle note")
                     .font(AppFont.sectionTitle)
                     .foregroundStyle(Color.inkSecondary)
                 
                 VStack(spacing: AppSpacing.md) {
-                    ForEach(visibleTips) { tip in
+                    ForEach(tips) { tip in
                         TipBubble(tip: tip) {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                                 DismissedTipStore.dismiss(tip.id)
-                                tips.removeAll { $0.id == tip.id }
+                                dismissedIds.insert(tip.id)
                             }
                         }
                     }
                 }
-            }
-            .onAppear {
-                tips = TipEngine.tips(for: feedStore.babyProfile, feeds: feeds)
             }
         }
     }

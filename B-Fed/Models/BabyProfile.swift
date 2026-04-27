@@ -5,25 +5,25 @@ import SwiftData
 /// Stores baby information for intelligent feeding guidance
 @Model
 class BabyProfile {
-    var id: UUID
+    var id: UUID = UUID()
     
     // Parent information
-    var parentName: String
-    var parentEmail: String
-    var parentDOB: Date
-    var country: String
+    var parentName: String = ""
+    var parentEmail: String = ""
+    var parentDOB: Date = Date()
+    var country: String = ""
     
     // Baby information
-    var babyName: String
-    var dateOfBirth: Date
+    var babyName: String = "Baby"
+    var dateOfBirth: Date = Date()
     var birthWeight: Double? // in grams
     var currentWeight: Double? // in grams
-    var feedingType: FeedingType
+    var feedingType: FeedingType = FeedingType.formula
     var formulaBrand: String?
     var formulaStage: FormulaStage?
     
-    var createdAt: Date
-    var updatedAt: Date
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     init(
         id: UUID = UUID(),

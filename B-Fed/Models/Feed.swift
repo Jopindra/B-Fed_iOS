@@ -3,14 +3,14 @@ import SwiftData
 
 @Model
 class Feed {
-    var id: UUID
-    var startTime: Date
+    var id: UUID = UUID()
+    var startTime: Date = Date()
     var endTime: Date?
-    var amount: Double
-    var unit: FeedUnit
-    var notes: String
-    var createdAt: Date
-    var completed: Bool
+    var amount: Double = 0
+    var unit: FeedUnit = FeedUnit.milliliters
+    var notes: String = ""
+    var createdAt: Date = Date()
+    var completed: Bool = true
     
     init(
         id: UUID = UUID(),

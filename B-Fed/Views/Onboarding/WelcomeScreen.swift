@@ -226,10 +226,6 @@ struct WelcomeScreen: View {
                         .accessibilityHint("Begins the onboarding setup")
                         .accessibilityIdentifier("onboarding-getStarted-button")
 
-                        Text("Already have an account? Sign in")
-                            .font(AppFont.sans(11))
-                            .foregroundColor(.orchidTintDark)
-                            .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .padding(.horizontal, 18)
                     .padding(.bottom, max(geometry.safeAreaInsets.bottom, 34) + 16)

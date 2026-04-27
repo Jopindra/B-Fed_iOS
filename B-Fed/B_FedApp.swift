@@ -31,8 +31,9 @@ struct B_FedApp: App {
     @State private var showOnboarding: Bool
     
     init() {
+        let isDemoMode = CommandLine.arguments.contains("--demo") || UserDefaults.standard.bool(forKey: "isDemoMode")
         let hasCompleted = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
-        _showOnboarding = State(initialValue: !hasCompleted)
+        _showOnboarding = State(initialValue: !(hasCompleted || isDemoMode))
     }
     
     var body: some Scene {

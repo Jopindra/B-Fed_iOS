@@ -203,14 +203,18 @@ struct TimelineRow: View {
             VStack(alignment: .trailing, spacing: 2) {
                 Text(feed.startTime, style: .time)
                     .font(AppFont.body)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 
                 if let endTime = feed.endTime {
                     Text(endTime, style: .time)
                         .font(AppFont.caption)
                         .foregroundStyle(Color.inkSecondary.opacity(0.6))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
             }
-            .frame(width: 50)
+            .frame(width: 56)
             
             // Timeline connector
             TimelineConnector(

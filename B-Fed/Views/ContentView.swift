@@ -39,6 +39,43 @@ struct ContentView: View {
         }
         .onAppear {
             feedStore.setModelContext(modelContext)
+            if CommandLine.arguments.contains("--demo") {
+                populateDemoDataIfNeeded()
+            }
+        }
+    }
+    
+    private func populateDemoDataIfNeeded() {
+        guard feedStore.babyProfile == nil else { return }
+        
+        let profile = BabyProfile(
+            parentName: "Sarah",
+            parentEmail: "sarah@example.com",
+            parentDOB: Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date(),
+            country: "Australia",
+            babyName: "Lily",
+            dateOfBirth: Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date(),
+            birthWeight: 3400,
+            currentWeight: 4200,
+            feedingType: .formula,
+            formulaBrand: "Aptamil",
+            formulaStage: .stage1
+        )
+        feedStore.saveBabyProfile(profile)
+        
+        // Add some sample feeds for today
+        let calendar = Calendar.current
+        let now = Date()
+        let feedTimes = [
+            calendar.date(byAdding: .hour, value: -2, to: now)!,
+            calendar.date(byAdding: .hour, value: -5, to: now)!,
+            calendar.date(byAdding: .hour, value: -8, to: now)!
+        ]
+        let amounts = [120.0, 90.0, 150.0]
+        let completeds = [true, false, true]
+        
+        for (index, time) in feedTimes.enumerated() {
+            _ = feedStore.createFeed(amount: amounts[index], startTime: time, notes: "", completed: completeds[index])
         }
     }
 }
