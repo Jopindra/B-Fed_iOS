@@ -44,6 +44,13 @@ struct LogFeedView: View {
                         .foregroundStyle(Color.inkSecondary)
                         .opacity(isDragging ? 0 : 1)
                     
+                    // Formula context
+                    if let profile = feedStore.babyProfile,
+                       profile.showsFormulaInfo {
+                        FormulaFeedContext(profile: profile)
+                            .opacity(isDragging ? 0 : 1)
+                    }
+                    
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
@@ -422,6 +429,41 @@ struct FeedConfirmationView: View {
                 Spacer(minLength: 60)
             }
         }
+    }
+}
+
+// MARK: - Formula Feed Context
+struct FormulaFeedContext: View {
+    let profile: BabyProfile
+    
+    private var displayBrand: String {
+        profile.customFormulaBrand ?? profile.formulaBrand ?? "Formula"
+    }
+    
+    var body: some View {
+        HStack(spacing: AppSpacing.sm) {
+            Image(systemName: "drop.fill")
+                .font(AppFont.sans(12))
+                .foregroundStyle(Color.almostAquaDark)
+            
+            Text(displayBrand)
+                .font(AppFont.sans(13, weight: .medium))
+                .foregroundStyle(Color.inkPrimary)
+            
+            if let stage = profile.formulaStage {
+                Text("·")
+                    .font(AppFont.sans(13))
+                    .foregroundStyle(Color.inkSecondary)
+                
+                Text(stage.displayName)
+                    .font(AppFont.sans(13))
+                    .foregroundStyle(Color.inkSecondary)
+            }
+        }
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.vertical, AppSpacing.sm)
+        .background(Color.almostAquaDark.opacity(0.08))
+        .clipShape(Capsule())
     }
 }
 

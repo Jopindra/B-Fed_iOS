@@ -10,6 +10,7 @@ class OnboardingViewModel {
     var parentName: String = ""
     var parentEmail: String = ""
     var country: String = ""
+    var countryCode: String = ""
     var babyName: String = ""
     var babyDOB: Date = Date()
     var feedingType: String = ""
@@ -78,6 +79,7 @@ class OnboardingViewModel {
         parentName = ""
         parentEmail = ""
         country = ""
+        countryCode = ""
         babyName = ""
         babyDOB = Date()
         feedingType = ""
@@ -144,6 +146,7 @@ class OnboardingViewModel {
         parentName = "Sarah"
         parentEmail = "sarah@example.com"
         country = "Australia"
+        countryCode = "AU"
         babyName = "Lily"
         babyDOB = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
         feedingType = "formula"

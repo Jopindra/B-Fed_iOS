@@ -36,9 +36,10 @@ struct OnboardingView: View {
                 case 3:
                     CountryScreen(
                         country: $viewModel.country,
+                        countryCode: $viewModel.countryCode,
                         onBack: { viewModel.goBackToStep(2) },
                         onContinue: {
-                            viewModel.formulaSetupViewModel.countryCode = viewModel.country
+                            viewModel.formulaSetupViewModel.countryCode = viewModel.countryCode
                             viewModel.advanceToStep(4)
                         }
                     )

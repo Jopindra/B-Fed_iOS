@@ -55,6 +55,7 @@ struct PreviewContainer<Content: View>: View {
     PreviewContainer {
         CountryScreen(
             country: .constant(""),
+            countryCode: .constant(""),
             onBack: { },
             onContinue: { }
         )

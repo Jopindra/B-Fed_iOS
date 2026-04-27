@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CountryScreen: View {
     @Binding var country: String
+    @Binding var countryCode: String
     let onBack: () -> Void
     let onContinue: () -> Void
 
@@ -57,7 +58,7 @@ struct CountryScreen: View {
             background: { OnboardingBackground.country() }
         )
         .sheet(isPresented: $showingPicker) {
-            CountryPickerSheet(country: $country, countries: countries)
+            CountryPickerSheet(country: $country, countryCode: $countryCode, countries: countries)
         }
     }
 }
@@ -66,6 +67,7 @@ struct CountryScreen: View {
 
 private struct CountryPickerSheet: View {
     @Binding var country: String
+    @Binding var countryCode: String
     let countries: [(code: String, name: String)]
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
@@ -80,6 +82,7 @@ private struct CountryPickerSheet: View {
             List(filteredCountries, id: \.code) { item in
                 Button(action: {
                     country = item.name
+                    countryCode = item.code
                     dismiss()
                 }) {
                     HStack {
@@ -113,6 +116,7 @@ private struct CountryPickerSheet: View {
 #Preview {
     CountryScreen(
         country: .constant(""),
+        countryCode: .constant(""),
         onBack: {},
         onContinue: {}
     )
