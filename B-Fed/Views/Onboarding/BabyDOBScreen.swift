@@ -21,9 +21,11 @@ struct BabyDOBScreen: View {
                         .padding(.top, AppSpacing.sm)
 
                     DatePicker("Baby's date of birth", selection: $babyDOB, in: ...Date(), displayedComponents: .date)
-                        .datePickerStyle(.graphical)
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
                         .tint(.inkPrimary)
                         .accessibilityIdentifier("onboarding-babyDOB-picker")
+                        .frame(maxWidth: .infinity)
                         .padding(.horizontal, AppSpacing.lg)
                         .padding(.top, AppSpacing.xl)
 

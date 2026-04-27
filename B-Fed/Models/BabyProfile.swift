@@ -132,7 +132,7 @@ enum FormulaStage: String, Codable, CaseIterable {
     var displayName: String {
         switch self {
         case .newborn:
-            return "Newborn (0–6 months)"
+            return "Newborn"
         case .stage1:
             return "Stage 1 (0–6 months)"
         case .stage2:
