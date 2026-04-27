@@ -148,7 +148,7 @@ private struct FeedingOptionCard: View {
 
 // MARK: - Selection Indicator
 
-private struct SelectionIndicator: View {
+struct SelectionIndicator: View {
     let isSelected: Bool
 
     var body: some View {

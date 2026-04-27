@@ -22,6 +22,13 @@ class BabyProfile {
     var formulaBrand: String?
     var formulaStage: FormulaStage?
     
+    // Formula Library + Smart Guide
+    var selectedBrandId: String?
+    var selectedProductId: String?
+    var usesFormulaGuide: Bool = false
+    var customFormulaBrand: String?
+    var customFormulaProduct: String?
+    
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
     
@@ -37,7 +44,12 @@ class BabyProfile {
         currentWeight: Double? = nil,
         feedingType: FeedingType = .formula,
         formulaBrand: String? = nil,
-        formulaStage: FormulaStage? = nil
+        formulaStage: FormulaStage? = nil,
+        selectedBrandId: String? = nil,
+        selectedProductId: String? = nil,
+        usesFormulaGuide: Bool = false,
+        customFormulaBrand: String? = nil,
+        customFormulaProduct: String? = nil
     ) {
         self.id = id
         self.parentName = parentName
@@ -51,6 +63,11 @@ class BabyProfile {
         self.feedingType = feedingType
         self.formulaBrand = formulaBrand
         self.formulaStage = formulaStage
+        self.selectedBrandId = selectedBrandId
+        self.selectedProductId = selectedProductId
+        self.usesFormulaGuide = usesFormulaGuide
+        self.customFormulaBrand = customFormulaBrand
+        self.customFormulaProduct = customFormulaProduct
         self.createdAt = Date()
         self.updatedAt = Date()
     }

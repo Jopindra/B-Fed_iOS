@@ -4,6 +4,9 @@ struct BabyWeightScreen: View {
     @Binding var birthWeight: String
     @Binding var currentWeight: String
     @Binding var weightUnit: String
+    
+    var stepNumber: Int = 7
+    var totalSteps: Int = 7
 
     let onContinue: () -> Void
     let onBack: () -> Void
@@ -22,8 +25,8 @@ struct BabyWeightScreen: View {
 
     var body: some View {
         OnboardingStepView(
-            stepNumber: 7,
-            totalSteps: 7,
+            stepNumber: stepNumber,
+            totalSteps: totalSteps,
             question: "What's their weight?",
             onBack: onBack,
             content: {

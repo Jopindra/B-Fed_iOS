@@ -20,6 +20,18 @@ class OnboardingViewModel {
     var weightUnit: String = "kg"
     var currentStep: Int = 0
     var showingValidationErrors: Bool = false
+    
+    // MARK: - Formula Setup
+    var formulaSetupViewModel = FormulaSetupViewModel()
+    
+    var showsFormulaSetup: Bool {
+        let type = feedingType.lowercased()
+        return type == "formula" || type == "both"
+    }
+    
+    var totalSteps: Int {
+        showsFormulaSetup ? 10 : 7
+    }
 
     // MARK: Computed Validation
 
@@ -76,6 +88,7 @@ class OnboardingViewModel {
         weightUnit = "kg"
         currentStep = 0
         showingValidationErrors = false
+        formulaSetupViewModel.reset()
     }
 
     // MARK: Profile Creation
@@ -101,6 +114,9 @@ class OnboardingViewModel {
         
         let stageEnum = FormulaStage(rawValue: formulaStage)
         let brand = formulaBrand.isEmpty ? nil : formulaBrand
+        
+        // Formula Library profile
+        let formulaProfile = formulaSetupViewModel.buildFormulaProfile()
 
         return BabyProfile(
             parentName: parentName,
@@ -112,8 +128,13 @@ class OnboardingViewModel {
             birthWeight: birthWeightGrams,
             currentWeight: currentWeightGrams,
             feedingType: mappedFeedingType,
-            formulaBrand: brand,
-            formulaStage: stageEnum
+            formulaBrand: brand ?? formulaProfile.customFormulaBrand ?? formulaProfile.displayBrandName,
+            formulaStage: stageEnum ?? formulaProfile.selectedStage,
+            selectedBrandId: formulaProfile.selectedBrandId,
+            selectedProductId: formulaProfile.selectedProductId,
+            usesFormulaGuide: formulaProfile.usesFormulaGuide,
+            customFormulaBrand: formulaProfile.customFormulaBrand,
+            customFormulaProduct: formulaProfile.customFormulaProduct
         )
     }
 
@@ -125,11 +146,13 @@ class OnboardingViewModel {
         country = "Australia"
         babyName = "Lily"
         babyDOB = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
-        feedingType = "breast"
+        feedingType = "formula"
         formulaBrand = ""
         formulaStage = ""
         birthWeight = "3.4"
         currentWeight = "4.2"
         weightUnit = "kg"
+        formulaSetupViewModel.countryCode = "AU"
+        formulaSetupViewModel.feedingType = .formula
     }
 }
