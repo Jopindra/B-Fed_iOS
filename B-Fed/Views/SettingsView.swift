@@ -6,6 +6,7 @@ struct SettingsView: View {
     @State private var viewModel = SettingsViewModel()
     @State private var showingResetConfirmation = false
     @State private var showingShareSheet = false
+    @State private var showingFormulaPicker = false
     @State private var shareItems: [Any] = []
     @Query(sort: \Feed.startTime, order: .reverse) private var feeds: [Feed]
     
@@ -30,6 +31,20 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingShareSheet) {
                 ActivityView(activityItems: shareItems)
+            }
+            .sheet(isPresented: $showingFormulaPicker) {
+                if let profile = feedStore.babyProfile {
+                    FormulaPickerSheet(
+                        countryCode: profile.country,
+                        currentBrand: viewModel.formulaBrand,
+                        currentStage: viewModel.formulaStage,
+                        onSave: { brand, stage in
+                            viewModel.formulaBrand = brand
+                            viewModel.formulaStage = stage
+                            viewModel.save(to: feedStore)
+                        }
+                    )
+                }
             }
             .alert("Reset All Data?", isPresented: $showingResetConfirmation) {
                 Button("Cancel", role: .cancel) { }
@@ -83,8 +98,21 @@ struct SettingsView: View {
             }
             
             if viewModel.showsFormulaFields {
-                TextField("Formula brand", text: $viewModel.formulaBrand)
-                    .submitLabel(.done)
+                Button {
+                    showingFormulaPicker = true
+                } label: {
+                    HStack {
+                        Text("Formula brand")
+                            .foregroundStyle(Color.inkPrimary)
+                        Spacer()
+                        Text(viewModel.formulaBrand.isEmpty ? "Select" : viewModel.formulaBrand)
+                            .foregroundStyle(viewModel.formulaBrand.isEmpty ? Color.orchidTint : Color.inkSecondary)
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color.inkSecondary.opacity(0.5))
+                    }
+                }
+                .buttonStyle(.plain)
                 
                 Picker("Stage", selection: $viewModel.formulaStage) {
                     Text("Not specified").tag(Optional<FormulaStage>.none)
@@ -202,6 +230,63 @@ final class SettingsViewModel {
             parentEmail: parentEmail
         )
     }
+}
+
+// MARK: - Formula Picker Sheet
+struct FormulaPickerSheet: View {
+    let countryCode: String
+    let currentBrand: String
+    let currentStage: FormulaStage?
+    let onSave: (String, FormulaStage?) -> Void
+    
+    @Environment(\.dismiss) private var dismiss
+    @State private var viewModel = FormulaSetupViewModel()
+    @State private var path = NavigationPath()
+    
+    var body: some View {
+        NavigationStack(path: $path) {
+            BrandSelectionScreen(
+                viewModel: viewModel,
+                stepNumber: 1,
+                totalSteps: 2,
+                onBack: { dismiss() },
+                onContinue: { path.append(FormulaPickerStep.stage) }
+            )
+            .navigationDestination(for: FormulaPickerStep.self) { step in
+                switch step {
+                case .stage:
+                    ProductStageSelectionScreen(
+                        viewModel: viewModel,
+                        stepNumber: 2,
+                        totalSteps: 2,
+                        onBack: { path.removeLast() },
+                        onContinue: {
+                            let brand = viewModel.displayBrandName
+                            let stage = viewModel.selectedStage
+                            onSave(brand, stage)
+                            dismiss()
+                        }
+                    )
+                }
+            }
+        }
+        .onAppear {
+            viewModel.countryCode = countryCode
+            viewModel.feedingType = .formula
+            // Pre-select current brand if it matches seed data
+            if let match = FormulaSeedData.brands.first(where: { $0.name == currentBrand }) {
+                viewModel.selectBrand(match)
+            } else if !currentBrand.isEmpty {
+                viewModel.selectCustomBrand()
+                viewModel.customBrandName = currentBrand
+            }
+            viewModel.selectedStage = currentStage
+        }
+    }
+}
+
+private enum FormulaPickerStep: Hashable {
+    case stage
 }
 
 #Preview {
