@@ -35,7 +35,7 @@ struct SettingsView: View {
             .sheet(isPresented: $showingFormulaPicker) {
                 if let profile = feedStore.babyProfile {
                     FormulaPickerSheet(
-                        countryCode: profile.country,
+                        countryCode: profile.countryCode,
                         currentBrand: viewModel.formulaBrand,
                         currentStage: viewModel.formulaStage,
                         onSave: { brand, stage in

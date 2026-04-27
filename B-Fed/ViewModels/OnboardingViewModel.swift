@@ -125,6 +125,7 @@ class OnboardingViewModel {
             parentEmail: parentEmail,
             parentDOB: parentDOB,
             country: country,
+            countryCode: countryCode,
             babyName: babyName.isEmpty ? "Baby" : babyName,
             dateOfBirth: babyDOB,
             birthWeight: birthWeightGrams,

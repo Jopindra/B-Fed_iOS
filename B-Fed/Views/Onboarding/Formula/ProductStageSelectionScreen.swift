@@ -25,62 +25,60 @@ struct ProductStageSelectionScreen: View {
                             .padding(.top, AppSpacing.sm)
                     }
                     
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: AppSpacing.lg) {
-                            // Products for this brand
-                            if !viewModel.availableProducts.isEmpty {
-                                VStack(alignment: .leading, spacing: AppSpacing.md) {
-                                    Text("Products")
-                                        .font(AppFont.sans(12, weight: .semibold))
-                                        .foregroundStyle(Color.inkSecondary)
-                                        .padding(.horizontal, AppSpacing.sm)
-                                    
-                                    ForEach(viewModel.availableProducts) { product in
-                                        ProductCard(
-                                            product: product,
-                                            isSelected: viewModel.selectedProductId == product.id,
-                                            action: { viewModel.selectProduct(product) }
-                                        )
-                                    }
-                                }
-                            }
-                            
-                            // Stage selection (always show, for manual override or when no products)
+                    VStack(spacing: AppSpacing.lg) {
+                        // Products for this brand
+                        if !viewModel.availableProducts.isEmpty {
                             VStack(alignment: .leading, spacing: AppSpacing.md) {
-                                Text("Stage")
+                                Text("Products")
                                     .font(AppFont.sans(12, weight: .semibold))
                                     .foregroundStyle(Color.inkSecondary)
                                     .padding(.horizontal, AppSpacing.sm)
                                 
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: AppSpacing.sm) {
-                                        ForEach(FormulaStage.allCases, id: \.self) { stage in
-                                            FormulaStagePill(
-                                                stage: stage,
-                                                isSelected: viewModel.selectedStage == stage,
-                                                action: { viewModel.selectStage(stage) }
-                                            )
-                                        }
-                                    }
-                                    .padding(.horizontal, AppSpacing.lg)
+                                ForEach(viewModel.availableProducts) { product in
+                                    ProductCard(
+                                        product: product,
+                                        isSelected: viewModel.selectedProductId == product.id,
+                                        action: { viewModel.selectProduct(product) }
+                                    )
                                 }
                             }
+                        }
+                        
+                        // Stage selection (always show, for manual override or when no products)
+                        VStack(alignment: .leading, spacing: AppSpacing.md) {
+                            Text("Stage")
+                                .font(AppFont.sans(12, weight: .semibold))
+                                .foregroundStyle(Color.inkSecondary)
+                                .padding(.horizontal, AppSpacing.sm)
                             
-                            // Specialist warning
-                            if let product = viewModel.selectedProduct, product.isSpecialist {
-                                SpecialistWarningView()
-                                    .padding(.horizontal, AppSpacing.lg)
-                                    .padding(.top, AppSpacing.sm)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: AppSpacing.sm) {
+                                    ForEach(FormulaStage.allCases, id: \.self) { stage in
+                                        FormulaStagePill(
+                                            stage: stage,
+                                            isSelected: viewModel.selectedStage == stage,
+                                            action: { viewModel.selectStage(stage) }
+                                        )
+                                    }
+                                }
+                                .padding(.horizontal, AppSpacing.lg)
                             }
-                            
-                            // Disclaimer
-                            FormulaDisclaimerView()
+                        }
+                        
+                        // Specialist warning
+                        if let product = viewModel.selectedProduct, product.isSpecialist {
+                            SpecialistWarningView()
                                 .padding(.horizontal, AppSpacing.lg)
                                 .padding(.top, AppSpacing.sm)
                         }
-                        .padding(.top, AppSpacing.lg)
-                        .padding(.bottom, AppSpacing.xxl)
+                        
+                        // Disclaimer
+                        FormulaDisclaimerView()
+                            .padding(.horizontal, AppSpacing.lg)
+                            .padding(.top, AppSpacing.sm)
                     }
+                    .padding(.top, AppSpacing.lg)
+                    .padding(.bottom, AppSpacing.xxl)
                     
                     Spacer()
                 }

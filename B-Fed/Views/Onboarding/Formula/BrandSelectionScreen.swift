@@ -44,37 +44,35 @@ struct BrandSelectionScreen: View {
                     .padding(.top, AppSpacing.lg)
                     
                     // Brand grid
-                    ScrollView(showsIndicators: false) {
-                        LazyVStack(spacing: AppSpacing.md) {
-                            ForEach(viewModel.filteredBrands) { brand in
-                                BrandCard(
-                                    brand: brand,
-                                    isSelected: viewModel.selectedBrandId == brand.id,
-                                    action: { viewModel.selectBrand(brand) }
-                                )
-                            }
-                            
-                            // Alt options
-                            altOptionCard(
-                                title: "I don't see my brand",
-                                subtitle: "Enter it manually",
-                                icon: "pencil",
-                                isSelected: viewModel.showingCustomEntry,
-                                action: { viewModel.selectCustomBrand() }
-                            )
-                            
-                            altOptionCard(
-                                title: "I haven't chosen yet",
-                                subtitle: "Skip this step for now",
-                                icon: "ellipsis",
-                                isSelected: viewModel.hasntChosenYet,
-                                action: { viewModel.selectHaventChosen() }
+                    VStack(spacing: AppSpacing.md) {
+                        ForEach(viewModel.filteredBrands) { brand in
+                            BrandCard(
+                                brand: brand,
+                                isSelected: viewModel.selectedBrandId == brand.id,
+                                action: { viewModel.selectBrand(brand) }
                             )
                         }
-                        .padding(.horizontal, AppSpacing.lg)
-                        .padding(.top, AppSpacing.lg)
-                        .padding(.bottom, AppSpacing.xl)
+                        
+                        // Alt options
+                        altOptionCard(
+                            title: "I don't see my brand",
+                            subtitle: "Enter it manually",
+                            icon: "pencil",
+                            isSelected: viewModel.showingCustomEntry,
+                            action: { viewModel.selectCustomBrand() }
+                        )
+                        
+                        altOptionCard(
+                            title: "I haven't chosen yet",
+                            subtitle: "Skip this step for now",
+                            icon: "ellipsis",
+                            isSelected: viewModel.hasntChosenYet,
+                            action: { viewModel.selectHaventChosen() }
+                        )
                     }
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.top, AppSpacing.lg)
+                    .padding(.bottom, AppSpacing.xl)
                     
                     // Custom entry
                     if viewModel.showingCustomEntry {

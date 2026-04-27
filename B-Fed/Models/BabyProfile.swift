@@ -12,6 +12,7 @@ class BabyProfile {
     var parentEmail: String = ""
     var parentDOB: Date = Date()
     var country: String = ""
+    var countryCode: String = ""
     
     // Baby information
     var babyName: String = "Baby"
@@ -43,6 +44,7 @@ class BabyProfile {
         parentEmail: String = "",
         parentDOB: Date = Date(),
         country: String = "",
+        countryCode: String = "",
         babyName: String = "Baby",
         dateOfBirth: Date = Date(),
         birthWeight: Double? = nil,
@@ -61,6 +63,7 @@ class BabyProfile {
         self.parentEmail = parentEmail
         self.parentDOB = parentDOB
         self.country = country
+        self.countryCode = countryCode
         self.babyName = babyName
         self.dateOfBirth = dateOfBirth
         self.birthWeight = birthWeight

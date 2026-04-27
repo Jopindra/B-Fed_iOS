@@ -53,6 +53,7 @@ struct ContentView: View {
             parentEmail: "sarah@example.com",
             parentDOB: Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date(),
             country: "Australia",
+            countryCode: "AU",
             babyName: "Lily",
             dateOfBirth: Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date(),
             birthWeight: 3400,
