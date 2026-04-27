@@ -32,6 +32,11 @@ class BabyProfile {
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
     
+    /// Whether this profile has formula information worth displaying
+    var showsFormulaInfo: Bool {
+        feedingType == .formula || feedingType == .mixed
+    }
+    
     init(
         id: UUID = UUID(),
         parentName: String = "",

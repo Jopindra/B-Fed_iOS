@@ -40,6 +40,8 @@ struct DashboardView: View {
 struct FirstTimeDashboardView: View {
     @Binding var showingLogFeed: Bool
     
+    @Environment(FeedStore.self) private var feedStore
+    
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
@@ -79,6 +81,14 @@ struct FirstTimeDashboardView: View {
                 }
                 .buttonStyle(GentlePressEffect())
                 .padding(.horizontal, AppSpacing.xl)
+                
+                // Formula info card (if applicable)
+                if let profile = feedStore.babyProfile,
+                   profile.showsFormulaInfo {
+                    FormulaInfoCard(profile: profile)
+                        .padding(.top, AppSpacing.xl)
+                        .padding(.horizontal, AppSpacing.xl)
+                }
                 
                 Spacer(minLength: 100)
             }
@@ -202,6 +212,12 @@ struct PopulatedDashboardView: View {
                 
                 if selectedPeriod == .last7Days {
                     InsightsSection()
+                }
+                
+                // Formula info card (if applicable)
+                if let profile = feedStore.babyProfile,
+                   profile.showsFormulaInfo {
+                    FormulaInfoCard(profile: profile)
                 }
                 
                 TipsSection()
@@ -685,6 +701,216 @@ struct FeedRow: View {
             Spacer()
         }
         .cardStyle()
+    }
+}
+
+// MARK: - Formula Info Card
+struct FormulaInfoCard: View {
+    let profile: BabyProfile
+    @State private var showingGuide = false
+    
+    private var displayBrand: String {
+        profile.customFormulaBrand ?? profile.formulaBrand ?? "Formula"
+    }
+    
+    private var displayStage: String? {
+        profile.formulaStage?.displayName
+    }
+    
+    private var displayProduct: String? {
+        profile.customFormulaProduct
+    }
+    
+    var body: some View {
+        Button {
+            showingGuide = true
+        } label: {
+            HStack(spacing: AppSpacing.md) {
+                Image(systemName: "drop.fill")
+                    .font(AppFont.sans(14, weight: .medium))
+                    .foregroundStyle(Color.almostAquaDark)
+                    .frame(width: 32, height: 32)
+                    .background(Color.almostAquaDark.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(displayBrand)
+                        .font(AppFont.body)
+                        .foregroundStyle(Color.inkPrimary)
+                    
+                    if let stage = displayStage {
+                        Text(stage)
+                            .font(AppFont.caption)
+                            .foregroundStyle(Color.inkSecondary)
+                    } else if let product = displayProduct {
+                        Text(product)
+                            .font(AppFont.caption)
+                            .foregroundStyle(Color.inkSecondary)
+                    }
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(AppFont.caption)
+                    .foregroundStyle(Color.inkSecondary.opacity(0.5))
+            }
+            .padding(AppSpacing.md)
+            .background(Color.backgroundCard)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
+                    .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Formula: \(displayBrand)")
+        .sheet(isPresented: $showingGuide) {
+            FormulaGuideSheet(profile: profile)
+        }
+    }
+}
+
+// MARK: - Formula Guide Sheet
+struct FormulaGuideSheet: View {
+    let profile: BabyProfile
+    @Environment(\.dismiss) private var dismiss
+    
+    private var guidance: FormulaGuidanceResult {
+        FormulaGuidanceService.guidance(for: profile)
+    }
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: AppSpacing.lg) {
+                    // Brand summary
+                    VStack(alignment: .leading, spacing: AppSpacing.md) {
+                        HStack {
+                            Image(systemName: "drop.fill")
+                                .font(AppFont.sans(14))
+                                .foregroundStyle(Color.almostAquaDark)
+                            
+                            Text(profile.customFormulaBrand ?? profile.formulaBrand ?? "Formula")
+                                .font(AppFont.sans(15, weight: .semibold))
+                                .foregroundStyle(Color.inkPrimary)
+                            
+                            Spacer()
+                        }
+                        
+                        if let stage = profile.formulaStage {
+                            Text(stage.displayName)
+                                .font(AppFont.caption)
+                                .foregroundStyle(Color.almostAquaDark)
+                                .padding(.horizontal, AppSpacing.md)
+                                .padding(.vertical, 4)
+                                .background(Color.almostAquaLight)
+                                .clipShape(Capsule())
+                        }
+                    }
+                    .padding(AppSpacing.lg)
+                    .background(Color.backgroundCard)
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
+                            .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                    )
+                    .padding(.horizontal, AppSpacing.lg)
+                    
+                    // Guidance cards
+                    HStack(spacing: AppSpacing.md) {
+                        GentleGuideCard(
+                            title: "Estimated daily",
+                            value: "\(guidance.suggestedDailyMin)–\(guidance.suggestedDailyMax) ml",
+                            subtitle: guidance.weightBased ? "Based on weight" : "Based on age",
+                            tint: Color.almostAquaDark
+                        )
+                    }
+                    .padding(.horizontal, AppSpacing.lg)
+                    
+                    HStack(spacing: AppSpacing.md) {
+                        GentleGuideCard(
+                            title: "Typical feed size",
+                            value: "\(guidance.estimatedFeedSizeMin)–\(guidance.estimatedFeedSizeMax) ml",
+                            subtitle: "Per feed",
+                            tint: Color.peachDustDark
+                        )
+                        
+                        GentleGuideCard(
+                            title: "Feeds per day",
+                            value: "\(guidance.estimatedFeedsPerDay.lowerBound)–\(guidance.estimatedFeedsPerDay.upperBound)",
+                            subtitle: "Times",
+                            tint: Color.orchidTintDark
+                        )
+                    }
+                    .padding(.horizontal, AppSpacing.lg)
+                    
+                    // Stage guidance
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                        Text("Usually suited to this age")
+                            .font(AppFont.sans(12, weight: .semibold))
+                            .foregroundStyle(Color.inkSecondary)
+                            .padding(.horizontal, AppSpacing.sm)
+                        
+                        Text(guidance.applicableStageLabel)
+                            .font(AppFont.bodyLarge)
+                            .foregroundStyle(Color.inkPrimary)
+                            .padding(.horizontal, AppSpacing.lg)
+                            .padding(.vertical, AppSpacing.md)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.backgroundCard)
+                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
+                                    .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                            )
+                    }
+                    .padding(.horizontal, AppSpacing.lg)
+                    
+                    // Explanation
+                    Text(guidance.explanationText)
+                        .font(AppFont.body)
+                        .foregroundStyle(Color.inkSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, AppSpacing.lg)
+                    
+                    // Disclaimer
+                    FormulaDisclaimerView()
+                        .padding(.horizontal, AppSpacing.lg)
+                    
+                    if !guidance.weightBased {
+                        HStack(spacing: AppSpacing.sm) {
+                            Image(systemName: "scalemass")
+                                .font(AppFont.sans(12))
+                                .foregroundStyle(Color.almostAquaDark)
+                            
+                            Text("Add your baby's weight in Settings for a more tailored estimate.")
+                                .font(AppFont.sans(11))
+                                .foregroundStyle(Color.almostAquaDark)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding(AppSpacing.md)
+                        .background(Color.almostAquaLight.opacity(0.5))
+                        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
+                        .padding(.horizontal, AppSpacing.lg)
+                    }
+                    
+                    Spacer(minLength: 40)
+                }
+                .padding(.top, AppSpacing.lg)
+                .padding(.bottom, AppSpacing.xxl)
+            }
+            .background(Color.backgroundBase)
+            .navigationTitle("Feeding Guide")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
     }
 }
 
