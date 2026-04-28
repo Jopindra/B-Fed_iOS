@@ -20,7 +20,7 @@ struct BabyDOBScreen: View {
                         .padding(.horizontal, AppSpacing.lg)
                         .padding(.top, AppSpacing.sm)
 
-                    DatePicker("Baby's date of birth", selection: $babyDOB, in: ...Date(), displayedComponents: .date)
+                    DatePicker("Baby's date of birth", selection: $babyDOB, displayedComponents: .date)
                         .datePickerStyle(.wheel)
                         .labelsHidden()
                         .tint(.inkPrimary)
