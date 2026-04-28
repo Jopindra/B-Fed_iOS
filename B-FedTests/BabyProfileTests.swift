@@ -98,6 +98,20 @@ final class BabyProfileTests: XCTestCase {
         let months = profile.ageInMonths
         XCTAssertEqual(profile.formattedAge, "\(months) months old")
     }
+    
+    func testFormattedAgeOneYear() {
+        let dob = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+        let profile = BabyProfile(dateOfBirth: dob)
+        XCTAssertEqual(profile.formattedAge, "1 year old")
+    }
+    
+    func testFormattedAgeYearsAndMonths() {
+        let dob = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+            .addingTimeInterval(-86400 * 30) // subtract ~1 month
+        let profile = BabyProfile(dateOfBirth: dob)
+        XCTAssertTrue(profile.formattedAge.contains("1 year"))
+        XCTAssertTrue(profile.formattedAge.contains("1 month"))
+    }
 
     // MARK: - Weight
 

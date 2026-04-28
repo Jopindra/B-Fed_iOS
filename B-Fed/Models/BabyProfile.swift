@@ -104,8 +104,22 @@ class BabyProfile {
             let weeks = days / 7
             return weeks == 1 ? "1 week old" : "\(weeks) weeks old"
         } else {
-            let months = ageInMonths
-            return months == 1 ? "1 month old" : "\(months) months old"
+            let components = Calendar.current.dateComponents([.year, .month], from: dateOfBirth, to: Date())
+            let years = components.year ?? 0
+            let months = components.month ?? 0
+            
+            if years >= 1 {
+                let yearString = years == 1 ? "1 year" : "\(years) years"
+                if months == 0 {
+                    return "\(yearString) old"
+                } else {
+                    let monthString = months == 1 ? "1 month" : "\(months) months"
+                    return "\(yearString), \(monthString) old"
+                }
+            } else {
+                let totalMonths = ageInMonths
+                return totalMonths == 1 ? "1 month old" : "\(totalMonths) months old"
+            }
         }
     }
     
