@@ -8,30 +8,27 @@ struct ContentView: View {
     @State private var showingLogFeedSheet = false
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            DashboardView()
-                .tabItem {
-                    Label("Dashboard", systemImage: "house")
+        ZStack {
+            // Main content
+            Group {
+                switch selectedTab {
+                case 0:
+                    DashboardView()
+                case 1:
+                    FeedHistoryView()
+                case 2:
+                    InsightsView()
+                default:
+                    DashboardView()
                 }
-                .tag(0)
-            
-            FeedHistoryView()
-                .tabItem {
-                    Label("History", systemImage: "list.bullet")
-                }
-                .tag(1)
-            
-            SettingsView()
-                .tabItem {
-                    Label("More", systemImage: "ellipsis")
-                }
-                .tag(2)
-        }
-        .tabBarStyled()
-        .overlay(alignment: .bottom) {
-            LogFeedButton {
-                showingLogFeedSheet = true
             }
+            
+            // Custom tab bar
+            VStack(spacing: 0) {
+                Spacer()
+                CustomTabBar(selectedTab: $selectedTab)
+            }
+            .ignoresSafeArea(.keyboard)
         }
         .ignoresSafeArea(.keyboard)
         .sheet(isPresented: $showingLogFeedSheet) {
@@ -81,25 +78,60 @@ struct ContentView: View {
     }
 }
 
-// MARK: - Log Feed Button
-struct LogFeedButton: View {
-    let action: () -> Void
+// MARK: - Custom Tab Bar
+struct CustomTabBar: View {
+    @Binding var selectedTab: Int
+    
+    private let tabs: [(label: String, icon: String)] = [
+        ("Today", "sun.max"),
+        ("History", "clock"),
+        ("Insights", "chart.line.uptrend.xyaxis")
+    ]
     
     var body: some View {
-        Button(action: action) {
-            Image(systemName: "plus")
-                .font(AppFont.sans(24, weight: .semibold))
-                .foregroundStyle(.white)
-                .frame(width: 60, height: 60)
-                .background(Color.inkPrimary)
-                .clipShape(Circle())
+        VStack(spacing: 0) {
+            // Top border
+            Rectangle()
+                .fill(Color.black.opacity(0.06))
+                .frame(height: 0.5)
+            
+            // Tab buttons
+            HStack(spacing: 0) {
+                ForEach(0..<tabs.count, id: \.self) { index in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedTab = index
+                        }
+                    } label: {
+                        VStack(spacing: 4) {
+                            Image(systemName: tabs[index].icon)
+                                .font(.system(size: 20, weight: .medium))
+                            Text(tabs[index].label)
+                                .font(AppFont.sans(10, weight: .semibold))
+                            
+                            // Active indicator capsule
+                            Capsule()
+                                .fill(Color.inkPrimary)
+                                .frame(width: 20, height: 2.5)
+                                .opacity(selectedTab == index ? 1 : 0)
+                                .padding(.top, 4)
+                        }
+                        .foregroundStyle(
+                            selectedTab == index
+                                ? Color.inkPrimary
+                                : Color.inkSecondary.opacity(0.6)
+                        )
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 8)
+                        .padding(.bottom, 4)
+                    }
+                }
+            }
+            .frame(height: 56)
+            .background(Color.backgroundCard)
         }
-        .frame(maxHeight: .infinity, alignment: .bottom)
-        .padding(.bottom, AppSpacing.xl)
     }
 }
-
-
 
 #Preview {
     ContentView()

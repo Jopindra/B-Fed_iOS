@@ -72,6 +72,7 @@ struct FeedHistoryView: View {
         #if os(iOS)
         .listStyle(.insetGrouped)
         #endif
+        .padding(.bottom, 60)
     }
     
     private func groupByTimeOfDay(_ feeds: [Feed]) -> [(String, [Feed])] {

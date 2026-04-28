@@ -12,27 +12,176 @@ struct DashboardView: View {
         !allFeeds.isEmpty
     }
     
+    // MARK: - Today Feeds
+    private var todayFeeds: [Feed] {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: Date())
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        return allFeeds.filter { $0.startTime >= startOfDay && $0.startTime < endOfDay }
+    }
+    
+    var totalMlToday: Int {
+        Int(todayFeeds.reduce(0) { $0 + $1.amount })
+    }
+    
+    var lastFeedMinutesAgo: Int? {
+        guard let last = todayFeeds.first else { return nil }
+        return Int(Date().timeIntervalSince(last.startTime) / 60)
+    }
+    
+    var feedsInLastFourHours: [Feed] {
+        let cutoff = Date().addingTimeInterval(-4 * 3600)
+        return todayFeeds.filter { $0.startTime >= cutoff }
+    }
+    
+    private var babyName: String {
+        feedStore.babyProfile?.babyName ?? "Baby"
+    }
+    
+    // MARK: - Greeting
+    var headerText: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        if hour >= 0 && hour < 5 {
+            return "You're doing great tonight"
+        }
+        if todayFeeds.isEmpty {
+            return "Ready when you are, \(babyName)"
+        }
+        guard let mins = lastFeedMinutesAgo else {
+            return "\(babyName) is doing well"
+        }
+        switch mins {
+        case 0..<10:
+            return "\(babyName) just had a feed"
+        case 10..<120:
+            let h = mins / 60
+            let m = mins % 60
+            if h > 0 {
+                return "\(babyName) fed \(h)h \(m)min ago"
+            } else {
+                return "\(babyName) fed \(m)min ago"
+            }
+        case 120..<180:
+            return "\(babyName) is due a feed soon"
+        default:
+            return "It's been a while for \(babyName)"
+        }
+    }
+    
+    var dailySummaryText: String {
+        if todayFeeds.isEmpty {
+            return "No feeds logged yet today"
+        }
+        return "\(todayFeeds.count) feeds · \(totalMlToday)ml today"
+    }
+    
     var body: some View {
-        NavigationStack {
-            Group {
-                if hasFeeds {
-                    PopulatedDashboardView(
-                        selectedPeriod: $selectedPeriod,
-                        showingLogFeed: $showingLogFeed
-                    )
-                } else {
-                    FirstTimeDashboardView(showingLogFeed: $showingLogFeed)
+        GeometryReader { geometry in
+            ZStack {
+                // Background
+                Color(hex: "FAFAF8").ignoresSafeArea(.all)
+                
+                // Background blobs
+                ZStack {
+                    // Subtle peach top-right
+                    Ellipse()
+                        .fill(Color.peachDust)
+                        .opacity(0.40)
+                        .frame(
+                            width: geometry.size.width * 0.90,
+                            height: geometry.size.width * 0.90
+                        )
+                        .position(
+                            x: geometry.size.width * 0.85,
+                            y: geometry.size.width * 0.10
+                        )
+                    
+                    // Lemon icing smaller top-right
+                    Ellipse()
+                        .fill(Color.lemonIcing)
+                        .opacity(0.45)
+                        .frame(
+                            width: geometry.size.width * 0.48,
+                            height: geometry.size.width * 0.48
+                        )
+                        .position(
+                            x: geometry.size.width * 0.88,
+                            y: geometry.size.width * 0.08
+                        )
+                    
+                    // Aqua bottom-left
+                    Ellipse()
+                        .fill(Color.almostAquaLight)
+                        .opacity(0.40)
+                        .frame(
+                            width: geometry.size.width * 0.80,
+                            height: geometry.size.width * 0.80
+                        )
+                        .position(
+                            x: geometry.size.width * 0.10,
+                            y: geometry.size.height * 0.90
+                        )
+                }
+                .allowsHitTesting(false)
+                .ignoresSafeArea(.all)
+                
+                // Content
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // Header zone
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(headerText)
+                                .font(AppFont.heroTitle)
+                                .foregroundStyle(Color.inkPrimary)
+                            
+                            Text(dailySummaryText)
+                                .font(AppFont.body)
+                                .foregroundStyle(Color.inkSecondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 16)
+                        .padding(.top, geometry.safeAreaInsets.top + 20)
+                        
+                        // Bubble arc placeholder
+                        bubbleArcPlaceholder
+                            .padding(.top, 20)
+                        
+                        // Existing dashboard content
+                        if hasFeeds {
+                            PopulatedDashboardView(
+                                selectedPeriod: $selectedPeriod,
+                                showingLogFeed: $showingLogFeed
+                            )
+                        } else {
+                            FirstTimeDashboardView(showingLogFeed: $showingLogFeed)
+                        }
+                    }
+                    .padding(.bottom, 80)
                 }
             }
-            .navigationTitle("Today")
+        }
+        .sheet(isPresented: $showingLogFeed) {
+            LogFeedView()
+        }
+    }
+    
+    // MARK: - Bubble Arc Placeholder
+    private var bubbleArcPlaceholder: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
+                .stroke(Color.inkPrimary.opacity(0.1), lineWidth: 1)
+                .frame(height: 220)
             
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.large)
-            #endif
-            .sheet(isPresented: $showingLogFeed) {
-                LogFeedView()
+            VStack(spacing: 8) {
+                Image(systemName: "drop.fill")
+                    .font(.system(size: 32))
+                    .foregroundStyle(Color.inkPrimary.opacity(0.2))
+                Text("Feed Arc")
+                    .font(AppFont.caption)
+                    .foregroundStyle(Color.inkSecondary.opacity(0.5))
             }
         }
+        .padding(.horizontal, 16)
     }
 }
 
@@ -43,58 +192,55 @@ struct FirstTimeDashboardView: View {
     @Environment(FeedStore.self) private var feedStore
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 0) {
-                Spacer().frame(height: AppSpacing.xxl)
-                
-                // Empty bottle (outline only)
-                EmptyBottleView()
-                    .frame(width: 120, height: 180)
-                
-                Spacer().frame(height: AppSpacing.xxl)
-                
-                // Primary message
-                Text("Let's log your first feed")
-                    .font(AppFont.heroTitle)
-                    .foregroundStyle(Color.inkPrimary)
-                    .multilineTextAlignment(.center)
-                
-                Spacer().frame(height: 8)
-                
-                // Secondary reassurance
-                Text("You're doing great already")
-                    .font(AppFont.bodyLarge)
-                    .foregroundStyle(Color.inkSecondary)
-                
-                Spacer().frame(height: 32)
-                
-                // Log Feed Button
-                Button(action: { showingLogFeed = true }) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "plus")
-                            .font(AppFont.bodyLarge)
-                        Text("Log Feed")
-                            .font(AppFont.bodyLarge)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .primaryButton()
+        VStack(spacing: 0) {
+            Spacer().frame(height: AppSpacing.xxl)
+            
+            // Empty bottle (outline only)
+            EmptyBottleView()
+                .frame(width: 120, height: 180)
+            
+            Spacer().frame(height: AppSpacing.xxl)
+            
+            // Primary message
+            Text("Let's log your first feed")
+                .font(AppFont.heroTitle)
+                .foregroundStyle(Color.inkPrimary)
+                .multilineTextAlignment(.center)
+            
+            Spacer().frame(height: 8)
+            
+            // Secondary reassurance
+            Text("You're doing great already")
+                .font(AppFont.bodyLarge)
+                .foregroundStyle(Color.inkSecondary)
+            
+            Spacer().frame(height: 32)
+            
+            // Log Feed Button
+            Button(action: { showingLogFeed = true }) {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus")
+                        .font(AppFont.bodyLarge)
+                    Text("Log Feed")
+                        .font(AppFont.bodyLarge)
                 }
-                .buttonStyle(GentlePressEffect())
-                .padding(.horizontal, AppSpacing.xl)
-                
-                // Formula info card (if applicable)
-                if let profile = feedStore.babyProfile,
-                   profile.showsFormulaInfo {
-                    FormulaInfoCard(profile: profile)
-                        .padding(.top, AppSpacing.xl)
-                        .padding(.horizontal, AppSpacing.xl)
-                }
-                
-                Spacer(minLength: 100)
+                .frame(maxWidth: .infinity)
+                .primaryButton()
             }
-            .padding(.horizontal, AppSpacing.lg)
+            .buttonStyle(GentlePressEffect())
+            .padding(.horizontal, AppSpacing.xl)
+            
+            // Formula info card (if applicable)
+            if let profile = feedStore.babyProfile,
+               profile.showsFormulaInfo {
+                FormulaInfoCard(profile: profile)
+                    .padding(.top, AppSpacing.xl)
+                    .padding(.horizontal, AppSpacing.xl)
+            }
+            
+            Spacer().frame(height: 100)
         }
-        .background(Color.backgroundBase)
+        .padding(.horizontal, AppSpacing.lg)
     }
 }
 
@@ -199,38 +345,50 @@ struct PopulatedDashboardView: View {
     }
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 20) {
-                HeroCardPopulated(
-                    selectedPeriod: $selectedPeriod,
-                    bottleFillLevel: bottleFillLevel,
-                    showReassurance: $showReassurance,
-                    reassuranceMessage: reassuranceMessage,
-                    showingLogFeed: $showingLogFeed,
-                    animateStats: animateStats
-                )
-                
-                if selectedPeriod == .last7Days {
-                    InsightsSection()
-                }
-                
-                // Formula info card (if applicable)
-                if let profile = feedStore.babyProfile,
-                   profile.showsFormulaInfo {
-                    FormulaInfoCard(profile: profile)
-                }
-                
-                PrepGuideLink()
-                
-                TipsSection()
-                
-                RecentFeedsSection()
+        VStack(spacing: 20) {
+            HeroCardPopulated(
+                selectedPeriod: $selectedPeriod,
+                bottleFillLevel: bottleFillLevel,
+                showReassurance: $showReassurance,
+                reassuranceMessage: reassuranceMessage,
+                showingLogFeed: $showingLogFeed,
+                animateStats: animateStats
+            )
+            
+            if selectedPeriod == .last7Days {
+                InsightsSection()
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, AppSpacing.xxl)
+            
+            // Formula info card (if applicable)
+            if let profile = feedStore.babyProfile,
+               profile.showsFormulaInfo {
+                FormulaInfoCard(profile: profile)
+            }
+            
+            PrepGuideLink()
+            
+            TipsSection()
+            
+            RecentFeedsSection()
+            
+            // Log Feed Button
+            Button(action: { showingLogFeed = true }) {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus")
+                        .font(AppFont.bodyLarge)
+                    Text("Log Feed")
+                        .font(AppFont.bodyLarge)
+                }
+                .frame(maxWidth: .infinity)
+                .primaryButton()
+            }
+            .buttonStyle(GentlePressEffect())
+            .padding(.horizontal, AppSpacing.md)
+            .padding(.top, AppSpacing.md)
         }
-        .background(Color.backgroundBase)
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+        .padding(.bottom, AppSpacing.xxl)
         .onAppear {
             // Check if this is the first feed (bottle was empty)
             let isFirstFeed = bottleFillLevel == 0 && targetFillLevel > 0
@@ -1060,3 +1218,36 @@ struct TipBubble: View {
         .environment(FeedStore())
         .modelContainer(for: Feed.self, inMemory: true)
 }
+
+
+// MARK: - Insights Placeholder
+struct InsightsView: View {
+    @Environment(FeedStore.self) private var feedStore
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 20) {
+                    Text("Insights")
+                        .font(AppFont.heroTitle)
+                        .foregroundStyle(Color.inkPrimary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text("Coming soon")
+                        .font(AppFont.bodyLarge)
+                        .foregroundStyle(Color.inkSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 60)
+            }
+            .background(Color.backgroundBase)
+            .navigationTitle("Insights")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.large)
+            #endif
+        }
+    }
+}
+
