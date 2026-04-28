@@ -76,6 +76,8 @@ class FeedStore {
         formulaBrand: String? = nil,
         formulaStage: FormulaStage? = nil,
         currentWeight: Double? = nil,
+        country: String? = nil,
+        countryCode: String? = nil,
         parentName: String? = nil,
         parentEmail: String? = nil
     ) {
@@ -86,6 +88,22 @@ class FeedStore {
         if let formulaBrand = formulaBrand { profile.formulaBrand = formulaBrand }
         if let formulaStage = formulaStage { profile.formulaStage = formulaStage }
         if let currentWeight = currentWeight { profile.currentWeight = currentWeight }
+        if let country = country { profile.country = country }
+        if let countryCode = countryCode {
+            // If country changed, reset formula brand if not available in new country
+            if profile.countryCode != countryCode,
+               let currentBrand = profile.formulaBrand {
+                let brandsInNewCountry = FormulaGuidanceService.brands(forCountryCode: countryCode)
+                let isBrandValid = brandsInNewCountry.contains { $0.name == currentBrand }
+                if !isBrandValid {
+                    profile.formulaBrand = nil
+                    profile.formulaStage = nil
+                    profile.selectedBrandId = nil
+                    profile.selectedProductId = nil
+                }
+            }
+            profile.countryCode = countryCode
+        }
         if let parentName = parentName { profile.parentName = parentName }
         if let parentEmail = parentEmail { profile.parentEmail = parentEmail }
         

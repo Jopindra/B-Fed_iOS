@@ -7,6 +7,7 @@ struct SettingsView: View {
     @State private var showingResetConfirmation = false
     @State private var showingShareSheet = false
     @State private var showingFormulaPicker = false
+    @State private var showingCountryPicker = false
     @State private var shareItems: [Any] = []
     @Query(sort: \Feed.startTime, order: .reverse) private var feeds: [Feed]
     
@@ -33,18 +34,34 @@ struct SettingsView: View {
                 ActivityView(activityItems: shareItems)
             }
             .sheet(isPresented: $showingFormulaPicker) {
-                if let profile = feedStore.babyProfile {
-                    FormulaPickerSheet(
-                        countryCode: profile.countryCode,
-                        currentBrand: viewModel.formulaBrand,
-                        currentStage: viewModel.formulaStage,
-                        onSave: { brand, stage in
-                            viewModel.formulaBrand = brand
-                            viewModel.formulaStage = stage
-                            viewModel.save(to: feedStore)
+                FormulaPickerSheet(
+                    countryCode: viewModel.countryCode,
+                    currentBrand: viewModel.formulaBrand,
+                    currentStage: viewModel.formulaStage,
+                    onSave: { brand, stage in
+                        viewModel.formulaBrand = brand
+                        viewModel.formulaStage = stage
+                        viewModel.save(to: feedStore)
+                    }
+                )
+            }
+            .sheet(isPresented: $showingCountryPicker) {
+                SettingsCountryPickerSheet(
+                    country: $viewModel.country,
+                    countryCode: $viewModel.countryCode,
+                    onSave: {
+                        // Reset formula brand if not available in new country
+                        if !viewModel.formulaBrand.isEmpty {
+                            let brands = FormulaGuidanceService.brands(forCountryCode: viewModel.countryCode)
+                            let isValid = brands.contains { $0.name == viewModel.formulaBrand }
+                            if !isValid {
+                                viewModel.formulaBrand = ""
+                                viewModel.formulaStage = nil
+                            }
                         }
-                    )
-                }
+                        viewModel.save(to: feedStore)
+                    }
+                )
             }
             .alert("Reset All Data?", isPresented: $showingResetConfirmation) {
                 Button("Cancel", role: .cancel) { }
@@ -96,6 +113,22 @@ struct SettingsView: View {
                     Text(type.displayName).tag(type)
                 }
             }
+            
+            Button {
+                showingCountryPicker = true
+            } label: {
+                HStack {
+                    Text("Country")
+                        .foregroundStyle(Color.inkPrimary)
+                    Spacer()
+                    Text(viewModel.country.isEmpty ? "Select" : viewModel.country)
+                        .foregroundStyle(viewModel.country.isEmpty ? Color.orchidTint : Color.inkSecondary)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.inkSecondary.opacity(0.5))
+                }
+            }
+            .buttonStyle(.plain)
             
             if viewModel.showsFormulaFields {
                 Button {
@@ -195,6 +228,8 @@ final class SettingsViewModel {
     var feedingType: FeedingType = .formula
     var formulaBrand = ""
     var formulaStage: FormulaStage?
+    var country = ""
+    var countryCode = ""
     var parentName = ""
     var parentEmail = ""
     
@@ -208,6 +243,8 @@ final class SettingsViewModel {
         feedingType = profile.feedingType
         formulaBrand = profile.formulaBrand ?? ""
         formulaStage = profile.formulaStage
+        country = profile.country
+        countryCode = profile.countryCode
         parentName = profile.parentName
         parentEmail = profile.parentEmail
         
@@ -219,6 +256,8 @@ final class SettingsViewModel {
     func save(to feedStore: FeedStore) {
         let weightGrams = Double(currentWeight).map { $0 * 1000 }
         let brand = formulaBrand.isEmpty ? nil : formulaBrand
+        let countryValue = country.isEmpty ? nil : country
+        let countryCodeValue = countryCode.isEmpty ? nil : countryCode
         
         feedStore.updateBabyProfile(
             babyName: babyName,
@@ -226,6 +265,8 @@ final class SettingsViewModel {
             formulaBrand: brand,
             formulaStage: showsFormulaFields ? formulaStage : nil,
             currentWeight: weightGrams,
+            country: countryValue,
+            countryCode: countryCodeValue,
             parentName: parentName,
             parentEmail: parentEmail
         )
@@ -287,6 +328,64 @@ struct FormulaPickerSheet: View {
 
 private enum FormulaPickerStep: Hashable {
     case stage
+}
+
+// MARK: - Country Picker Sheet (Settings)
+struct SettingsCountryPickerSheet: View {
+    @Binding var country: String
+    @Binding var countryCode: String
+    let onSave: () -> Void
+    
+    @Environment(\.dismiss) private var dismiss
+    @State private var searchText = ""
+    
+    private let countries: [(code: String, name: String)] = {
+        Locale.Region.isoRegions.compactMap { region in
+            let code = region.identifier
+            return Locale.current.localizedString(forRegionCode: code).map { (code, $0) }
+        }.sorted { $0.name < $1.name }
+    }()
+    
+    private var filteredCountries: [(code: String, name: String)] {
+        if searchText.isEmpty { return countries }
+        return countries.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+    }
+    
+    var body: some View {
+        NavigationStack {
+            List(filteredCountries, id: \.code) { item in
+                Button(action: {
+                    country = item.name
+                    countryCode = item.code
+                    onSave()
+                    dismiss()
+                }) {
+                    HStack {
+                        Text(item.name)
+                            .font(AppFont.sans(16))
+                            .foregroundColor(.inkPrimary)
+                        Spacer()
+                        if country == item.name {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.inkPrimary)
+                        }
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+            .listStyle(.plain)
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
+            .navigationTitle("Select Country")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                        .font(AppFont.sans(16, weight: .semibold))
+                }
+            }
+        }
+    }
 }
 
 #Preview {
