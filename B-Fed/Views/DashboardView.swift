@@ -220,11 +220,11 @@ struct PopulatedDashboardView: View {
                     FormulaInfoCard(profile: profile)
                 }
                 
+                PrepGuideLink()
+                
                 TipsSection()
                 
                 RecentFeedsSection()
-                
-                PrepGuideLink()
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
