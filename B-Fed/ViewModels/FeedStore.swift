@@ -78,6 +78,7 @@ class FeedStore {
         currentWeight: Double? = nil,
         country: String? = nil,
         countryCode: String? = nil,
+        dateOfBirth: Date? = nil,
         parentName: String? = nil,
         parentEmail: String? = nil
     ) {
@@ -104,6 +105,7 @@ class FeedStore {
             }
             profile.countryCode = countryCode
         }
+        if let dateOfBirth = dateOfBirth { profile.dateOfBirth = dateOfBirth }
         if let parentName = parentName { profile.parentName = parentName }
         if let parentEmail = parentEmail { profile.parentEmail = parentEmail }
         

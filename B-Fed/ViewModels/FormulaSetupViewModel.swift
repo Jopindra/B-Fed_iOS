@@ -9,6 +9,7 @@ enum FormulaSetupStep: Int, CaseIterable {
 }
 
 // MARK: - Formula Setup View Model
+@MainActor
 @Observable
 class FormulaSetupViewModel {
     

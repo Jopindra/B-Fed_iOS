@@ -27,9 +27,13 @@ struct SettingsView: View {
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
             #endif
-            .onAppear {
-                viewModel.load(from: feedStore.babyProfile)
-            }
+        }
+        .onAppear {
+            viewModel.load(from: feedStore.babyProfile)
+        }
+        .onChange(of: feedStore.babyProfile) { _, newProfile in
+            viewModel.load(from: newProfile)
+        }
             .sheet(isPresented: $showingShareSheet) {
                 ActivityView(activityItems: shareItems)
             }
@@ -71,7 +75,6 @@ struct SettingsView: View {
             } message: {
                 Text("This will delete all feeds and your baby profile. This action cannot be undone.")
             }
-        }
     }
     
     // MARK: - Baby Section
@@ -80,12 +83,7 @@ struct SettingsView: View {
             TextField("Name", text: $viewModel.babyName)
                 .submitLabel(.done)
             
-            HStack {
-                Text("Date of birth")
-                Spacer()
-                Text(profile.dateOfBirth, style: .date)
-                    .foregroundStyle(Color.inkSecondary)
-            }
+            DatePicker("Date of birth", selection: $viewModel.dateOfBirth, in: ...Date(), displayedComponents: .date)
             
             HStack {
                 Text("Age")
@@ -224,6 +222,7 @@ struct SettingsView: View {
 @Observable
 final class SettingsViewModel {
     var babyName = ""
+    var dateOfBirth: Date = Date()
     var currentWeight = ""
     var feedingType: FeedingType = .formula
     var formulaBrand = ""
@@ -238,8 +237,22 @@ final class SettingsViewModel {
     }
     
     func load(from profile: BabyProfile?) {
-        guard let profile = profile else { return }
+        guard let profile = profile else {
+            // Reset all fields when profile is nil
+            babyName = ""
+            dateOfBirth = Date()
+            currentWeight = ""
+            feedingType = .formula
+            formulaBrand = ""
+            formulaStage = nil
+            country = ""
+            countryCode = ""
+            parentName = ""
+            parentEmail = ""
+            return
+        }
         babyName = profile.babyName
+        dateOfBirth = profile.dateOfBirth
         feedingType = profile.feedingType
         formulaBrand = profile.formulaBrand ?? ""
         formulaStage = profile.formulaStage
@@ -250,6 +263,8 @@ final class SettingsViewModel {
         
         if let weight = profile.currentWeight ?? profile.birthWeight {
             currentWeight = String(format: "%.2f", weight / 1000)
+        } else {
+            currentWeight = ""
         }
     }
     
@@ -267,6 +282,7 @@ final class SettingsViewModel {
             currentWeight: weightGrams,
             country: countryValue,
             countryCode: countryCodeValue,
+            dateOfBirth: dateOfBirth,
             parentName: parentName,
             parentEmail: parentEmail
         )
