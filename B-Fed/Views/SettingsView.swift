@@ -197,15 +197,6 @@ struct SettingsView: View {
                 }
             }
             
-            NavigationLink(destination: BottlePrepGuideView()) {
-                HStack {
-                    Image(systemName: "drop.fill")
-                        .foregroundStyle(Color.almostAquaDark)
-                    Text("Bottle Prep Guide")
-                        .foregroundStyle(Color.inkPrimary)
-                }
-            }
-            
             Button {
                 showingResetConfirmation = true
             } label: {
