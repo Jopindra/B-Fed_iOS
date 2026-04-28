@@ -241,7 +241,7 @@ struct DashboardView: View {
             }
         }
         .sheet(isPresented: $showingLogFeed) {
-            LogFeedView()
+            LogFeedSheet()
         }
     }
     
