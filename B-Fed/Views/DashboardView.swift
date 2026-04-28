@@ -76,6 +76,50 @@ struct DashboardView: View {
         return "\(todayFeeds.count) feeds · \(totalMlToday)ml today"
     }
     
+    // MARK: - Reassurance Text
+    var reassuranceText: (headline: String, subtext: String) {
+        if todayFeeds.isEmpty {
+            return ("When you log a feed", "it will appear here")
+        }
+        guard let mins = lastFeedMinutesAgo else {
+            return ("Take your time", "Log when ready")
+        }
+        switch mins {
+        case 0..<30:
+            return ("Just finished", "Nice work")
+        case 30..<90:
+            return ("Feeding well today", "Next feed in around \(90 - mins) minutes")
+        case 90..<150:
+            return ("Due a feed soon", "Last feed \(mins)min ago")
+        default:
+            return ("Take your time", "Log when ready")
+        }
+    }
+    
+    // MARK: - Bottle Timer
+    private var bottleTimerRemainingMinutes: Int {
+        let freshnessWindow: TimeInterval = 2 * 3600 // 2 hours
+        let remaining = freshnessWindow - feedStore.timerElapsed
+        return max(0, Int(remaining / 60))
+    }
+    
+    private var bottleTimerIsExpired: Bool {
+        bottleTimerRemainingMinutes <= 0 && feedStore.isTimerRunning
+    }
+    
+    private var bottleTimerIsUrgent: Bool {
+        bottleTimerRemainingMinutes < 30 && bottleTimerRemainingMinutes > 0 && feedStore.isTimerRunning
+    }
+    
+    private var bottleTimerUseByTime: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mma"
+        formatter.amSymbol = "am"
+        formatter.pmSymbol = "pm"
+        let useByDate = Date().addingTimeInterval(TimeInterval(bottleTimerRemainingMinutes * 60))
+        return formatter.string(from: useByDate).lowercased()
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -130,17 +174,20 @@ struct DashboardView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         // Header zone
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 12) {
                             Text(headerText)
-                                .font(AppFont.heroTitle)
+                                .font(AppFont.serif(24))
                                 .foregroundStyle(Color.inkPrimary)
                             
-                            Text(dailySummaryText)
-                                .font(AppFont.body)
-                                .foregroundStyle(Color.inkSecondary)
+                            DailySummaryPill(
+                                feedCount: todayFeeds.count,
+                                totalMl: totalMlToday,
+                                hasFeeds: !todayFeeds.isEmpty
+                            )
+                            .frame(maxWidth: .infinity, alignment: .center)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 20)
                         .padding(.top, geometry.safeAreaInsets.top + 20)
                         
                         // Feed bubble arc
@@ -150,6 +197,34 @@ struct DashboardView: View {
                             onSeeAllTapped: onSwitchToHistoryTab
                         )
                         .padding(.top, 20)
+                        
+                        // Bottle timer card (if active)
+                        if feedStore.isTimerRunning {
+                            BottleTimerCard(
+                                useByTime: bottleTimerUseByTime,
+                                remainingMinutes: bottleTimerRemainingMinutes,
+                                isUrgent: bottleTimerIsUrgent,
+                                isExpired: bottleTimerIsExpired
+                            )
+                            .padding(.horizontal, 18)
+                            .padding(.top, 20)
+                        }
+                        
+                        // Reassurance zone
+                        VStack(spacing: 8) {
+                            Text(reassuranceText.headline)
+                                .font(AppFont.serif(15))
+                                .foregroundStyle(Color.inkPrimary)
+                                .multilineTextAlignment(.center)
+                            
+                            Text(reassuranceText.subtext)
+                                .font(AppFont.sans(12, weight: .regular))
+                                .foregroundStyle(Color.inkSecondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 28)
+                        .padding(.horizontal, 20)
                         
                         // Existing dashboard content
                         if hasFeeds {
@@ -171,6 +246,101 @@ struct DashboardView: View {
     }
     
 
+}
+
+// MARK: - Daily Summary Pill
+struct DailySummaryPill: View {
+    let feedCount: Int
+    let totalMl: Int
+    let hasFeeds: Bool
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            if hasFeeds {
+                Text("\(feedCount)")
+                    .font(AppFont.sans(11, weight: .semibold))
+                    .foregroundStyle(Color.inkPrimary)
+                Text(" feeds · ")
+                    .font(AppFont.sans(11, weight: .regular))
+                    .foregroundStyle(Color.inkSecondary)
+                Text("\(totalMl)ml")
+                    .font(AppFont.sans(11, weight: .semibold))
+                    .foregroundStyle(Color.inkPrimary)
+                Text(" today")
+                    .font(AppFont.sans(11, weight: .regular))
+                    .foregroundStyle(Color.inkSecondary)
+            } else {
+                Text("No feeds logged yet today")
+                    .font(AppFont.sans(11, weight: .regular))
+                    .foregroundStyle(Color.inkSecondary)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(
+            Capsule()
+                .fill(Color.white)
+                .overlay(
+                    Capsule()
+                        .stroke(Color.black.opacity(0.07), lineWidth: 0.5)
+                )
+        )
+    }
+}
+
+// MARK: - Bottle Timer Card
+struct BottleTimerCard: View {
+    let useByTime: String
+    let remainingMinutes: Int
+    let isUrgent: Bool
+    let isExpired: Bool
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("BOTTLE TIMER")
+                    .font(AppFont.sans(9, weight: .semibold))
+                    .foregroundStyle(Color.peachDustDark)
+                    .tracking(0.3)
+                
+                if isExpired {
+                    Text("Bottle should be discarded")
+                        .font(AppFont.sans(12, weight: .regular))
+                        .foregroundStyle(Color.orchidTintDark)
+                } else {
+                    Text("Use by \(useByTime) · \(remainingMinutes) min remaining")
+                        .font(AppFont.sans(12, weight: .regular))
+                        .foregroundStyle(Color.inkSecondary)
+                }
+            }
+            
+            Spacer()
+            
+            if !isExpired {
+                Text(remainingTimeString)
+                    .font(AppFont.serif(18))
+                    .foregroundStyle(isUrgent ? Color.peachDustDark : Color.peachDustDark)
+            }
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(isExpired ? Color.orchidTintLight : Color.peachDustLight)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(isUrgent || isExpired ? Color.peachDustDark : Color.peachDust, lineWidth: 0.5)
+        )
+    }
+    
+    private var remainingTimeString: String {
+        if remainingMinutes >= 60 {
+            let h = remainingMinutes / 60
+            let m = remainingMinutes % 60
+            return m > 0 ? "\(h)h \(m)m" : "\(h)h"
+        }
+        return "\(remainingMinutes)m"
+    }
 }
 
 // MARK: - First Time Dashboard (Empty State)
