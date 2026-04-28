@@ -45,7 +45,6 @@ struct SettingsView: View {
                     onSave: { brand, stage in
                         viewModel.formulaBrand = brand
                         viewModel.formulaStage = stage
-                        viewModel.save(to: feedStore)
                     }
                 )
             }
@@ -63,7 +62,6 @@ struct SettingsView: View {
                                 viewModel.formulaStage = nil
                             }
                         }
-                        viewModel.save(to: feedStore)
                     }
                 )
             }
@@ -153,11 +151,22 @@ struct SettingsView: View {
                 }
             }
             
-            Button("Save Changes") {
+            Button {
                 viewModel.save(to: feedStore)
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.success)
+            } label: {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "checkmark.circle.fill")
+                    Text("Save Changes")
+                }
+                .font(AppFont.sans(16, weight: .semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, AppSpacing.md)
             }
-            .frame(maxWidth: .infinity)
-            .foregroundStyle(Color.almostAquaDark)
+            .buttonStyle(.borderedProminent)
+            .tint(Color.inkPrimary)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
         }
     }
     
