@@ -5,6 +5,7 @@ struct DashboardView: View {
     @Environment(FeedStore.self) private var feedStore
     @State private var showingLogFeed = false
     @State private var selectedPeriod: TimePeriod = .today
+    var onSwitchToHistoryTab: () -> Void = {}
     
     @Query(sort: \Feed.startTime, order: .reverse) private var allFeeds: [Feed]
     
@@ -142,9 +143,13 @@ struct DashboardView: View {
                         .padding(.horizontal, 16)
                         .padding(.top, geometry.safeAreaInsets.top + 20)
                         
-                        // Bubble arc placeholder
-                        bubbleArcPlaceholder
-                            .padding(.top, 20)
+                        // Feed bubble arc
+                        FeedBubbleArcView(
+                            feeds: feedsInLastFourHours,
+                            geometry: geometry,
+                            onSeeAllTapped: onSwitchToHistoryTab
+                        )
+                        .padding(.top, 20)
                         
                         // Existing dashboard content
                         if hasFeeds {
@@ -165,24 +170,7 @@ struct DashboardView: View {
         }
     }
     
-    // MARK: - Bubble Arc Placeholder
-    private var bubbleArcPlaceholder: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
-                .stroke(Color.inkPrimary.opacity(0.1), lineWidth: 1)
-                .frame(height: 220)
-            
-            VStack(spacing: 8) {
-                Image(systemName: "drop.fill")
-                    .font(.system(size: 32))
-                    .foregroundStyle(Color.inkPrimary.opacity(0.2))
-                Text("Feed Arc")
-                    .font(AppFont.caption)
-                    .foregroundStyle(Color.inkSecondary.opacity(0.5))
-            }
-        }
-        .padding(.horizontal, 16)
-    }
+
 }
 
 // MARK: - First Time Dashboard (Empty State)

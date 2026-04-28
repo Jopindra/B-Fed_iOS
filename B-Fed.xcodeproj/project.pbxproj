@@ -59,6 +59,7 @@
 		8B8F4D5087E329BE7E3F4A65 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F5882D1DB5476847D0C7932 /* Foundation.framework */; };
 		92044EA1B472BA1ACFE8BAC2 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7594D47BEFE0EEB9FF4AAA4 /* Components.swift */; };
 		9667A1ED9D45618B090D1760 /* B_FedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A97414FBCBD7082300079 /* B_FedTests.swift */; };
+		9A1FACD88BB4439E7AB9C47A /* FeedBubbleArcView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C9A5242B3621EBFA6E9E68 /* FeedBubbleArcView.swift */; };
 		9BE6E32904F6641CBE5DE4D6 /* FeedHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74FE31E2064A7FD6C5F9B5C5 /* FeedHistoryView.swift */; };
 		9E0B0C78697F6D3BA31A231A /* FormulaSeedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32436D9C25AD85D939620162 /* FormulaSeedData.swift */; };
 		A268D4AA348E6F427B19FD06 /* ParentEmailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F63710F9490B6F87119710 /* ParentEmailScreen.swift */; };
@@ -130,6 +131,7 @@
 		32436D9C25AD85D939620162 /* FormulaSeedData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormulaSeedData.swift; sourceTree = "<group>"; };
 		339B2BBB37A9377BB7BF3069 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		381CA11D2E6B14D6A5BCC5E8 /* MotionSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSystem.swift; sourceTree = "<group>"; };
+		39C9A5242B3621EBFA6E9E68 /* FeedBubbleArcView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = B-Fed/Views/FeedBubbleArcView.swift; sourceTree = SOURCE_ROOT; };
 		3D3448E555A451B80DFF444C /* OnboardingStepView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingStepView.swift; sourceTree = "<group>"; };
 		3D35CCB19D278F4F311FB628 /* B_FedWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = B_FedWidget.swift; sourceTree = "<group>"; };
 		3D55F0745B420EDB2A53CF68 /* ClockTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClockTests.swift; sourceTree = "<group>"; };
@@ -456,6 +458,7 @@
 				EE0BAD7AD8D083A7D56A20E7 /* Onboarding */,
 				8C5FBF6676AF5D7651F93E4E /* BottlePrepGuideView.swift */,
 				5D219A9A5C7B46CFD7C22166 /* SettingsView.swift */,
+				39C9A5242B3621EBFA6E9E68 /* FeedBubbleArcView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -667,6 +670,7 @@
 				5E582E1C8A97D57531797994 /* ProductStageSelectionScreen.swift in Sources */,
 				BAFF0C0E79A3C45FCB4EB52A /* GentleGuideScreen.swift in Sources */,
 				196DDFD864DB50ACF79A5198 /* FormulaDisclaimerView.swift in Sources */,
+				9A1FACD88BB4439E7AB9C47A /* FeedBubbleArcView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

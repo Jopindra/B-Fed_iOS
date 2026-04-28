@@ -13,13 +13,13 @@ struct ContentView: View {
             Group {
                 switch selectedTab {
                 case 0:
-                    DashboardView()
+                    DashboardView(onSwitchToHistoryTab: { selectedTab = 1 })
                 case 1:
                     FeedHistoryView()
                 case 2:
                     InsightsView()
                 default:
-                    DashboardView()
+                    DashboardView(onSwitchToHistoryTab: { selectedTab = 1 })
                 }
             }
             
