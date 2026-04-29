@@ -1,8 +1,10 @@
 import SwiftUI
 import SwiftData
+import UserNotifications
 
 struct LogFeedSheet: View {
     @Environment(FeedStore.self) private var feedStore
+    @Environment(SelectedFormulaStore.self) private var formulaStore
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
@@ -12,17 +14,31 @@ struct LogFeedSheet: View {
     @State private var timerActive: Bool = false
     @State private var selectedTime: Date = Date()
     @State private var showingTimePicker: Bool = false
-    @State private var showingFormulaPicker: Bool = false
+    @State private var showingFormulaSelector: Bool = false
+    @State private var showingFormulaDetail: Bool = false
     
     // MARK: - Derived
     private var formulaDisplayName: String {
+        if let selected = formulaStore.selectedFormula {
+            return selected.isCustom ? selected.name : selected.displayName
+        }
         guard let profile = feedStore.babyProfile else { return "Select formula" }
         return profile.customFormulaBrand ?? profile.formulaBrand ?? "Select formula"
     }
     
     private var hasFormulaSet: Bool {
+        if formulaStore.selectedFormula != nil { return true }
         guard let profile = feedStore.babyProfile else { return false }
         return (profile.customFormulaBrand ?? profile.formulaBrand) != nil
+    }
+    
+    private var currentFormula: Formula? {
+        if let selected = formulaStore.selectedFormula { return selected }
+        guard let profile = feedStore.babyProfile,
+              let brand = profile.customFormulaBrand ?? profile.formulaBrand else { return nil }
+        return FormulaService.allFormulas.first {
+            $0.brand == brand || $0.displayName.contains(brand)
+        }
     }
     
     private var defaultAmount: Double {
@@ -42,7 +58,7 @@ struct LogFeedSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.white.ignoresSafeArea()
+                Color.backgroundCard.ignoresSafeArea()
                 
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 0) {
@@ -51,7 +67,7 @@ struct LogFeedSheet: View {
                         
                         // Title
                         Text("Log a feed")
-                            .font(AppFont.serif(20))
+                            .font(AppFont.screenTitle)
                             .foregroundStyle(Color.inkPrimary)
                             .padding(.horizontal, 20)
                             .padding(.top, 20)
@@ -106,15 +122,20 @@ struct LogFeedSheet: View {
         .sheet(isPresented: $showingTimePicker) {
             TimePickerSheet(selectedTime: $selectedTime)
         }
-        .sheet(isPresented: $showingFormulaPicker) {
-            LogFeedFormulaPickerSheet()
+        .sheet(isPresented: $showingFormulaSelector) {
+            FormulaSelector()
+        }
+        .sheet(isPresented: $showingFormulaDetail) {
+            if let formula = currentFormula {
+                FormulaDetailView(formula: formula, volumeMl: amount)
+            }
         }
     }
     
     // MARK: - Sheet Handle
     private var sheetHandle: some View {
         RoundedRectangle(cornerRadius: 2)
-            .fill(Color.black.opacity(0.12))
+            .fill(Color.inkPrimary.opacity(AppMetrics.borderOpacity))
             .frame(width: 32, height: 4)
             .frame(maxWidth: .infinity)
             .padding(.top, 10)
@@ -123,7 +144,7 @@ struct LogFeedSheet: View {
     // MARK: - Section Label
     private func sectionLabel(_ text: String) -> some View {
         Text(text)
-            .font(AppFont.sans(9, weight: .semibold))
+            .font(AppFont.label)
             .foregroundStyle(Color.inkSecondary)
             .tracking(0.3)
             .padding(.horizontal, 20)
@@ -132,39 +153,55 @@ struct LogFeedSheet: View {
     
     // MARK: - Formula Row
     private var formulaRow: some View {
-        Button(action: { showingFormulaPicker = true }) {
-            HStack(spacing: 12) {
-                Circle()
-                    .fill(Color.almostAquaLight)
-                    .frame(width: 24, height: 24)
-                    .overlay(
-                        Text(formulaIcon)
-                            .font(AppFont.sans(10, weight: .semibold))
-                            .foregroundStyle(Color.almostAquaDark)
-                    )
-                
-                Text(formulaDisplayName)
-                    .font(AppFont.sans(13, weight: .medium))
-                    .foregroundStyle(hasFormulaSet ? Color.inkPrimary : Color.orchidTint)
-                
-                Spacer()
-                
-                Text("›")
-                    .font(AppFont.sans(16, weight: .light))
-                    .foregroundStyle(Color.inkSecondary)
+        HStack(spacing: 12) {
+            Button(action: { showingFormulaSelector = true }) {
+                HStack(spacing: 12) {
+                    Circle()
+                        .fill(Color.almostAquaLight)
+                        .frame(minWidth: 44, minHeight: 44)
+                        .overlay(
+                            Text(formulaIcon)
+                                .font(AppFont.sans(10, weight: .semibold))
+                                .foregroundStyle(Color.almostAquaDark)
+                        )
+                    
+                    Text(formulaDisplayName)
+                        .font(AppFont.bodyLarge)
+                        .foregroundStyle(hasFormulaSet ? Color.inkPrimary : Color.orchidTint)
+                    
+                    Spacer()
+                    
+                    Text("›")
+                        .font(AppFont.sans(16, weight: .light))
+                        .foregroundStyle(Color.inkSecondary)
+                }
             }
-            .padding(.horizontal, 12)
-            .frame(height: 44)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color.backgroundBase)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(Color.black.opacity(0.07), lineWidth: 0.5)
-                    )
-            )
+            .buttonStyle(PlainButtonStyle())
+            
+            if hasFormulaSet {
+                Button(action: { showingFormulaDetail = true }) {
+                    Text("?")
+                        .font(AppFont.caption)
+                        .foregroundStyle(Color.inkSecondary)
+                        .frame(width: 24, height: 24)
+                        .background(
+                            Circle()
+                                .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                        )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
         }
-        .buttonStyle(PlainButtonStyle())
+        .padding(.horizontal, 12)
+        .frame(height: 44)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.backgroundBase)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                )
+        )
     }
     
     private var formulaIcon: String {
@@ -193,7 +230,7 @@ struct LogFeedSheet: View {
                     .monospacedDigit()
                 
                 Text("ml")
-                    .font(AppFont.sans(10, weight: .regular))
+                    .font(AppFont.caption)
                     .foregroundStyle(Color.inkSecondary)
             }
             
@@ -213,7 +250,7 @@ struct LogFeedSheet: View {
                 .fill(Color.backgroundBase)
                 .overlay(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .stroke(Color.black.opacity(0.07), lineWidth: 0.5)
+                        .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
                 )
         )
     }
@@ -225,13 +262,13 @@ struct LogFeedSheet: View {
     ) -> some View {
         Button(action: action) {
             Text(label)
-                .font(AppFont.sans(20, weight: .regular))
+                .font(AppFont.lead)
                 .foregroundStyle(Color.inkPrimary)
                 .frame(width: 36, height: 36)
                 .background(
                     Circle()
-                        .fill(Color.white)
-                        .shadow(color: Color.black.opacity(0.04), radius: 2, x: 0, y: 1)
+                        .fill(Color.backgroundCard)
+                        
                 )
         }
         .buttonStyle(PlainButtonStyle())
@@ -247,16 +284,16 @@ struct LogFeedSheet: View {
             ForEach([60, 90, 120, 150, 180], id: \.self) { value in
                 Button(action: { amount = Double(value) }) {
                     Text("\(value)ml")
-                        .font(AppFont.sans(11, weight: .medium))
-                        .foregroundStyle(isPillActive(value) ? Color.white : Color.inkPrimary)
+                        .font(AppFont.caption)
+                        .foregroundStyle(isPillActive(value) ? Color.backgroundCard : Color.inkPrimary)
                         .frame(height: 28)
                         .padding(.horizontal, 12)
                         .background(
                             Capsule()
-                                .fill(isPillActive(value) ? Color.inkPrimary : Color.white)
+                                .fill(isPillActive(value) ? Color.inkPrimary : Color.backgroundCard)
                                 .overlay(
                                     Capsule()
-                                        .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                                        .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
                                 )
                         )
                 }
@@ -279,7 +316,7 @@ struct LogFeedSheet: View {
             
             Spacer()
             
-            Toggle("", isOn: $timerActive)
+            Toggle("Start bottle timer", isOn: $timerActive).labelsHidden()
                 .toggleStyle(SwitchToggleStyle(tint: Color.inkPrimary))
                 .labelsHidden()
         }
@@ -290,7 +327,7 @@ struct LogFeedSheet: View {
                 .fill(Color.backgroundBase)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(Color.black.opacity(0.07), lineWidth: 0.5)
+                        .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
                 )
         )
     }
@@ -316,7 +353,7 @@ struct LogFeedSheet: View {
                     .fill(Color.backgroundBase)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(Color.black.opacity(0.07), lineWidth: 0.5)
+                            .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
                     )
             )
         }
@@ -328,38 +365,62 @@ struct LogFeedSheet: View {
         VStack(spacing: 0) {
             Button(action: saveFeed) {
                 Text("Save feed")
-                    .font(AppFont.sans(15, weight: .semibold))
-                    .foregroundStyle(Color.white)
+                    .font(AppFont.button)
+                    .foregroundStyle(Color.backgroundCard)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 52)
+                    .frame(height: AppMetrics.buttonHeight)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
                             .fill(Color.inkPrimary)
                     )
             }
             .buttonStyle(PlainButtonStyle())
-            .padding(.horizontal, 18)
+            .padding(.horizontal, 20)
             .padding(.bottom, 16)
         }
-        .background(Color.white)
+        .background(Color.backgroundCard)
     }
     
     // MARK: - Save Action
     private func saveFeed() {
         guard amount > 0 else { return }
-        
-        if timerActive {
-            feedStore.startFeedTimer()
-        }
-        
+
         _ = feedStore.createFeed(
             amount: amount,
             startTime: selectedTime,
             notes: "",
             completed: true
         )
-        
+
+        if timerActive {
+            feedStore.startFeedTimer()
+            scheduleBottleNotification()
+        }
+
         dismiss()
+    }
+
+    private func scheduleBottleNotification() {
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
+
+        // Remove any pending bottle timer notification before scheduling a new one
+        center.removePendingNotificationRequests(withIdentifiers: ["bottle-timer-notification"])
+
+        let content = UNMutableNotificationContent()
+        content.title = "Bottle check"
+        let timeString = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "h:mm a"
+            return formatter.string(from: selectedTime).lowercased()
+        }()
+        content.body = "The bottle made at \(timeString) should be used or discarded"
+        content.sound = .default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2 * 3600, repeats: false)
+        let request = UNNotificationRequest(identifier: "bottle-timer-notification", content: content, trigger: trigger)
+
+        center.add(request)
     }
 }
 
@@ -429,7 +490,7 @@ struct LogFeedFormulaPickerSheet: View {
                         Spacer()
                         
                         Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 22))
+                            .font(AppFont.sans(22, weight: .regular))
                             .foregroundStyle(Color.inkPrimary)
                     }
                     .padding(.horizontal, 20)
@@ -459,5 +520,6 @@ struct LogFeedFormulaPickerSheet: View {
 #Preview {
     LogFeedSheet()
         .environment(FeedStore())
+        .environment(SelectedFormulaStore())
         .modelContainer(for: Feed.self, inMemory: true)
 }

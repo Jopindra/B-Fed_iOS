@@ -14,7 +14,7 @@ struct BottlePrepGuideView: View {
         PrepStep(
             number: 2,
             title: "Boil fresh water",
-            detail: "Bring water to a rolling boil and let it cool for about 30 minutes. It should feel warm, not hot — around 70°C if you want to be precise.",
+            detail: "Bring water to a rolling boil and let it cool for about 30 minutes. It should feel warm, not hot — your formula tin will tell you the right temperature.",
             icon: "flame.fill",
             tint: Color.peachDustDark
         ),
@@ -72,7 +72,7 @@ struct BottlePrepGuideView: View {
                         }
                         
                         Text("Bottle Prep Guide")
-                            .font(AppFont.serif(28))
+                            .font(AppFont.subHero)
                             .foregroundStyle(Color.inkPrimary)
                         
                         Text("A calm, safe routine you can rely on")
@@ -157,7 +157,7 @@ struct PrepStepCard: View {
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
-                .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
         )
     }
 }

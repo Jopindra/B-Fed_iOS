@@ -98,7 +98,7 @@ struct MonthView: View {
     private var insightText: String {
         let loggedCount = monthData.filter { $0.isLogged }.count
         if loggedCount == monthData.count {
-            return "Perfect month — you're building a beautiful routine"
+            return "A full month of feeds"
         } else if loggedCount > monthData.count / 2 {
             return "You logged feeds on \(loggedCount) days this month"
         } else {
@@ -137,7 +137,7 @@ struct CompletionDay: View {
                 .fill(Color.backgroundCard)
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                        .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
                 )
             
             // Today indicator (subtle ring)

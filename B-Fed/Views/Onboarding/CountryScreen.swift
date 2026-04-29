@@ -30,12 +30,12 @@ struct CountryScreen: View {
                                 .foregroundColor(country.isEmpty ? .orchidTint : .inkPrimary)
                             Spacer()
                             Image(systemName: "chevron.down")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(AppFont.sans(14, weight: .medium))
                                 .foregroundColor(.inkSecondary)
                         }
                         .padding(.horizontal, AppSpacing.lg)
                         .frame(height: AppMetrics.inputHeight)
-                        .background(Color.white)
+                        .background(Color.backgroundCard)
                         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
@@ -87,12 +87,12 @@ private struct CountryPickerSheet: View {
                 }) {
                     HStack {
                         Text(item.name)
-                            .font(AppFont.sans(16))
+                            .font(AppFont.bodyLarge)
                             .foregroundColor(.inkPrimary)
                         Spacer()
                         if country == item.name {
                             Image(systemName: "checkmark")
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(AppFont.sans(14, weight: .semibold))
                                 .foregroundColor(.inkPrimary)
                         }
                     }

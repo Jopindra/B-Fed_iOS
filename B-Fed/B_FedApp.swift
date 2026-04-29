@@ -14,12 +14,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         for window in windowScene.windows {
-            window.backgroundColor = UIColor(
-                red: 250.0/255.0,
-                green: 250.0/255.0,
-                blue: 248.0/255.0,
-                alpha: 1.0
-            )
+            window.backgroundColor = UIColor(Color.backgroundBase)
         }
     }
 }
@@ -28,6 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 struct B_FedApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var feedStore = FeedStore()
+    @State private var selectedFormulaStore = SelectedFormulaStore()
     @State private var showOnboarding: Bool
     
     init() {
@@ -44,10 +40,12 @@ struct B_FedApp: App {
                     showOnboarding = false
                 })
                 .environment(feedStore)
+                .environment(selectedFormulaStore)
                 .ignoresSafeArea(.all)
             } else {
                 ContentView()
                     .environment(feedStore)
+                    .environment(selectedFormulaStore)
             }
         }
         .modelContainer(sharedModelContainer)

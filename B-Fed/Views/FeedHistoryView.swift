@@ -72,7 +72,7 @@ struct FeedHistoryView: View {
         #if os(iOS)
         .listStyle(.insetGrouped)
         #endif
-        .padding(.bottom, 60)
+        .padding(.bottom, AppSpacing.xxxl)
     }
     
     private func groupByTimeOfDay(_ feeds: [Feed]) -> [(String, [Feed])] {
@@ -124,7 +124,7 @@ struct EmptyHistoryView: View {
             }
             
             Text("No feeds yet")
-                .font(AppFont.serif(24))
+                .font(AppFont.largeValue)
                 .foregroundStyle(Color.inkPrimary)
             
             Text("Your feeding timeline will appear here")
@@ -172,7 +172,7 @@ struct TimeGroupSection: View {
             Text(timeLabel)
                 .font(AppFont.sans(11, weight: .semibold))
                 .foregroundStyle(Color.inkSecondary.opacity(0.7))
-                .padding(.leading, 62)
+                .padding(.leading, 64)
                 .padding(.bottom, AppSpacing.sm)
             
             ForEach(Array(feeds.enumerated()), id: \.element.id) { index, feed in
@@ -240,10 +240,10 @@ struct TimelineRow: View {
                     } label: {
                         Label("Edit", systemImage: "pencil")
                     }
-                    .tint(Color.orchidTintDark)
+                    .tint(Color.almostAquaDark)
                 }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, AppSpacing.xs)
         .contentShape(Rectangle())
     }
 }

@@ -12,8 +12,9 @@ class FeedStore {
 
     var activeFeed: Feed?
     var babyProfile: BabyProfile?
-    var timerElapsed: TimeInterval { timerService.elapsed }
-    var isTimerRunning: Bool { timerService.isRunning }
+    var timerElapsed: TimeInterval = 0
+    var isTimerRunning: Bool = false
+    private var observationTimer: Timer?
 
     var currentTime: Date { clock.currentTime }
 
@@ -144,12 +145,12 @@ class FeedStore {
     func createFeed(amount: Double, startTime: Date = Date(), notes: String = "", completed: Bool = true) -> Feed {
         var endTime: Date? = nil
         if timerService.isRunning {
-            let duration = timerService.stop()
+            let duration = stopFeedTimer()
             if duration > 0 {
                 endTime = startTime.addingTimeInterval(duration)
             }
         }
-        
+
         let feed = Feed(
             startTime: startTime,
             endTime: endTime,
@@ -166,14 +167,37 @@ class FeedStore {
     
     func startFeedTimer() {
         timerService.start()
+        isTimerRunning = true
+        timerElapsed = 0
+        startObservationTimer()
     }
-    
+
     func stopFeedTimer() -> TimeInterval {
-        timerService.stop()
+        let duration = timerService.stop()
+        isTimerRunning = false
+        timerElapsed = 0
+        observationTimer?.invalidate()
+        observationTimer = nil
+        return duration
     }
-    
+
     func resetFeedTimer() {
         timerService.reset()
+        isTimerRunning = false
+        timerElapsed = 0
+        observationTimer?.invalidate()
+        observationTimer = nil
+    }
+
+    private func startObservationTimer() {
+        observationTimer?.invalidate()
+        observationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            Task { @MainActor in
+                self.timerElapsed = self.timerService.elapsed
+                self.isTimerRunning = self.timerService.isRunning
+            }
+        }
     }
 
     func deleteFeed(_ feed: Feed) {

@@ -5,9 +5,9 @@ import SwiftUI
 struct PrimaryButton: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .font(AppFont.sans(14, weight: .semibold))
-            .foregroundStyle(.white)
-            .frame(height: 52)
+            .font(AppFont.button)
+            .foregroundStyle(Color.backgroundCard)
+            .frame(height: AppMetrics.buttonHeight)
             .background(Color.inkPrimary)
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.button, style: .continuous))
     }
@@ -16,9 +16,9 @@ struct PrimaryButton: ViewModifier {
 struct SecondaryButton: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .font(AppFont.sans(14, weight: .semibold))
+            .font(AppFont.button)
             .foregroundStyle(Color.peachDustDark)
-            .frame(height: 52)
+            .frame(height: AppMetrics.buttonHeight)
             .background(Color.peachDustLight)
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.button, style: .continuous))
     }
@@ -27,13 +27,13 @@ struct SecondaryButton: ViewModifier {
 struct GhostButton: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .font(AppFont.sans(14, weight: .semibold))
+            .font(AppFont.button)
             .foregroundStyle(Color.inkSecondary)
-            .frame(height: 52)
+            .frame(height: AppMetrics.buttonHeight)
             .background(Color.clear)
             .overlay(
                 RoundedRectangle(cornerRadius: AppRadius.button, style: .continuous)
-                    .stroke(Color.inkSecondary.opacity(0.30), lineWidth: 0.5)
+                    .stroke(Color.inkSecondary.opacity(0.30), lineWidth: AppMetrics.borderWidth)
             )
     }
 }
@@ -62,7 +62,7 @@ struct CardStyle: ViewModifier {
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
-                    .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                    .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
             )
     }
 }
@@ -75,7 +75,7 @@ struct HeroCardStyle: ViewModifier {
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.hero, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: AppRadius.hero, style: .continuous)
-                    .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                    .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
             )
     }
 }
@@ -96,7 +96,7 @@ struct TagActive: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(AppFont.label)
-            .foregroundStyle(.white)
+            .foregroundStyle(Color.backgroundCard)
             .padding(.horizontal, AppSpacing.md)
             .padding(.vertical, AppSpacing.xs)
             .background(Color.inkPrimary)
@@ -114,7 +114,7 @@ struct TagInactive: ViewModifier {
             .background(Color.backgroundCard)
             .overlay(
                 Capsule()
-                    .stroke(Color.inkSecondary.opacity(0.20), lineWidth: 0.5)
+                    .stroke(Color.inkSecondary.opacity(0.20), lineWidth: AppMetrics.borderWidth)
             )
     }
 }
@@ -125,7 +125,7 @@ struct BadgeStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(AppFont.label)
-            .foregroundStyle(.white)
+            .foregroundStyle(Color.backgroundCard)
             .padding(.horizontal, AppSpacing.md)
             .padding(.vertical, AppSpacing.xs)
             .background(color)
@@ -184,7 +184,7 @@ struct ProgressBar: View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(Color.black.opacity(0.10))
+                    .fill(Color.inkPrimary.opacity(AppMetrics.borderOpacity))
                     .frame(height: 4)
 
                 RoundedRectangle(cornerRadius: 2)
@@ -210,12 +210,12 @@ struct OnboardingInputField: View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             if let label = label {
                 Text(label)
-                    .font(AppFont.sans(12, weight: .semibold))
-                    .foregroundColor(.inkPrimary)
+                    .font(AppFont.inputLabel)
+                    .foregroundColor(Color.inkPrimary)
             }
             TextField(label ?? "", text: $text, prompt: Text(placeholder).foregroundColor(.orchidTint))
-                .font(AppFont.sans(17))
-                .foregroundColor(.inkPrimary)
+                .font(AppFont.input)
+                .foregroundColor(Color.inkPrimary)
                 .keyboardType(keyboardType)
                 .submitLabel(submitLabel)
                 .ifLet(accessibilityIdentifier) { view, id in
@@ -223,11 +223,11 @@ struct OnboardingInputField: View {
                 }
                 .padding(.horizontal, AppSpacing.lg)
                 .frame(height: AppMetrics.inputHeight)
-                .background(Color.white)
+                .background(Color.backgroundCard)
                 .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
-                        .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                        .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
                 )
         }
     }
@@ -250,8 +250,8 @@ struct UnitToggle: View {
                             .padding(4)
                             .opacity(isSelected ? 1 : 0)
                         Text(option.label)
-                            .font(AppFont.sans(14, weight: .semibold))
-                            .foregroundColor(isSelected ? .white : .inkSecondary)
+                            .font(AppFont.button)
+                            .foregroundColor(isSelected ? Color.backgroundCard : Color.inkSecondary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -261,11 +261,11 @@ struct UnitToggle: View {
             }
         }
         .frame(height: AppMetrics.toggleHeight)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(Color.backgroundCard)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.button, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+            RoundedRectangle(cornerRadius: AppRadius.button, style: .continuous)
+                .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
         )
     }
 }
@@ -300,8 +300,8 @@ struct TabBarStyle: ViewModifier {
             .background(Color.backgroundCard)
             .overlay(
                 Rectangle()
-                    .fill(Color.black.opacity(0.06))
-                    .frame(height: 0.5)
+                    .fill(Color.inkPrimary.opacity(AppMetrics.borderOpacity))
+                    .frame(height: AppMetrics.borderWidth)
                     .frame(maxHeight: .infinity, alignment: .top),
                 alignment: .top
             )

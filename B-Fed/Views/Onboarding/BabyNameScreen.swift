@@ -16,14 +16,14 @@ struct BabyNameScreen: View {
             content: {
                 VStack(spacing: 0) {
                     Text("Or a nickname — whatever feels right")
-                        .font(AppFont.sans(13))
+                        .font(AppFont.body)
                         .foregroundColor(.inkSecondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, AppSpacing.lg)
                         .padding(.top, AppSpacing.sm)
 
                     TextField("Baby's name", text: $babyName, prompt: Text("e.g. Lily").foregroundColor(.orchidTint))
-                        .font(AppFont.sans(17))
+                        .font(AppFont.input)
                         .foregroundColor(.inkPrimary)
                         .keyboardType(.namePhonePad)
                         .submitLabel(.next)
@@ -31,7 +31,7 @@ struct BabyNameScreen: View {
                         .accessibilityIdentifier("onboarding-babyName-field")
                         .padding(.horizontal, AppSpacing.lg)
                         .frame(height: AppMetrics.inputHeight)
-                        .background(Color.white)
+                        .background(Color.backgroundCard)
                         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
@@ -41,7 +41,7 @@ struct BabyNameScreen: View {
                         .padding(.top, AppSpacing.xl)
 
                     Text("This is just for you")
-                        .font(AppFont.sans(11))
+                        .font(AppFont.caption)
                         .foregroundColor(.orchidTintDark)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, AppSpacing.lg)

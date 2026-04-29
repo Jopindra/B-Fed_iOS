@@ -33,7 +33,7 @@ struct LogFeedView: View {
                     BottleFillPreview(fillLevel: bottleFillLevel)
                         .frame(width: 80, height: 130)
                         .opacity(isDragging ? 1 : 0.6)
-                        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: bottleFillLevel)
+                        
                     
                     // Amount Display with Drag
                     AmountScrubber(amount: $amount, isDragging: $isDragging)
@@ -91,8 +91,7 @@ struct LogFeedView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .primaryButton()
-                    .buttonStyle(GentlePressEffect())
-                    .padding(.bottom, 8)
+                    .padding(.bottom, AppSpacing.sm)
                 }
                 .padding(.horizontal, AppSpacing.lg)
                 .padding(.bottom, AppSpacing.lg)
@@ -174,14 +173,14 @@ struct AmountScrubber: View {
             // Amount Display (drag gesture for sighted users)
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text("\(Int(amount))")
-                    .font(AppFont.serif(96))
+                    .font(AppFont.jumbo)
                     .foregroundStyle(Color.inkPrimary)
                     .monospacedDigit()
                     .scaleEffect(scale)
                     .accessibilityHidden(true)
                 
                 Text("ml")
-                    .font(AppFont.serif(28))
+                    .font(AppFont.subHero)
                     .foregroundStyle(Color.inkSecondary)
                     .accessibilityHidden(true)
             }
@@ -252,9 +251,7 @@ struct AmountScrubber: View {
         
         // Visual feedback
         // Gentle scale feedback during drag
-        withAnimation(MotionCurve.interaction) {
-            scale = 1.02
-        }
+        scale = 1.02
     }
     
     private func handleDragEnd(_: DragGesture.Value) {
@@ -279,10 +276,8 @@ struct AmountScrubber: View {
         }
         
         // Gentle return to rest
-        withAnimation(MotionCurve.gentleReturn) {
-            amount = finalAmount
-            scale = 1.0
-        }
+        amount = finalAmount
+        scale = 1.0
     }
 }
 
@@ -294,18 +289,16 @@ struct BottleFillPreview: View {
     var body: some View {
         ZStack {
             BottleGlassShape()
-                .fill(Color.white.opacity(0.6))
+                .fill(Color.backgroundCard.opacity(0.6))
             
             LiquidWithWave(fillLevel: fillLevel, phase: wavePhase)
                 .clipShape(BottleGlassShape())
             
             BottleGlassShape()
-                .stroke(Color.white.opacity(0.6), lineWidth: 2)
+                .stroke(Color.backgroundCard.opacity(0.6), lineWidth: 2)
         }
         .onAppear {
-            withAnimation(.linear(duration: 2.5).repeatForever(autoreverses: false)) {
-                wavePhase = .pi * 2
-            }
+            wavePhase = .pi * 2
         }
     }
 }
@@ -334,11 +327,10 @@ struct FeedTimerView: View {
                 Image(systemName: feedStore.isTimerRunning ? "stop.fill" : "play.fill")
                     .font(AppFont.bodyLarge)
                     .foregroundStyle(feedStore.isTimerRunning ? .white : Color.almostAquaDark)
-                    .frame(width: 50, height: 50)
+                    .frame(width: 48, height: 48)
                     .background(feedStore.isTimerRunning ? Color.peachDustDark.opacity(0.9) : Color.almostAquaDark.opacity(0.1))
                     .clipShape(Circle())
             }
-            .buttonStyle(GentlePressEffect())
             .accessibilityLabel(feedStore.isTimerRunning ? "Stop timer" : "Start timer")
         }
         .cardStyle()
@@ -406,7 +398,6 @@ struct FeedConfirmationView: View {
                         .frame(maxWidth: .infinity)
                         .primaryButton()
                     }
-                    .buttonStyle(GentlePressEffect())
                     .accessibilityLabel("Yes, finished whole bottle")
                     
                     Button {

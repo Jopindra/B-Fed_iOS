@@ -18,6 +18,8 @@ struct ContentView: View {
                     FeedHistoryView()
                 case 2:
                     InsightsView()
+                case 3:
+                    SettingsView()
                 default:
                     DashboardView(onSwitchToHistoryTab: { selectedTab = 1 })
                 }
@@ -83,43 +85,36 @@ struct CustomTabBar: View {
     @Binding var selectedTab: Int
     
     private let tabs: [(label: String, icon: String)] = [
-        ("Today", "sun.max"),
-        ("History", "clock"),
-        ("Insights", "chart.line.uptrend.xyaxis")
+        ("Today", "sun.max.fill"),
+        ("History", "clock.fill"),
+        ("Insights", "chart.line.uptrend.xyaxis"),
+        ("More", "ellipsis")
     ]
     
     var body: some View {
         VStack(spacing: 0) {
             // Top border
             Rectangle()
-                .fill(Color.black.opacity(0.06))
+                .fill(Color.inkPrimary.opacity(AppMetrics.borderOpacity))
                 .frame(height: 0.5)
             
             // Tab buttons
             HStack(spacing: 0) {
                 ForEach(0..<tabs.count, id: \.self) { index in
                     Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            selectedTab = index
-                        }
+                        selectedTab = index
                     } label: {
                         VStack(spacing: 4) {
                             Image(systemName: tabs[index].icon)
-                                .font(.system(size: 20, weight: .medium))
+                                .font(AppFont.sans(20, weight: .medium))
+                                .symbolRenderingMode(.hierarchical)
                             Text(tabs[index].label)
                                 .font(AppFont.sans(10, weight: .semibold))
-                            
-                            // Active indicator capsule
-                            Capsule()
-                                .fill(Color.inkPrimary)
-                                .frame(width: 20, height: 2.5)
-                                .opacity(selectedTab == index ? 1 : 0)
-                                .padding(.top, 4)
                         }
                         .foregroundStyle(
                             selectedTab == index
                                 ? Color.inkPrimary
-                                : Color.inkSecondary.opacity(0.6)
+                                : Color.inkSecondary.opacity(0.5)
                         )
                         .frame(maxWidth: .infinity)
                         .padding(.top, 8)

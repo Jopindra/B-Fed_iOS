@@ -80,7 +80,7 @@ struct FeedingTypeScreen: View {
                             }
                         }
                         .padding(.top, AppSpacing.lg)
-                        .transition(.opacity.combined(with: .move(edge: .top)))
+                        
                     }
 
                     Spacer()
@@ -109,7 +109,7 @@ private struct FeedingOptionCard: View {
                         .fill(option.bgColor)
                         .frame(width: 44, height: 44)
                     Image(systemName: option.icon)
-                        .font(.system(size: 20))
+                        .font(AppFont.sans(20, weight: .regular))
                         .foregroundColor(option.iconColor)
                 }
                 .padding(.leading, AppSpacing.lg)
@@ -131,7 +131,7 @@ private struct FeedingOptionCard: View {
             }
             .frame(height: 72)
             .frame(maxWidth: .infinity)
-            .background(Color.white)
+            .background(Color.backgroundCard)
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
@@ -154,7 +154,7 @@ struct SelectionIndicator: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(isSelected ? Color.clear : Color.black.opacity(0.15), lineWidth: 1.5)
+                .stroke(isSelected ? Color.clear : Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
                 .frame(width: 22, height: 22)
 
             if isSelected {
@@ -162,7 +162,7 @@ struct SelectionIndicator: View {
                     .fill(Color.inkPrimary)
                     .frame(width: 22, height: 22)
                 Image(systemName: "checkmark")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(AppFont.caption)
                     .foregroundColor(.white)
             }
         }
@@ -183,7 +183,7 @@ private struct FormulaStageButton: View {
                 .foregroundStyle(isSelected ? .white : Color.inkPrimary)
                 .padding(.horizontal, AppSpacing.md)
                 .padding(.vertical, AppSpacing.sm)
-                .background(isSelected ? Color.almostAquaDark : Color.white)
+                .background(isSelected ? Color.almostAquaDark : Color.backgroundCard)
                 .clipShape(Capsule())
                 .overlay(
                     Capsule()

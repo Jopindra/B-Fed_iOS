@@ -26,7 +26,7 @@ struct BrandSelectionScreen: View {
                     // Search
                     HStack(spacing: AppSpacing.sm) {
                         Image(systemName: "magnifyingglass")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(AppFont.sans(14, weight: .medium))
                             .foregroundColor(.inkSecondary)
                         TextField("Search brands", text: $viewModel.searchQuery)
                             .font(AppFont.sans(15))
@@ -34,11 +34,11 @@ struct BrandSelectionScreen: View {
                     }
                     .padding(.horizontal, AppSpacing.lg)
                     .frame(height: AppMetrics.inputHeight)
-                    .background(Color.white)
+                    .background(Color.backgroundCard)
                     .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
-                            .stroke(Color.black.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                            .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
                     )
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.top, AppSpacing.lg)
@@ -90,7 +90,7 @@ struct BrandSelectionScreen: View {
                         }
                         .padding(.horizontal, AppSpacing.lg)
                         .padding(.top, AppSpacing.md)
-                        .transition(.opacity.combined(with: .move(edge: .top)))
+                        
                     }
                     
                     Spacer()
@@ -115,7 +115,7 @@ struct BrandSelectionScreen: View {
                         .fill(Color.backgroundBase)
                         .frame(width: 44, height: 44)
                     Image(systemName: icon)
-                        .font(.system(size: 18))
+                        .font(AppFont.sans(18, weight: .regular))
                         .foregroundColor(Color.inkSecondary)
                 }
                 .padding(.leading, AppSpacing.lg)
@@ -137,11 +137,11 @@ struct BrandSelectionScreen: View {
             }
             .frame(height: 72)
             .frame(maxWidth: .infinity)
-            .background(Color.white)
+            .background(Color.backgroundCard)
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
-                    .stroke(isSelected ? Color.inkPrimary : Color.black.opacity(AppMetrics.borderOpacity), lineWidth: isSelected ? 1.5 : AppMetrics.borderWidth)
+                    .stroke(isSelected ? Color.inkPrimary : Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: isSelected ? 1.5 : AppMetrics.borderWidth)
             )
         }
         .buttonStyle(.plain)
@@ -174,11 +174,11 @@ private struct BrandCard: View {
             }
             .frame(height: 64)
             .frame(maxWidth: .infinity)
-            .background(Color.white)
+            .background(Color.backgroundCard)
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
-                    .stroke(isSelected ? Color.inkPrimary : Color.black.opacity(AppMetrics.borderOpacity), lineWidth: isSelected ? 1.5 : AppMetrics.borderWidth)
+                    .stroke(isSelected ? Color.inkPrimary : Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: isSelected ? 1.5 : AppMetrics.borderWidth)
             )
         }
         .buttonStyle(.plain)

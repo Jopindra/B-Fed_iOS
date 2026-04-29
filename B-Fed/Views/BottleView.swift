@@ -20,18 +20,6 @@ struct BottleView: View {
     
     var body: some View {
         ZStack {
-            // Glow effect when bottle is well-fed
-            if shouldGlow {
-                Circle()
-                    .fill(Color.almostAquaDark.opacity(0.3))
-                    .frame(width: 200, height: 200)
-                    .opacity(glowOpacity)
-                    .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: glowOpacity)
-                    .onAppear {
-                        glowOpacity = 1
-                    }
-            }
-            
             // Bottle container
             ZStack {
                 // Bottle outline (hand-drawn feel)
@@ -54,13 +42,8 @@ struct BottleView: View {
             .scaleEffect(bottleScale)
         }
         .onAppear {
-            // Gentle continuous wave animation
-            withAnimation(.linear(duration: 3).repeatForever(autoreverses: false)) {
-                waveOffset = .pi * 2
-            }
-            withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {
-                secondaryWaveOffset = .pi * 2
-            }
+            waveOffset = .pi * 2
+            secondaryWaveOffset = .pi * 2
         }
         .onChange(of: isAnimating) { _, newValue in
             if newValue {
@@ -70,23 +53,7 @@ struct BottleView: View {
     }
     
     private func performFillAnimation() {
-        // Button press
-        withAnimation(.easeInOut(duration: 0.1)) {
-            bottleScale = 0.97
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            // Release and micro bounce
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-                bottleScale = 1.02
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                withAnimation(.easeOut(duration: 0.2)) {
-                    bottleScale = 1.0
-                }
-            }
-        }
+        bottleScale = 1.0
     }
 }
 
@@ -233,11 +200,11 @@ struct SupportiveMessageView: View {
     
     // Supportive messages pool
     static let messages = [
-        "Nice one",
+        "Noted",
         "That feed counts",
-        "You're doing great",
-        "Keep it up",
-        "Well done",
+        "You're here — that matters",
+        "One feed at a time",
+        "That counts",
         "Every feed matters",
         "You're nourishing them",
         "Gentle and steady",
@@ -262,7 +229,7 @@ struct SupportiveMessageView: View {
             .clipShape(Capsule())
             .opacity(isVisible ? 1 : 0)
             .offset(y: isVisible ? 0 : 10)
-            .animation(.easeOut(duration: 0.3), value: isVisible)
+    
     }
 }
 

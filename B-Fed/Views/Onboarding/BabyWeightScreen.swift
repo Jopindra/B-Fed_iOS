@@ -32,7 +32,7 @@ struct BabyWeightScreen: View {
             content: {
                 VStack(spacing: 0) {
                     Text("Helps us guide feeding amounts")
-                        .font(AppFont.sans(13))
+                        .font(AppFont.body)
                         .foregroundColor(.inkSecondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, AppSpacing.lg)
@@ -67,10 +67,10 @@ struct BabyWeightScreen: View {
                             )
 
                             Text("You can update weight anytime in the app")
-                                .font(AppFont.sans(11))
+                                .font(AppFont.caption)
                                 .foregroundColor(.orchidTintDark)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.top, 2)
+                                .padding(.top, AppSpacing.xs)
                         }
                     }
                     .padding(.horizontal, AppSpacing.lg)

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4EB20E89BA6D4B53AE96192B /* FormulaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFD50903084404594D168E6 /* FormulaDetailView.swift */; };
+		CE4F09C1131C435A96702E1E /* FormulaSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A4A087B60C4383B9533AA7 /* FormulaSelector.swift */; };
+		4BF9664B17FC4E60966DE81C /* FormulaStageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73B9B15D58641C18DF87BC8 /* FormulaStageService.swift */; };
+		1F99E180110946D8B75EA8E0 /* FormulaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F45005E15BD40FBA6E5AF29 /* FormulaService.swift */; };
 		0094E1A541B49E870EA8C024 /* FormulaGuidanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADFF08893F3A67A51BF3EAA /* FormulaGuidanceService.swift */; };
 		013F30D361DB43E470F6D398 /* LogFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6914A61740E396FBA80F0C /* LogFeedView.swift */; };
 		01B7B4478FA018AB6CC5E736 /* MonthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B545582BAE353E76872FC1A /* MonthView.swift */; };
@@ -72,7 +76,6 @@
 		B3BCF09E8870291117FCFD00 /* BabyWeightScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F482A372343472AFB6E974A6 /* BabyWeightScreen.swift */; };
 		B60642138FB78C936323E015 /* DMSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 10A04678874E0258722CF7B0 /* DMSans-Regular.ttf */; };
 		B70A4DDC97F44412DDE8D64A /* DMSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E3B426E9B4BB18D45365505 /* DMSans-Light.ttf */; };
-		B9C7B2E34D4070EF24013726 /* MotionSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 381CA11D2E6B14D6A5BCC5E8 /* MotionSystem.swift */; };
 		BAFF0C0E79A3C45FCB4EB52A /* GentleGuideScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D42F16B7BF329A7EAC630B /* GentleGuideScreen.swift */; };
 		BC1F4EAB95FB1C001F767D58 /* DMSerifDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B8E74DF6B602FF617445B611 /* DMSerifDisplay-Regular.ttf */; };
 		C00180CCA03EA699BBDB5B21 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E7386A79F52C48F0D33522 /* Country.swift */; };
@@ -105,6 +108,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7BFD50903084404594D168E6 /* FormulaDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = B-Fed/Views/FormulaDetailView.swift; sourceTree = SOURCE_ROOT; };
+		58A4A087B60C4383B9533AA7 /* FormulaSelector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = B-Fed/Views/FormulaSelector.swift; sourceTree = SOURCE_ROOT; };
+		F73B9B15D58641C18DF87BC8 /* FormulaStageService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormulaStageService.swift; sourceTree = "<group>"; };
+		3F45005E15BD40FBA6E5AF29 /* FormulaService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = B-Fed/Services/FormulaService.swift; sourceTree = SOURCE_ROOT; };
 		0580CD23A638F404D775C303 /* TimePeriodTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimePeriodTests.swift; sourceTree = "<group>"; };
 		0A235895192C119F4A6BF75B /* TipEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TipEngine.swift; sourceTree = "<group>"; };
 		0A477DF49EF79B9D935D770A /* BabyDOBScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BabyDOBScreen.swift; sourceTree = "<group>"; };
@@ -131,7 +138,6 @@
 		2E3B426E9B4BB18D45365505 /* DMSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "DMSans-Light.ttf"; path = "B-Fed/Fonts/DMSans-Light.ttf"; sourceTree = SOURCE_ROOT; };
 		32436D9C25AD85D939620162 /* FormulaSeedData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormulaSeedData.swift; sourceTree = "<group>"; };
 		339B2BBB37A9377BB7BF3069 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		381CA11D2E6B14D6A5BCC5E8 /* MotionSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSystem.swift; sourceTree = "<group>"; };
 		39C9A5242B3621EBFA6E9E68 /* FeedBubbleArcView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "B-Fed/Views/FeedBubbleArcView.swift"; sourceTree = SOURCE_ROOT; };
 		3D3448E555A451B80DFF444C /* OnboardingStepView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingStepView.swift; sourceTree = "<group>"; };
 		3D35CCB19D278F4F311FB628 /* B_FedWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = B_FedWidget.swift; sourceTree = "<group>"; };
@@ -343,6 +349,8 @@
 		6B1E64DEEF9A6D1BA39B1196 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				F73B9B15D58641C18DF87BC8 /* FormulaStageService.swift */,
+				3F45005E15BD40FBA6E5AF29 /* FormulaService.swift */,
 				E1B7546ACA4EA8B8133C3335 /* FeedingIntelligence.swift */,
 				9910F7EC7D2773B315A75012 /* Clock.swift */,
 				CD0213EB933A0AA14E6B1A14 /* ErrorLogger.swift */,
@@ -382,7 +390,6 @@
 		94F1AFF6C59834BBB3FD7169 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
-				381CA11D2E6B14D6A5BCC5E8 /* MotionSystem.swift */,
 				4FFA48C8B6EEDE1BB0B35669 /* DesignTokens.swift */,
 				F7594D47BEFE0EEB9FF4AAA4 /* Components.swift */,
 			);
@@ -446,6 +453,8 @@
 		B781D4B92CC266FEB70E2125 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				7BFD50903084404594D168E6 /* FormulaDetailView.swift */,
+				58A4A087B60C4383B9533AA7 /* FormulaSelector.swift */,
 				28409E4E7637CC3A6C6ECEB6 /* BabyBottleView.swift */,
 				B4A07527ACF80A45BF7CB042 /* BottleView.swift */,
 				D561E3E5C8CFE2ADE1036188 /* ContentView.swift */,
@@ -623,7 +632,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E997E9259CBA3AE58C6D1F2 /* B_FedApp.swift in Sources */,
-				B9C7B2E34D4070EF24013726 /* MotionSystem.swift in Sources */,
 				C3037773233F3359C1DD2E56 /* BabyProfile.swift in Sources */,
 				ae605f8f-8544-4413-9d8c-a7dc481d9ab7 /* TimePeriod.swift in Sources */,
 				40539E84DFD83544B734F29D /* Feed.swift in Sources */,
@@ -667,6 +675,10 @@
 				5A5217683FF5CE240527BB69 /* BabyFormulaProfile.swift in Sources */,
 				9E0B0C78697F6D3BA31A231A /* FormulaSeedData.swift in Sources */,
 				0094E1A541B49E870EA8C024 /* FormulaGuidanceService.swift in Sources */,
+				4EB20E89BA6D4B53AE96192B /* FormulaDetailView.swift in Sources */,
+				CE4F09C1131C435A96702E1E /* FormulaSelector.swift in Sources */,
+				4BF9664B17FC4E60966DE81C /* FormulaStageService.swift in Sources */,
+				1F99E180110946D8B75EA8E0 /* FormulaService.swift in Sources */,
 				893335683B41084EDC406E3C /* FormulaSetupViewModel.swift in Sources */,
 				02A07262B7A2E6643DEA4897 /* FeedingTypeSelectionScreen.swift in Sources */,
 				38CA47B959D4DA836F16DDAE /* BrandSelectionScreen.swift in Sources */,

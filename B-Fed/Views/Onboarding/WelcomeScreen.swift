@@ -13,10 +13,10 @@ extension Text {
             .padding(.vertical, 10)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(Color.white)
+                    .fill(Color.backgroundCard)
                     .overlay(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+                            .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
                     )
             )
     }
@@ -29,8 +29,8 @@ struct WelcomeScreen: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color(hex: "FAFAF8")
-                    .ignoresSafeArea(.all)
+                Color.backgroundBase
+                    .ignoresSafeArea()
 
                 // MARK: Background decorative shapes
                 ZStack {
@@ -131,7 +131,8 @@ struct WelcomeScreen: View {
                     )
                     .accessibilityHidden(true)
                 }
-                .ignoresSafeArea(.all)
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
 
                 // MARK: Foreground content
                 VStack(alignment: .leading, spacing: 0) {
@@ -186,7 +187,7 @@ struct WelcomeScreen: View {
                         Text("a little")
                         Text("easier.")
                     }
-                    .font(AppFont.serif(38))
+                    .font(AppFont.display)
                     .foregroundColor(Color.inkPrimary)
                     .padding(.horizontal, 20)
 
@@ -194,7 +195,7 @@ struct WelcomeScreen: View {
                         Text("Track feeds, spot patterns,")
                         Text("feel supported every step.")
                     }
-                    .font(AppFont.sans(15))
+                    .font(AppFont.bodyLarge)
                     .foregroundColor(.inkSecondary)
                     .padding(.top, 16)
                     .padding(.horizontal, 20)
@@ -206,17 +207,17 @@ struct WelcomeScreen: View {
                         Button(action: onContinue) {
                             HStack {
                                 Text("Get started")
-                                    .font(AppFont.sans(17, weight: .semibold))
+                                    .font(AppFont.input)
                                     .tracking(0.3)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color.backgroundCard)
                                     .padding(.leading, 24)
                                 Spacer()
                                 Text("→")
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 20))
+                                    .foregroundColor(Color.backgroundCard)
+                                    .font(AppFont.sans(20, weight: .medium))
                                     .padding(.trailing, 24)
                             }
-                            .frame(maxWidth: .infinity, minHeight: 58)
+                            .frame(maxWidth: .infinity, minHeight: 56)
                             .background(
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                                     .fill(Color.inkPrimary)
@@ -227,15 +228,15 @@ struct WelcomeScreen: View {
                         .accessibilityIdentifier("onboarding-getStarted-button")
 
                     }
-                    .padding(.horizontal, 18)
-                    .padding(.bottom, max(geometry.safeAreaInsets.bottom, 34) + 16)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, max(geometry.safeAreaInsets.bottom, 32) + AppSpacing.xl)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
-            .ignoresSafeArea(.all)
+            .ignoresSafeArea()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .ignoresSafeArea(.all)
+        .ignoresSafeArea()
     }
 }
 

@@ -27,8 +27,8 @@ struct FeedBubbleArcView: View {
         VStack(spacing: 0) {
             // Section header
             sectionHeader
-                .padding(.horizontal, 16)
-                .padding(.bottom, 12)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.bottom, AppSpacing.md)
             
             if hasFeeds {
                 arcWithBubbles
@@ -90,7 +90,7 @@ struct FeedBubbleArcView: View {
             endAngle: .degrees(340)
         )
         .stroke(
-            Color.black.opacity(0.05),
+            Color.inkPrimary.opacity(AppMetrics.borderOpacity),
             style: StrokeStyle(lineWidth: 5, lineCap: .round)
         )
     }
@@ -116,7 +116,7 @@ struct FeedBubbleArcView: View {
                         .foregroundStyle(textColor)
                     
                     Text("ml")
-                        .font(AppFont.sans(6, weight: .regular))
+                        .font(AppFont.caption)
                         .foregroundStyle(textColor)
                         .opacity(0.9)
                 }
@@ -124,9 +124,9 @@ struct FeedBubbleArcView: View {
             
             // Time label below bubble
             Text(timeString)
-                .font(AppFont.sans(7, weight: .regular))
+                .font(AppFont.caption)
                 .foregroundStyle(Color.orchidTintDark)
-                .padding(.top, 12)
+                .padding(.top, AppSpacing.md)
         }
     }
     
@@ -134,7 +134,7 @@ struct FeedBubbleArcView: View {
     private var ghostCircle: some View {
         Circle()
             .stroke(
-                Color.black.opacity(0.06),
+                Color.inkPrimary.opacity(AppMetrics.borderOpacity),
                 style: StrokeStyle(
                     lineWidth: 1.5,
                     lineCap: .round,
@@ -261,7 +261,7 @@ struct FeedBubbleArcView: View {
             isMostRecent = (slotIndex == 2)
         }
         
-        return isMostRecent ? Color.white : Color.inkPrimary
+        return isMostRecent ? Color.backgroundCard : Color.inkPrimary
     }
     
     private func timeString(for date: Date) -> String {

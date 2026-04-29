@@ -65,7 +65,9 @@ struct OnboardingView: View {
                         totalSteps: viewModel.totalSteps,
                         onBack: { viewModel.goBackToStep(5) },
                         onContinue: {
-                            viewModel.formulaSetupViewModel.feedingType = mappedFeedingType
+                            if let type = mappedFeedingType {
+                                viewModel.formulaSetupViewModel.feedingType = type
+                            }
                             if viewModel.showsFormulaSetup {
                                 viewModel.advanceToStep(7)
                             } else {
@@ -86,6 +88,8 @@ struct OnboardingView: View {
                 case 8:
                     ProductStageSelectionScreen(
                         viewModel: viewModel.formulaSetupViewModel,
+                        babyDOB: viewModel.babyDOB,
+                        babyName: viewModel.babyName.isEmpty ? "your baby" : viewModel.babyName,
                         stepNumber: 8,
                         totalSteps: viewModel.totalSteps,
                         onBack: { viewModel.goBackToStep(7) },
@@ -96,10 +100,7 @@ struct OnboardingView: View {
                     GentleGuideScreen(
                         babyProfile: previewProfile,
                         viewModel: viewModel.formulaSetupViewModel,
-                        stepNumber: 9,
-                        totalSteps: viewModel.totalSteps,
-                        onBack: { viewModel.goBackToStep(8) },
-                        onContinue: { viewModel.advanceToStep(10) }
+                        onContinue: completeOnboarding
                     )
 
                 case 10:
@@ -125,25 +126,25 @@ struct OnboardingView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .ignoresSafeArea(.all)
         .onAppear {
             feedStore.setModelContext(modelContext)
         }
     }
     
-    private var mappedFeedingType: FeedingType {
+    private var mappedFeedingType: FeedingType? {
         switch viewModel.feedingType.lowercased() {
         case "breast": return .breast
         case "formula": return .formula
         case "both": return .mixed
-        default: return .formula
+        default: return nil
         }
     }
     
-    private var mappedFeedingTypeBinding: Binding<FeedingType> {
+    private var mappedFeedingTypeBinding: Binding<FeedingType?> {
         Binding(
             get: { mappedFeedingType },
             set: { newValue in
+                guard let newValue else { return }
                 switch newValue {
                 case .breast: viewModel.feedingType = "breast"
                 case .formula: viewModel.feedingType = "formula"
@@ -160,12 +161,13 @@ struct OnboardingView: View {
             : nil
         
         let profile = BabyProfile(
+            parentName: viewModel.parentName,
             country: viewModel.country,
             babyName: viewModel.babyName.isEmpty ? "Baby" : viewModel.babyName,
             dateOfBirth: viewModel.babyDOB,
             birthWeight: weightGrams,
             currentWeight: weightGrams,
-            feedingType: mappedFeedingType
+            feedingType: mappedFeedingType ?? .formula
         )
         return profile
     }

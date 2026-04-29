@@ -3,7 +3,7 @@ import SwiftUI
 // MARK: - Feeding Type Selection Screen
 /// Simplified feeding type picker. Formula details handled in subsequent steps.
 struct FeedingTypeSelectionScreen: View {
-    @Binding var feedingType: FeedingType
+    @Binding var feedingType: FeedingType?
     var stepNumber: Int = 6
     var totalSteps: Int = 10
     let onBack: () -> Void
@@ -46,7 +46,7 @@ struct FeedingTypeSelectionScreen: View {
                 }
             },
             onContinue: onContinue,
-            continueEnabled: true,
+            continueEnabled: feedingType != nil,
             showSkip: false,
             background: { OnboardingBackground.feedingType() }
         )
@@ -67,7 +67,7 @@ private struct FeedingTypeCard: View {
                         .fill(option.bgColor)
                         .frame(width: 44, height: 44)
                     Image(systemName: option.icon)
-                        .font(.system(size: 20))
+                        .font(AppFont.sans(20, weight: .regular))
                         .foregroundColor(option.iconColor)
                 }
                 .padding(.leading, AppSpacing.lg)
@@ -89,7 +89,7 @@ private struct FeedingTypeCard: View {
             }
             .frame(height: 72)
             .frame(maxWidth: .infinity)
-            .background(Color.white)
+            .background(Color.backgroundCard)
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)

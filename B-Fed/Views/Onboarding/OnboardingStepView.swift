@@ -56,13 +56,13 @@ struct OnboardingStepView<Content: View, Background: View>: View {
                     Button(action: onBack) {
                         ZStack {
                             RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.white)
+                                .fill(Color.backgroundCard)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                                        .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
                                 )
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(AppFont.sans(16, weight: .medium))
                                 .foregroundColor(Color.inkPrimary)
                         }
                         .frame(width: 36, height: 36)
@@ -75,22 +75,22 @@ struct OnboardingStepView<Content: View, Background: View>: View {
                     Spacer()
                 }
                 .frame(height: 44)
-                .padding(.horizontal, 18)
+                .padding(.horizontal, 20)
                 .padding(.top, 56)
 
                 // Progress bar
                 GeometryReader { progressGeo in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(Color.black.opacity(0.08))
+                            .fill(Color.inkPrimary.opacity(AppMetrics.borderOpacity))
                         RoundedRectangle(cornerRadius: 2)
                             .fill(Color.inkPrimary)
                             .frame(width: progressGeo.size.width * progressRatio)
                     }
                 }
                 .frame(height: 3)
-                .padding(.horizontal, 18)
-                .padding(.top, 12)
+                .padding(.horizontal, 20)
+                .padding(.top, AppSpacing.md)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Onboarding progress")
                 .accessibilityValue("Step \(stepNumber) of \(totalSteps)")
@@ -98,11 +98,11 @@ struct OnboardingStepView<Content: View, Background: View>: View {
 
                 // Question headline
                 Text(question)
-                    .font(AppFont.serif(26))
+                    .font(AppFont.question)
                     .foregroundColor(Color.inkPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 18)
-                    .padding(.top, 32)
+                    .padding(.horizontal, 20)
+                    .padding(.top, AppSpacing.xxl)
                     .accessibilityIdentifier("onboarding-question-label")
 
                 // Content area
@@ -114,9 +114,9 @@ struct OnboardingStepView<Content: View, Background: View>: View {
                 // Bottom CTA
                 VStack(spacing: 12) {
                     Button(action: onContinue) {
-                        Text(isLastStep ? "Let's go →" : "Continue →")
+                        Text(isLastStep ? "Get started →" : "Continue →")
                             .font(AppFont.sans(16, weight: .semibold))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.backgroundCard)
                             .frame(maxWidth: .infinity, minHeight: 54)
                             .background(
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -140,8 +140,8 @@ struct OnboardingStepView<Content: View, Background: View>: View {
                         .accessibilityIdentifier("onboarding-skip-button")
                     }
                 }
-                .padding(.horizontal, 18)
-                .padding(.bottom, 24)
+                .padding(.horizontal, 20)
+                .padding(.bottom, AppSpacing.xl)
             }
         }
     }

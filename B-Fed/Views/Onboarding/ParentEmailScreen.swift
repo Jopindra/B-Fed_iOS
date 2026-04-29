@@ -20,7 +20,7 @@ struct ParentEmailScreen: View {
             content: {
                 VStack(spacing: 0) {
                     TextField("Your email address", text: $parentEmail, prompt: Text("e.g. sarah@email.com").foregroundColor(.orchidTint))
-                        .font(AppFont.sans(17))
+                        .font(AppFont.input)
                         .foregroundColor(.inkPrimary)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
@@ -30,7 +30,7 @@ struct ParentEmailScreen: View {
                         .accessibilityIdentifier("onboarding-parentEmail-field")
                         .padding(.horizontal, AppSpacing.lg)
                         .frame(height: AppMetrics.inputHeight)
-                        .background(Color.white)
+                        .background(Color.backgroundCard)
                         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
@@ -40,7 +40,7 @@ struct ParentEmailScreen: View {
                         .padding(.top, AppSpacing.xl)
 
                     Text("We'll only use this for your account")
-                        .font(AppFont.sans(11))
+                        .font(AppFont.caption)
                         .foregroundColor(.orchidTintDark)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, AppSpacing.lg)

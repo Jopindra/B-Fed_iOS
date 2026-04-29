@@ -14,7 +14,7 @@ struct BabyDOBScreen: View {
             content: {
                 VStack(spacing: 0) {
                     Text("We use this to personalise your feeding guidance")
-                        .font(AppFont.sans(13))
+                        .font(AppFont.body)
                         .foregroundColor(.inkSecondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, AppSpacing.lg)

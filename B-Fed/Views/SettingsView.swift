@@ -120,7 +120,7 @@ struct SettingsView: View {
                     Text(viewModel.country.isEmpty ? "Select" : viewModel.country)
                         .foregroundStyle(viewModel.country.isEmpty ? Color.orchidTint : Color.inkSecondary)
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(AppFont.sans(13, weight: .semibold))
                         .foregroundStyle(Color.inkSecondary.opacity(0.5))
                 }
             }
@@ -137,7 +137,7 @@ struct SettingsView: View {
                         Text(viewModel.formulaBrand.isEmpty ? "Select" : viewModel.formulaBrand)
                             .foregroundStyle(viewModel.formulaBrand.isEmpty ? Color.orchidTint : Color.inkSecondary)
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(AppFont.sans(13, weight: .semibold))
                             .foregroundStyle(Color.inkSecondary.opacity(0.5))
                     }
                 }
@@ -160,12 +160,11 @@ struct SettingsView: View {
                     Image(systemName: "checkmark.circle.fill")
                     Text("Save Changes")
                 }
-                .font(AppFont.sans(16, weight: .semibold))
+                .font(AppFont.button)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, AppSpacing.md)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(Color.inkPrimary)
+            .primaryButton()
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
         }
     }
@@ -383,7 +382,7 @@ struct SettingsCountryPickerSheet: View {
                         Spacer()
                         if country == item.name {
                             Image(systemName: "checkmark")
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(AppFont.sans(14, weight: .semibold))
                                 .foregroundColor(.inkPrimary)
                         }
                     }

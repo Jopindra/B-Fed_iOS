@@ -26,48 +26,65 @@ extension Color {
         )
     }
 
-    // Primary – Pantone 12-1107 Peach Dust
+    // MARK: Dynamic semantic colours
+    static let backgroundBase = Color(
+        UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(Color(hex: "1C1A1A"))
+                : UIColor(Color(hex: "FAFAF8"))
+        }
+    )
+    static let backgroundCard = Color(
+        UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(Color(hex: "2A2727"))
+                : UIColor(Color(hex: "FFFFFF"))
+        }
+    )
+    static let inkPrimary = Color(
+        UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(Color(hex: "F5E6DE"))
+                : UIColor(Color(hex: "2E2929"))
+        }
+    )
+    static let inkSecondary = Color(
+        UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? UIColor(Color(hex: "C4BCBA"))
+                : UIColor(Color(hex: "5A5555"))
+        }
+    )
+
+    // MARK: Static palette colours (do not adapt, used for accents)
     static let peachDust       = Color(hex: "E8C4B0")
     static let peachDustLight  = Color(hex: "F5E6DE")
     static let peachDustDark   = Color(hex: "C49070")
-
-    // Bridge – Peach Dust → Lemon Icing arc transition
     static let peachLemonBridge = Color(hex: "EDD5C0")
-
-    // Pantone 11-0515 Lemon Icing
     static let lemonIcing       = Color(hex: "EEE8C8")
     static let lemonIcingLight  = Color(hex: "F7F4E3")
     static let lemonIcingDark   = Color(hex: "C8BE7A")
-
-    // Secondary – Pantone 13-6006 Almost Aqua
     static let almostAqua      = Color(hex: "B8CCBA")
     static let almostAquaLight = Color(hex: "DDE9DE")
     static let almostAquaDark  = Color(hex: "7A9E80")
-
-    // Tertiary – Pantone 13-3802 Orchid Tint
     static let orchidTint      = Color(hex: "C4BCCD")
     static let orchidTintLight = Color(hex: "E4DFE9")
     static let orchidTintDark  = Color(hex: "8A7E96")
 
-    // Neutrals
-    static let inkPrimary      = Color(hex: "2E2929")
-    static let inkSecondary    = Color(hex: "5A5555")
-    static let backgroundBase  = Color(hex: "FAFAF8")
-    static let backgroundCard  = Color(hex: "FFFFFF")
-
-    // Dark mode variants
+    // MARK: Dark mode variants (legacy — prefer semantic tokens above)
     static let dmBackgroundBase = Color(hex: "1C1A1A")
     static let dmBackgroundCard = Color(hex: "2A2727")
     static let dmInkPrimary     = Color(hex: "F5E6DE")
     static let dmInkSecondary   = Color(hex: "C4BCBA")
 
-    // Legacy mapping for gradual migration
+    // MARK: Legacy mapping for gradual migration
     static var brandPrimary: Color { .almostAquaDark }
     static var warmCoral: Color { .peachDust }
     static var warmLavender: Color { .orchidTint }
     static var textPrimary: Color { .inkPrimary }
     static var textSecondary: Color { .inkSecondary }
     static var textMuted: Color { .inkSecondary.opacity(0.6) }
+
 }
 
 // MARK: - Font Tokens
@@ -91,11 +108,20 @@ enum AppFont {
     }
 
     // Type scale
+    static let jumbo        = serif(96)
+    static let display      = serif(38)
     static let heroTitle    = serif(32)
+    static let subHero      = serif(28)
+    static let question     = serif(26)
     static let screenTitle  = serif(22)
+    static let largeValue   = serif(24)
+    static let lead         = serif(20)
     static let sectionTitle = sans(16, weight: .semibold)
     static let bodyLarge    = sans(15, weight: .medium)
     static let body         = sans(13, weight: .regular)
+    static let input        = sans(17, weight: .regular)
+    static let button       = sans(14, weight: .semibold)
+    static let inputLabel   = sans(12, weight: .semibold)
     static let caption      = sans(11, weight: .regular)
     static let label        = sans(10, weight: .semibold)
 }
@@ -106,7 +132,7 @@ struct LabelTextStyle: ViewModifier {
         content
             .font(AppFont.label)
             .textCase(.uppercase)
-            .tracking(0.5)
+            .tracking(0.4)
     }
 }
 
@@ -124,6 +150,7 @@ enum AppSpacing {
     static let lg: CGFloat = 16
     static let xl: CGFloat = 24
     static let xxl: CGFloat = 32
+    static let xxxl: CGFloat = 48
 }
 
 // MARK: - Corner Radius Tokens
@@ -137,7 +164,7 @@ enum AppRadius {
 
 // MARK: - Metrics Tokens
 enum AppMetrics {
-    static let inputHeight: CGFloat = 58
+    static let inputHeight: CGFloat = 56
     static let toggleHeight: CGFloat = 48
     static let buttonHeight: CGFloat = 54
     static let borderOpacity: CGFloat = 0.07

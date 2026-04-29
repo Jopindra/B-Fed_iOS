@@ -49,9 +49,7 @@ struct StatisticsView: View {
             HStack(spacing: 12) {
                 ForEach(TimePeriod.allCases, id: \.self) { period in
                     Button {
-                        withAnimation(.spring(response: 0.3)) {
-                            selectedPeriod = period
-                        }
+                        selectedPeriod = period
                     } label: {
                         if selectedPeriod == period {
                             Text(period.rawValue)
@@ -115,7 +113,7 @@ struct StatisticsView: View {
                     x: .value("Date", data.date, unit: .day),
                     y: .value("Amount", data.amount)
                 )
-                .foregroundStyle(Color.peachDustDark.gradient)
+                .foregroundStyle(Color.peachDustDark)
                 .cornerRadius(4)
             }
             .frame(height: 180)
@@ -186,7 +184,7 @@ struct StatisticsView: View {
     private var emptyState: some View {
         VStack(spacing: 16) {
             Image(systemName: "chart.bar")
-                .font(AppFont.sans(60, weight: .regular))
+                .font(AppFont.display)
                 .foregroundStyle(Color.inkSecondary)
             
             Text("No Data Yet")

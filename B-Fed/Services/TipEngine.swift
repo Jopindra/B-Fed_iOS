@@ -87,7 +87,7 @@ enum TipEngine {
         if tips.isEmpty {
             tips.append(Tip(
                 id: "doing-great",
-                text: "You're doing great. Every feed, cuddle, and moment of patience matters.",
+                text: "You're here — that matters. Every feed, cuddle, and moment of patience counts.",
                 category: .reassurance
             ))
         }

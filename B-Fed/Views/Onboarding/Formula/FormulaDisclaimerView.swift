@@ -7,7 +7,7 @@ struct FormulaDisclaimerView: View {
             Image(systemName: "info.circle.fill")
                 .font(AppFont.sans(12))
                 .foregroundStyle(Color.orchidTintDark)
-                .padding(.top, 2)
+                .padding(.top, AppSpacing.xs)
             
             Text(FormulaGuidanceService.standardDisclaimer)
                 .font(AppFont.sans(11))

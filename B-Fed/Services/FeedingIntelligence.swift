@@ -100,12 +100,12 @@ enum FeedingIntelligence {
         
         // On track
         if percentage >= 80 {
-            return ["You're right on track", "Doing great today", "Perfect progress"].randomElement() ?? "You're doing great"
+            return ["You're right on track", "Today is going smoothly", "Today is unfolding gently"].randomElement() ?? "You're here — that matters"
         }
         
         // Getting there
         if percentage >= 50 {
-            return ["Building steadily", "You're doing fine", "Gentle progress"].randomElement() ?? "You're doing great"
+            return ["Building steadily", "You're doing fine", "Gentle progress"].randomElement() ?? "You're here — that matters"
         }
         
         // Lower intake - provide reassurance
@@ -117,10 +117,10 @@ enum FeedingIntelligence {
                 "You're responding perfectly to their needs",
                 "Some days are simply lighter — that's okay"
             ]
-            return reassurances.randomElement() ?? "You're doing great"
+            return reassurances.randomElement() ?? "You're here — that matters"
         }
         
-        return "You're doing great"
+        return "You're here — that matters"
     }
     
     /// Contextual guidance based on time of day
@@ -303,21 +303,21 @@ enum ReassuranceEngine {
     /// Messages for improving intake
     static func improvementEncouragement() -> String {
         [
-            "Great growth happening",
+            "Intake is changing",
             "Baby is thriving",
             "Wonderful progress together",
             "You're both doing beautifully"
-        ].randomElement() ?? "Great growth happening"
+        ].randomElement() ?? "Intake is changing"
     }
     
     /// Messages after logging a feed
     static func postFeedEncouragement() -> String {
         [
-            "Nice one",
+            "Noted",
             "That feed counts",
-            "Keep it up",
-            "Well done",
+            "One feed at a time",
+            "That counts",
             "Perfect"
-        ].randomElement() ?? "Nice one"
+        ].randomElement() ?? "Noted"
     }
 }

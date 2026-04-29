@@ -16,7 +16,7 @@ struct ParentNameScreen: View {
             content: {
                 VStack(spacing: 0) {
                     TextField("Your name", text: $parentName, prompt: Text("e.g. Sarah").foregroundColor(.orchidTint))
-                        .font(AppFont.sans(17))
+                        .font(AppFont.input)
                         .foregroundColor(.inkPrimary)
                         .keyboardType(.namePhonePad)
                         .submitLabel(.next)
@@ -24,7 +24,7 @@ struct ParentNameScreen: View {
                         .accessibilityIdentifier("onboarding-parentName-field")
                         .padding(.horizontal, AppSpacing.lg)
                         .frame(height: AppMetrics.inputHeight)
-                        .background(Color.white)
+                        .background(Color.backgroundCard)
                         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
@@ -34,7 +34,7 @@ struct ParentNameScreen: View {
                         .padding(.top, AppSpacing.xl)
 
                     Text("This is how we'll greet you in the app")
-                        .font(AppFont.sans(11))
+                        .font(AppFont.caption)
                         .foregroundColor(.orchidTintDark)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, AppSpacing.lg)
