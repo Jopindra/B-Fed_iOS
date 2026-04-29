@@ -50,32 +50,36 @@ struct GentleGuideScreen: View {
         return "\(brand) · \(stage)"
     }
 
-    private var hasDOB: Bool {
-        babyProfile.dateOfBirth != Date.distantPast && babyProfile.dateOfBirth != Date()
-    }
-
     // MARK: - Body
     var body: some View {
         GeometryReader { geometry in
             ZStack {
+                // Layer 1: background colour
                 Color.backgroundBase.ignoresSafeArea()
 
+                // Layer 2: blobs
                 blobBackground(in: geometry)
+                    .allowsHitTesting(false)
 
+                // Layer 3: rising dots
+                RisingDotsView()
+                    .allowsHitTesting(false)
+                    .ignoresSafeArea(.all)
+
+                // Layer 4: content
                 VStack(alignment: .leading, spacing: 0) {
-                    // Title block
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("You're all set,")
-                            .font(AppFont.serif(30))
-                            .foregroundColor(.inkPrimary)
+                    Spacer().frame(height: geometry.safeAreaInsets.top + 40)
 
-                        Text(parentName)
-                            .font(AppFont.serif(30))
-                            .foregroundColor(.inkPrimary)
-                    }
-                    .padding(.top, geometry.safeAreaInsets.top + 16)
+                    // Title
+                    Text("You're all set,")
+                        .font(AppFont.serif(30))
+                        .foregroundColor(.inkPrimary)
 
-                    Spacer().frame(height: 8)
+                    Text(parentName)
+                        .font(AppFont.serif(30))
+                        .foregroundColor(.inkPrimary)
+
+                    Spacer().frame(height: 10)
 
                     Text("Here's a starting point for \(babyName)")
                         .font(AppFont.sans(13))
@@ -83,37 +87,18 @@ struct GentleGuideScreen: View {
 
                     Spacer().frame(height: 4)
 
-                    if !formulaContextText.isEmpty {
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(Color.almostAquaDark)
-                                .frame(width: 6, height: 6)
+                    Text(formulaContextText)
+                        .font(AppFont.sans(11))
+                        .foregroundColor(.almostAquaDark)
 
-                            Text(formulaContextText)
-                                .font(AppFont.sans(12))
-                                .foregroundColor(.inkSecondary)
-                        }
-                        .padding(.top, 4)
+                    Spacer().frame(height: 28)
 
-                        if hasDOB {
-                            Text("Based on \(babyName)'s age")
-                                .font(AppFont.sans(10))
-                                .foregroundColor(.almostAquaDark)
-                                .padding(.top, 4)
-                        } else {
-                            Text("Add \(babyName)'s birthday for personalised guidance")
-                                .font(AppFont.sans(10))
-                                .foregroundColor(.orchidTintDark)
-                                .padding(.top, 4)
-                        }
-                    }
-
-                    Spacer().frame(height: 24)
-
+                    // Daily intake card
                     dailyIntakeCard
 
                     Spacer().frame(height: 12)
 
+                    // Two small cards
                     HStack(spacing: 10) {
                         perFeedCard
                         feedsPerDayCard
@@ -121,6 +106,7 @@ struct GentleGuideScreen: View {
 
                     Spacer().frame(height: 14)
 
+                    // Disclaimer
                     Text("Always follow the instructions on your tin. Amounts vary between babies.")
                         .font(AppFont.sans(10))
                         .foregroundColor(.inkSecondary)
@@ -129,11 +115,13 @@ struct GentleGuideScreen: View {
 
                     Spacer()
 
+                    // Button
                     Button(action: onContinue) {
-                        Text("Take me to my dashboard")
+                        Text("Let's begin")
                             .font(AppFont.sans(16, weight: .semibold))
                             .foregroundColor(.backgroundCard)
-                            .frame(maxWidth: .infinity, minHeight: 54)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 54)
                             .background(
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                                     .fill(Color.inkPrimary)

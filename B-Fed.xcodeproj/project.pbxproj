@@ -77,6 +77,7 @@
 		B60642138FB78C936323E015 /* DMSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 10A04678874E0258722CF7B0 /* DMSans-Regular.ttf */; };
 		B70A4DDC97F44412DDE8D64A /* DMSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E3B426E9B4BB18D45365505 /* DMSans-Light.ttf */; };
 		BAFF0C0E79A3C45FCB4EB52A /* GentleGuideScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D42F16B7BF329A7EAC630B /* GentleGuideScreen.swift */; };
+		50856E40BDDE4AF0805D02DF83351FA2 /* RisingDotsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F86E5EC595E4C86B78CC728E5C2671F /* RisingDotsView.swift */; };
 		BC1F4EAB95FB1C001F767D58 /* DMSerifDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B8E74DF6B602FF617445B611 /* DMSerifDisplay-Regular.ttf */; };
 		C00180CCA03EA699BBDB5B21 /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E7386A79F52C48F0D33522 /* Country.swift */; };
 		C1E7BB3C25C386E33C94086D /* FeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A7AC9C4707EBA7E138EAAB /* FeedStore.swift */; };
@@ -189,6 +190,7 @@
 		D3F498CCDBBC87BA90134277 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D561E3E5C8CFE2ADE1036188 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D8D42F16B7BF329A7EAC630B /* GentleGuideScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GentleGuideScreen.swift; sourceTree = "<group>"; };
+		1F86E5EC595E4C86B78CC728E5C2671F /* RisingDotsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RisingDotsView.swift; sourceTree = "<group>"; };
 		DCA6AC5DF9495A1CF4158500 /* ProductStageSelectionScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductStageSelectionScreen.swift; sourceTree = "<group>"; };
 		E1B7546ACA4EA8B8133C3335 /* FeedingIntelligence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedingIntelligence.swift; sourceTree = "<group>"; };
 		E3F4CA06FF7D57AC53791BF3 /* FeedingIntelligenceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedingIntelligenceTests.swift; sourceTree = "<group>"; };
@@ -436,6 +438,7 @@
 				6CEE2E0854E8BF327617B0E3 /* BrandSelectionScreen.swift */,
 				DCA6AC5DF9495A1CF4158500 /* ProductStageSelectionScreen.swift */,
 				D8D42F16B7BF329A7EAC630B /* GentleGuideScreen.swift */,
+				1F86E5EC595E4C86B78CC728E5C2671F /* RisingDotsView.swift */,
 				2077D01EC2CF7883F3BED79B /* FormulaDisclaimerView.swift */,
 			);
 			name = Formula;
@@ -684,6 +687,7 @@
 				38CA47B959D4DA836F16DDAE /* BrandSelectionScreen.swift in Sources */,
 				5E582E1C8A97D57531797994 /* ProductStageSelectionScreen.swift in Sources */,
 				BAFF0C0E79A3C45FCB4EB52A /* GentleGuideScreen.swift in Sources */,
+				50856E40BDDE4AF0805D02DF83351FA2 /* RisingDotsView.swift in Sources */,
 				196DDFD864DB50ACF79A5198 /* FormulaDisclaimerView.swift in Sources */,
 				9A1FACD88BB4439E7AB9C47A /* FeedBubbleArcView.swift in Sources */,
 				EDE0BD5BC6CA20AD597233FB /* LogFeedSheet.swift in Sources */,
