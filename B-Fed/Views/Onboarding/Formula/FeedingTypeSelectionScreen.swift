@@ -35,7 +35,13 @@ struct FeedingTypeSelectionScreen: View {
                             FeedingTypeCard(
                                 option: option,
                                 isSelected: feedingType == option.type,
-                                action: { feedingType = option.type }
+                                action: {
+                                    feedingType = option.type
+                                    Task {
+                                        try? await Task.sleep(for: .seconds(0.3))
+                                        onContinue()
+                                    }
+                                }
                             )
                         }
                     }
@@ -47,6 +53,7 @@ struct FeedingTypeSelectionScreen: View {
             },
             onContinue: onContinue,
             continueEnabled: feedingType != nil,
+            showContinue: false,
             showSkip: false,
             background: { OnboardingBackground.feedingType() }
         )
