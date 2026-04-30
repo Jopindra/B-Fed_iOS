@@ -54,11 +54,12 @@ struct CountryScreen: View {
             },
             onContinue: onContinue,
             continueEnabled: true,
+            showContinue: false,
             showSkip: true,
             background: { OnboardingBackground.country() }
         )
         .sheet(isPresented: $showingPicker) {
-            CountryPickerSheet(country: $country, countryCode: $countryCode, countries: countries)
+            CountryPickerSheet(country: $country, countryCode: $countryCode, countries: countries, onContinue: onContinue)
         }
     }
 }
@@ -69,6 +70,7 @@ private struct CountryPickerSheet: View {
     @Binding var country: String
     @Binding var countryCode: String
     let countries: [(code: String, name: String)]
+    let onContinue: () -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
 
@@ -83,7 +85,11 @@ private struct CountryPickerSheet: View {
                 Button(action: {
                     country = item.name
                     countryCode = item.code
-                    dismiss()
+                    Task {
+                        try? await Task.sleep(for: .seconds(0.3))
+                        dismiss()
+                        onContinue()
+                    }
                 }) {
                     HStack {
                         Text(item.name)

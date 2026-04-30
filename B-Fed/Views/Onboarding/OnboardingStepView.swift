@@ -9,6 +9,7 @@ struct OnboardingStepView<Content: View, Background: View>: View {
     @ViewBuilder let content: Content
     let onContinue: () -> Void
     let continueEnabled: Bool
+    let showContinue: Bool
     let showSkip: Bool
     let skipAction: (() -> Void)?
     @ViewBuilder let background: Background
@@ -21,6 +22,7 @@ struct OnboardingStepView<Content: View, Background: View>: View {
         @ViewBuilder content: () -> Content,
         onContinue: @escaping () -> Void,
         continueEnabled: Bool,
+        showContinue: Bool = true,
         showSkip: Bool = false,
         skipAction: (() -> Void)? = nil,
         @ViewBuilder background: () -> Background
@@ -32,6 +34,7 @@ struct OnboardingStepView<Content: View, Background: View>: View {
         self.content = content()
         self.onContinue = onContinue
         self.continueEnabled = continueEnabled
+        self.showContinue = showContinue
         self.showSkip = showSkip
         self.skipAction = skipAction
         self.background = background()
@@ -112,6 +115,7 @@ struct OnboardingStepView<Content: View, Background: View>: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                 // Bottom CTA
+                if showContinue {
                 VStack(spacing: 12) {
                     Button(action: onContinue) {
                         Text(isLastStep ? "Get started →" : "Continue →")
@@ -142,6 +146,7 @@ struct OnboardingStepView<Content: View, Background: View>: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, AppSpacing.xl)
+                }
             }
         }
     }
@@ -157,6 +162,7 @@ extension OnboardingStepView where Background == EmptyView {
         @ViewBuilder content: () -> Content,
         onContinue: @escaping () -> Void,
         continueEnabled: Bool,
+        showContinue: Bool = true,
         showSkip: Bool = false,
         skipAction: (() -> Void)? = nil
     ) {
@@ -167,6 +173,7 @@ extension OnboardingStepView where Background == EmptyView {
         self.content = content()
         self.onContinue = onContinue
         self.continueEnabled = continueEnabled
+        self.showContinue = showContinue
         self.showSkip = showSkip
         self.skipAction = skipAction
         self.background = EmptyView()
