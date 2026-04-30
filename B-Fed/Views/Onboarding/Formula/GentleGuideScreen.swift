@@ -1,11 +1,19 @@
 import SwiftUI
 
 // MARK: - Gentle Guide Screen
-/// Warm welcome moment — feels like the first screen inside the app, not an onboarding step.
+/// Onboarding completion screen — calm, informative, no celebration effects.
 struct GentleGuideScreen: View {
     let babyProfile: BabyProfile
     let viewModel: FormulaSetupViewModel
     let onContinue: () -> Void
+
+    // MARK: - Animation states
+    @State private var drawCircle = false
+    @State private var showCheckmark = false
+    @State private var showHeadline = false
+    @State private var showCard = false
+    @State private var showReassurance = false
+    @State private var showButton = false
 
     // MARK: - Age & guidance
     private var ageInMonths: Int {
@@ -33,217 +41,250 @@ struct GentleGuideScreen: View {
         }
     }
 
-    private var parentName: String {
-        babyProfile.parentName.isEmpty ? "there" : babyProfile.parentName
-    }
-
     private var babyName: String {
         babyProfile.babyName
     }
 
-    private var formulaContextText: String {
-        let brand = viewModel.displayBrandName
-        let stage = viewModel.selectedStage?.displayName ?? ""
-        if brand.isEmpty && stage.isEmpty { return "" }
-        if stage.isEmpty { return brand }
-        if brand.isEmpty { return stage }
-        return "\(brand) · \(stage)"
+    private var hasFormulaInfo: Bool {
+        !viewModel.displayBrandName.isEmpty
+    }
+
+    private var stageShortName: String {
+        switch viewModel.selectedStage {
+        case .newborn: return "Newborn"
+        case .stage1: return "Stage 1"
+        case .stage2: return "Stage 2"
+        case .stage3: return "Stage 3"
+        case .toddler: return "Toddler"
+        case .none: return ""
+        }
+    }
+
+    private var stageAgeRange: String {
+        switch viewModel.selectedStage {
+        case .newborn: return "0–1 month"
+        case .stage1: return "0–6 months"
+        case .stage2: return "6–12 months"
+        case .stage3: return "1–2 years"
+        case .toddler: return "2+ years"
+        case .none: return ""
+        }
     }
 
     // MARK: - Body
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Layer 1: background colour
-                Color.backgroundBase.ignoresSafeArea()
+        ZStack {
+            Color(hex: "F7F9F7").ignoresSafeArea()
 
-                // Layer 2: blobs
-                blobBackground(in: geometry)
-                    .allowsHitTesting(false)
+            blobs
 
-                // Layer 3: content
-                VStack(alignment: .leading, spacing: 0) {
-                    Spacer().frame(height: geometry.safeAreaInsets.top + 64)
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+                    // Zone 1: Icon + Headline
+                    VStack(spacing: 24) {
+                        animatedIcon
 
-                    // Title
-                    Text("You're all set,")
-                        .font(AppFont.serif(30))
-                        .foregroundColor(.inkPrimary)
-
-                    Text(parentName)
-                        .font(AppFont.serif(30))
-                        .foregroundColor(.inkPrimary)
-
-                    Spacer().frame(height: 10)
-
-                    Text("Here's a starting point for \(babyName)")
-                        .font(AppFont.sans(13))
-                        .foregroundColor(.inkSecondary)
-
-                    Spacer().frame(height: 4)
-
-                    Text(formulaContextText)
-                        .font(AppFont.sans(11))
-                        .foregroundColor(.almostAquaDark)
-
-                    Spacer().frame(height: 28)
-
-                    // Daily intake card
-                    dailyIntakeCard
-
-                    Spacer().frame(height: 12)
-
-                    // Two small cards
-                    HStack(spacing: 10) {
-                        perFeedCard
-                        feedsPerDayCard
+                        headline
                     }
+                    .padding(.top, 80)
 
-                    Spacer().frame(height: 14)
+                    // Zone 2: Summary Card
+                    VStack(spacing: 16) {
+                        summaryCard
+                            .offset(y: showCard ? 0 : 16)
+                            .opacity(showCard ? 1 : 0)
 
-                    // Disclaimer
-                    Text("Always follow the instructions on your tin. Amounts vary between babies.")
-                        .font(AppFont.sans(10))
-                        .foregroundColor(.inkSecondary)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity, alignment: .center)
-
-                    Spacer()
-
-                    // Button
-                    Button(action: onContinue) {
-                        Text("Let's begin")
-                            .font(AppFont.sans(16, weight: .semibold))
-                            .foregroundColor(.backgroundCard)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 54)
-                            .background(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .fill(Color.inkPrimary)
-                            )
+                        reassuranceLine
+                            .offset(y: showReassurance ? 0 : 16)
+                            .opacity(showReassurance ? 1 : 0)
                     }
-                    .buttonStyle(.plain)
-                    .padding(.bottom, geometry.safeAreaInsets.bottom + 24)
+                    .padding(.top, 40)
+
+                    // Zone 3: Button
+                    button
+                        .offset(y: showButton ? 0 : 16)
+                        .opacity(showButton ? 1 : 0)
+                        .padding(.top, 32)
+                        .padding(.bottom, 24)
                 }
                 .padding(.horizontal, 20)
             }
         }
+        .onAppear(perform: startAnimations)
     }
 
-    // MARK: - Background blobs
-    private func blobBackground(in geometry: GeometryProxy) -> some View {
+    // MARK: - Blobs
+    private var blobs: some View {
         ZStack {
-            Ellipse()
-                .fill(Color.almostAqua.opacity(0.45))
-                .frame(
-                    width: geometry.size.width * 0.76,
-                    height: geometry.size.width * 0.76
-                )
-                .position(x: geometry.size.width, y: 0)
+            Circle()
+                .fill(Color(hex: "DCE9DC").opacity(0.45))
+                .frame(width: 160, height: 160)
+                .position(x: UIScreen.main.bounds.width - 40, y: 60)
 
-            Ellipse()
-                .fill(Color.almostAquaLight.opacity(0.5))
-                .frame(
-                    width: geometry.size.width * 0.44,
-                    height: geometry.size.width * 0.44
-                )
-                .position(x: geometry.size.width, y: 0)
-
-            Ellipse()
-                .fill(Color.peachDust.opacity(0.45))
-                .frame(
-                    width: geometry.size.width * 0.84,
-                    height: geometry.size.width * 0.84
-                )
-                .position(x: 0, y: geometry.size.height)
-
-            Ellipse()
-                .fill(Color.lemonIcing.opacity(0.38))
-                .frame(
-                    width: geometry.size.width * 0.60,
-                    height: geometry.size.width * 0.60
-                )
-                .position(x: geometry.size.width, y: geometry.size.height)
+            Circle()
+                .fill(Color(hex: "E8DCD4").opacity(0.40))
+                .frame(width: 100, height: 100)
+                .position(x: 30, y: UIScreen.main.bounds.height - 80)
         }
         .allowsHitTesting(false)
+        .ignoresSafeArea()
     }
 
-    // MARK: - Daily intake card
-    private var dailyIntakeCard: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("ESTIMATED DAILY INTAKE")
-                .font(AppFont.sans(9, weight: .semibold))
-                .foregroundColor(.peachDustDark)
-                .tracking(0.4)
+    // MARK: - Animated Icon
+    private var animatedIcon: some View {
+        ZStack {
+            Circle()
+                .fill(Color(hex: "DCE9DC"))
+                .frame(width: 80, height: 80)
 
-            Text("\(guidance.dailyMin)–\(guidance.dailyMax) ml")
-                .font(AppFont.serif(36))
-                .foregroundColor(.inkPrimary)
-                .padding(.top, 10)
+            Circle()
+                .trim(from: 0, to: drawCircle ? 1 : 0)
+                .stroke(Color(hex: "5A8A5A"), lineWidth: 1.5)
+                .frame(width: 80, height: 80)
+                .rotationEffect(.degrees(-90))
 
-            Text("Based on \(babyName)'s age")
-                .font(AppFont.sans(11))
-                .foregroundColor(.inkSecondary)
-                .padding(.top, 8)
+            Text("✓")
+                .font(AppFont.sans(22, weight: .medium))
+                .foregroundColor(Color(hex: "5A8A5A"))
+                .opacity(showCheckmark ? 1 : 0)
         }
-        .padding(24)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.peachDustLight)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
-    // MARK: - Per feed card
-    private var perFeedCard: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("PER FEED")
-                .font(AppFont.sans(9, weight: .semibold))
-                .foregroundColor(.inkSecondary)
-                .tracking(0.4)
+    // MARK: - Headline
+    private var headline: some View {
+        VStack(spacing: 6) {
+            Text("ALL SET")
+                .font(AppFont.sans(11, weight: .medium))
+                .foregroundColor(Color(hex: "5A8A5A"))
+                .tracking(0.04 * 11)
+                .textCase(.uppercase)
 
-            Text("\(guidance.feedMin)–\(guidance.feedMax) ml")
-                .font(AppFont.serif(22))
-                .foregroundColor(.inkPrimary)
-
-            Text("Typical amount")
-                .font(AppFont.sans(10))
-                .foregroundColor(.inkSecondary)
+            Text("\(babyName) is ready.")
+                .font(AppFont.sans(28, weight: .semibold))
+                .foregroundColor(Color(hex: "1C2421"))
+                .multilineTextAlignment(.center)
         }
-        .padding(16)
-        .frame(height: 90)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.backgroundCard)
-        .cornerRadius(14)
+        .offset(y: showHeadline ? 0 : 16)
+        .opacity(showHeadline ? 1 : 0)
+    }
+
+    // MARK: - Summary Card
+    private var summaryCard: some View {
+        VStack(spacing: 0) {
+            if hasFormulaInfo {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Formula")
+                        .font(AppFont.sans(11, weight: .medium))
+                        .foregroundColor(Color(hex: "5A8A5A"))
+                        .tracking(0.05 * 11)
+                        .textCase(.uppercase)
+
+                    Text("\(viewModel.displayBrandName) · \(stageShortName)")
+                        .font(AppFont.sans(16, weight: .medium))
+                        .foregroundColor(Color(hex: "1C2421"))
+
+                    Text(stageAgeRange)
+                        .font(AppFont.sans(13))
+                        .foregroundColor(Color(hex: "888780"))
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Divider()
+                    .background(Color.black.opacity(0.07))
+                    .padding(.vertical, 16)
+            }
+
+            HStack(spacing: 0) {
+                // Daily guide
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Daily guide")
+                        .font(AppFont.sans(11, weight: .medium))
+                        .foregroundColor(Color(hex: "5A8A5A"))
+                        .tracking(0.05 * 11)
+                        .textCase(.uppercase)
+
+                    Text("\(guidance.dailyMin)–\(guidance.dailyMax) ml")
+                        .font(AppFont.sans(18, weight: .semibold))
+                        .foregroundColor(Color(hex: "1C2421"))
+
+                    Text("\(guidance.feedsPerDayMin)–\(guidance.feedsPerDayMax) feeds")
+                        .font(AppFont.sans(12))
+                        .foregroundColor(Color(hex: "888780"))
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // Per feed
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Per feed")
+                        .font(AppFont.sans(11, weight: .medium))
+                        .foregroundColor(Color(hex: "5A8A5A"))
+                        .tracking(0.05 * 11)
+                        .textCase(.uppercase)
+
+                    Text("\(guidance.feedMin)–\(guidance.feedMax) ml")
+                        .font(AppFont.sans(18, weight: .semibold))
+                        .foregroundColor(Color(hex: "1C2421"))
+
+                    Text("typical")
+                        .font(AppFont.sans(12))
+                        .foregroundColor(Color(hex: "888780"))
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(22)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.black.opacity(0.07), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(Color(hex: "5A8A5A").opacity(0.15), lineWidth: 0.5)
         )
     }
 
-    // MARK: - Feeds per day card
-    private var feedsPerDayCard: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("FEEDS PER DAY")
-                .font(AppFont.sans(9, weight: .semibold))
-                .foregroundColor(.inkSecondary)
-                .tracking(0.4)
+    // MARK: - Reassurance Line
+    private var reassuranceLine: some View {
+        Text("These are starting points — every baby is different")
+            .font(AppFont.sans(12).italic())
+            .foregroundColor(Color(hex: "B4B2A9"))
+            .multilineTextAlignment(.center)
+            .lineSpacing(1.6 * 12 - 12)
+            .frame(maxWidth: .infinity, alignment: .center)
+    }
 
-            Text("\(guidance.feedsPerDayMin)–\(guidance.feedsPerDayMax)")
-                .font(AppFont.serif(22))
-                .foregroundColor(.inkPrimary)
-
-            Text("At this age")
-                .font(AppFont.sans(10))
-                .foregroundColor(.inkSecondary)
+    // MARK: - Button
+    private var button: some View {
+        Button(action: onContinue) {
+            Text("Begin")
+                .font(AppFont.sans(16, weight: .medium))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color(hex: "1C2421"))
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
-        .padding(16)
-        .frame(height: 90)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.backgroundCard)
-        .cornerRadius(14)
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(Color.black.opacity(0.07), lineWidth: 0.5)
-        )
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Animation Sequence
+    private func startAnimations() {
+        withAnimation(.easeOut(duration: 1.0).delay(0.1)) {
+            drawCircle = true
+        }
+        withAnimation(.easeOut(duration: 0.3).delay(0.9)) {
+            showCheckmark = true
+        }
+        withAnimation(.easeOut(duration: 0.5).delay(0.6)) {
+            showHeadline = true
+        }
+        withAnimation(.easeOut(duration: 0.5).delay(0.9)) {
+            showCard = true
+        }
+        withAnimation(.easeOut(duration: 0.5).delay(1.2)) {
+            showReassurance = true
+        }
+        withAnimation(.easeOut(duration: 0.5).delay(1.5)) {
+            showButton = true
+        }
     }
 }
 
