@@ -61,14 +61,9 @@ struct GentleGuideScreen: View {
                 blobBackground(in: geometry)
                     .allowsHitTesting(false)
 
-                // Layer 3: rising dots
-                RisingDotsView()
-                    .allowsHitTesting(false)
-                    .ignoresSafeArea(.all)
-
-                // Layer 4: content
+                // Layer 3: content
                 VStack(alignment: .leading, spacing: 0) {
-                    Spacer().frame(height: geometry.safeAreaInsets.top + 40)
+                    Spacer().frame(height: geometry.safeAreaInsets.top + 64)
 
                     // Title
                     Text("You're all set,")
