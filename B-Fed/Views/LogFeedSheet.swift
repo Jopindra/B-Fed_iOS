@@ -12,7 +12,9 @@ struct LogFeedSheet: View {
     
     @State private var amount: Double = 120
     @State private var timerActive: Bool = false
-    @State private var selectedTime: Date = Date()
+    @State private var feedTime: Date = Date()
+    @State private var isTimeManuallySet: Bool = false
+    @State private var timeUpdateTimer: Timer? = nil
     @State private var showingTimePicker: Bool = false
     @State private var showingFormulaSelector: Bool = false
     @State private var showingFormulaDetail: Bool = false
@@ -98,7 +100,23 @@ struct LogFeedSheet: View {
     private var timeString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "h:mm a"
-        return formatter.string(from: selectedTime)
+        return formatter.string(from: feedTime)
+    }
+    
+    private func startTimeTimer() {
+        timeUpdateTimer?.invalidate()
+        timeUpdateTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { _ in
+            Task { @MainActor in
+                if !isTimeManuallySet {
+                    feedTime = Date()
+                }
+            }
+        }
+    }
+    
+    private func stopTimeTimer() {
+        timeUpdateTimer?.invalidate()
+        timeUpdateTimer = nil
     }
     
     // MARK: - Body
@@ -179,6 +197,11 @@ struct LogFeedSheet: View {
         .onAppear {
             amount = defaultAmount
             originalFormula = formulaStore.selectedFormula ?? currentFormula
+            feedTime = Date()
+            startTimeTimer()
+        }
+        .onDisappear {
+            stopTimeTimer()
         }
         .onChange(of: showingFormulaSelector) { _, isShowing in
             if !isShowing {
@@ -189,7 +212,7 @@ struct LogFeedSheet: View {
             }
         }
         .sheet(isPresented: $showingTimePicker) {
-            TimePickerSheet(selectedTime: $selectedTime)
+            TimePickerSheet(selectedTime: $feedTime)
         }
         .sheet(isPresented: $showingFormulaSelector) {
             FormulaSelector()
@@ -407,30 +430,53 @@ struct LogFeedSheet: View {
     
     // MARK: - Time Field
     private var timeField: some View {
-        Button(action: { showingTimePicker = true }) {
-            HStack {
-                Text(timeString)
-                    .font(AppFont.sans(15, weight: .regular))
-                    .foregroundStyle(Color.inkPrimary)
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(AppFont.sans(12, weight: .medium))
-                    .foregroundStyle(Color.inkSecondary)
+        HStack(spacing: 12) {
+            Button(action: {
+                isTimeManuallySet = true
+                showingTimePicker = true
+            }) {
+                HStack {
+                    Text(timeString)
+                        .font(AppFont.sans(15, weight: .regular))
+                        .foregroundStyle(Color.inkPrimary)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(AppFont.sans(12, weight: .medium))
+                        .foregroundStyle(Color.inkSecondary)
+                }
+                .padding(.horizontal, 12)
+                .frame(height: 44)
+                .background(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(Color.backgroundBase)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                        )
+                )
             }
-            .padding(.horizontal, 12)
-            .frame(height: 44)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color.backgroundBase)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
-                    )
-            )
+            .buttonStyle(PlainButtonStyle())
+            
+            if isTimeManuallySet {
+                Button(action: {
+                    isTimeManuallySet = false
+                    feedTime = Date()
+                }) {
+                    Text("Now")
+                        .font(AppFont.sans(11, weight: .medium))
+                        .foregroundStyle(Color(hex: "5A8A5A"))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color(hex: "EEF4EE"))
+                        )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
         }
-        .buttonStyle(PlainButtonStyle())
     }
     
     // MARK: - Save Button
@@ -459,7 +505,7 @@ struct LogFeedSheet: View {
 
         _ = feedStore.createFeed(
             amount: amount,
-            startTime: selectedTime,
+            startTime: feedTime,
             notes: "",
             completed: true
         )
@@ -484,7 +530,7 @@ struct LogFeedSheet: View {
         let timeString = {
             let formatter = DateFormatter()
             formatter.dateFormat = "h:mm a"
-            return formatter.string(from: selectedTime).lowercased()
+            return formatter.string(from: feedTime).lowercased()
         }()
         content.body = "The bottle made at \(timeString) should be used or discarded"
         content.sound = .default
