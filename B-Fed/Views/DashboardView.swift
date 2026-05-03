@@ -112,8 +112,11 @@ struct DashboardView: View {
                             statCards
                                 .padding(.top, 32)
                             
+                            weekTracker
+                                .padding(.top, 14)
+                            
                             reassuranceLine
-                                .padding(.top, 20)
+                                .padding(.top, 14)
                             
                             Spacer(minLength: 32)
                         }
@@ -289,6 +292,15 @@ struct DashboardView: View {
                     .stroke(Color(hex: "7B6A9A").opacity(0.15), lineWidth: 0.5)
             )
         }
+    }
+    
+    // MARK: — Week Tracker
+    
+    private var weekTracker: some View {
+        WeekTrackerView(
+            profileCreatedDate: feedStore.babyProfile?.createdAt,
+            feeds: allFeeds
+        )
     }
     
     // MARK: — Reassurance Line
