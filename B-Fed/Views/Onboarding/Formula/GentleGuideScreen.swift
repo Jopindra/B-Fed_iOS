@@ -78,36 +78,34 @@ struct GentleGuideScreen: View {
 
             blobs
 
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    // Zone 1: Icon + Headline
-                    VStack(spacing: 24) {
-                        animatedIcon
+            VStack(spacing: 0) {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // Zone 1: Icon + Headline
+                        VStack(spacing: 16) {
+                            animatedIcon
 
-                        headline
+                            headline
+                        }
+                        .padding(.top, 80)
+
+                        // Zone 2: Summary Card + Reassurance
+                        cardSection
+                            .padding(.top, 40)
+                            .padding(.bottom, 16)
                     }
-                    .padding(.top, 80)
-
-                    // Zone 2: Summary Card
-                    VStack(spacing: 16) {
-                        summaryCard
-                            .offset(y: showCard ? 0 : 16)
-                            .opacity(showCard ? 1 : 0)
-
-                        reassuranceLine
-                            .offset(y: showReassurance ? 0 : 16)
-                            .opacity(showReassurance ? 1 : 0)
-                    }
-                    .padding(.top, 40)
-
-                    // Zone 3: Button
-                    button
-                        .offset(y: showButton ? 0 : 16)
-                        .opacity(showButton ? 1 : 0)
-                        .padding(.top, 32)
-                        .padding(.bottom, 24)
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
+
+                Spacer(minLength: 0)
+
+                // Zone 3: Button
+                button
+                    .offset(y: showButton ? 0 : 16)
+                    .opacity(showButton ? 1 : 0)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+                    .padding(.bottom, 24)
             }
         }
         .onAppear(perform: startAnimations)
@@ -153,19 +151,34 @@ struct GentleGuideScreen: View {
     // MARK: - Headline
     private var headline: some View {
         VStack(spacing: 6) {
-            Text("ALL SET")
-                .font(AppFont.sans(11, weight: .medium))
-                .foregroundColor(Color(hex: "5A8A5A"))
-                .tracking(0.04 * 11)
-                .textCase(.uppercase)
-
-            Text("\(babyName) is ready.")
+            Text("\(babyName) is in good hands.")
                 .font(AppFont.sans(28, weight: .semibold))
                 .foregroundColor(Color(hex: "1C2421"))
+                .multilineTextAlignment(.center)
+
+            Text("Here's a gentle guide to get started")
+                .font(AppFont.sans(14, weight: .regular))
+                .foregroundColor(Color(hex: "888780"))
                 .multilineTextAlignment(.center)
         }
         .offset(y: showHeadline ? 0 : 16)
         .opacity(showHeadline ? 1 : 0)
+    }
+
+    // MARK: - Card Section (warm container + card + reassurance)
+    private var cardSection: some View {
+        VStack(spacing: 12) {
+            summaryCard
+                .offset(y: showCard ? 0 : 16)
+                .opacity(showCard ? 1 : 0)
+
+            reassuranceLine
+                .offset(y: showReassurance ? 0 : 16)
+                .opacity(showReassurance ? 1 : 0)
+        }
+        .padding(16)
+        .background(Color(hex: "F5F0EA"))
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
     }
 
     // MARK: - Summary Card
@@ -233,7 +246,7 @@ struct GentleGuideScreen: View {
             }
         }
         .padding(22)
-        .background(Color.white)
+        .background(Color(hex: "FDFAF7"))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
