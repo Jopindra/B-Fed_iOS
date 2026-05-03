@@ -87,7 +87,7 @@ struct GentleGuideScreen: View {
 
                             headline
                         }
-                        .padding(.top, 80)
+                        .padding(.top, 60)
 
                         // Zone 2: Formula pill + Card + Reassurance
                         VStack(spacing: 0) {
@@ -95,11 +95,11 @@ struct GentleGuideScreen: View {
                                 formulaPill
                                     .offset(y: showCard ? 0 : 16)
                                     .opacity(showCard ? 1 : 0)
-                                    .padding(.top, 28)
+                                    .padding(.top, 24)
                             }
                             
                             cardSection
-                                .padding(.top, hasFormulaInfo ? 12 : 28)
+                                .padding(.top, hasFormulaInfo ? 20 : 24)
                                 .padding(.bottom, 16)
                         }
                     }
@@ -123,15 +123,29 @@ struct GentleGuideScreen: View {
     // MARK: - Blobs
     private var blobs: some View {
         ZStack {
+            // Blob 1 — Lavender, top right
             Circle()
-                .fill(Color(hex: "DCE9DC").opacity(0.45))
-                .frame(width: 160, height: 160)
-                .position(x: UIScreen.main.bounds.width - 40, y: 60)
+                .fill(Color(hex: "C8C0D4").opacity(0.45))
+                .frame(width: 180, height: 180)
+                .position(x: UIScreen.main.bounds.width + 30, y: 30)
 
+            // Blob 2 — Cream, top left
             Circle()
-                .fill(Color(hex: "E8DCD4").opacity(0.40))
-                .frame(width: 100, height: 100)
-                .position(x: 30, y: UIScreen.main.bounds.height - 80)
+                .fill(Color(hex: "DDD8C0").opacity(0.35))
+                .frame(width: 150, height: 150)
+                .position(x: -25, y: 25)
+
+            // Blob 3 — Terracotta, mid left
+            Circle()
+                .fill(Color(hex: "D4A898").opacity(0.32))
+                .frame(width: 140, height: 140)
+                .position(x: -10, y: 350)
+
+            // Blob 4 — Sage, mid right
+            Circle()
+                .fill(Color(hex: "B0C4B0").opacity(0.32))
+                .frame(width: 120, height: 120)
+                .position(x: UIScreen.main.bounds.width + 10, y: 400)
         }
         .allowsHitTesting(false)
         .ignoresSafeArea()
@@ -176,7 +190,7 @@ struct GentleGuideScreen: View {
 
     // MARK: - Formula Pill
     private var formulaPill: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             Text("\(viewModel.displayBrandName) · \(stageShortName)")
                 .font(AppFont.sans(13, weight: .medium))
                 .foregroundColor(Color(hex: "3D6B3D"))
@@ -198,7 +212,7 @@ struct GentleGuideScreen: View {
 
     // MARK: - Card Section (warm container + card + reassurance)
     private var cardSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 14) {
             summaryCard
                 .offset(y: showCard ? 0 : 16)
                 .opacity(showCard ? 1 : 0)
