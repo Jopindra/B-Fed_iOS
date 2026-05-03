@@ -47,11 +47,52 @@ struct LogFeedSheet: View {
         }
     }
     
-    private var defaultAmount: Double {
-        if let lastFeed = allFeeds.first {
-            return lastFeed.amount
+    private var ageInMonths: Int? {
+        guard let dob = feedStore.babyProfile?.dateOfBirth else { return nil }
+        return FormulaStageService.ageInMonths(from: dob)
+    }
+    
+    private var perFeedRange: (min: Int, max: Int) {
+        guard let months = ageInMonths else { return (60, 120) }
+        switch months {
+        case 0..<1:  return (60, 90)
+        case 1..<2:  return (90, 120)
+        case 2..<4:  return (120, 180)
+        case 4..<6:  return (150, 210)
+        case 6..<9:  return (180, 240)
+        case 9..<12: return (180, 240)
+        case 12..<24: return (150, 200)
+        default:     return (120, 180)
         }
-        return 120
+    }
+    
+    private var quickAmountValues: [Int] {
+        let (feedMin, feedMax) = perFeedRange
+        let low = max(10, feedMin - 20)
+        let midLow = feedMin
+        let mid = Int(round(Double(feedMin + feedMax) / 2.0 / 10.0) * 10.0)
+        let midHigh = feedMax
+        let high = min(350, feedMax + 20)
+        return [low, midLow, mid, midHigh, high]
+    }
+    
+    private var todayFeeds: [Feed] {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: Date())
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        return allFeeds.filter { $0.startTime >= startOfDay && $0.startTime < endOfDay }
+    }
+    
+    private var defaultAmount: Double {
+        let pills = quickAmountValues
+        let midpoint = Double(pills[2])
+        
+        guard !todayFeeds.isEmpty else { return midpoint }
+        
+        let avg = todayFeeds.reduce(0.0) { $0 + $1.amount } / Double(todayFeeds.count)
+        let rounded = round(avg / 10.0) * 10.0
+        let closest = pills.map { Double($0) }.min { abs($0 - rounded) < abs($1 - rounded) } ?? midpoint
+        return closest
     }
     
     private var timeString: String {
@@ -142,6 +183,9 @@ struct LogFeedSheet: View {
         .onChange(of: showingFormulaSelector) { _, isShowing in
             if !isShowing {
                 formulaChangedForThisFeed = formulaStore.selectedFormula?.id != originalFormula?.id
+                if formulaChangedForThisFeed {
+                    amount = Double(quickAmountValues[2])
+                }
             }
         }
         .sheet(isPresented: $showingTimePicker) {
@@ -310,7 +354,7 @@ struct LogFeedSheet: View {
     // MARK: - Quick Amount Pills
     private var quickAmountPills: some View {
         HStack(spacing: 8) {
-            ForEach([60, 90, 120, 150, 180], id: \.self) { value in
+            ForEach(quickAmountValues, id: \.self) { value in
                 Button(action: { amount = Double(value) }) {
                     Text("\(value)ml")
                         .font(AppFont.caption)
