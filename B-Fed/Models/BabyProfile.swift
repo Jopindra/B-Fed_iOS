@@ -96,30 +96,19 @@ class BabyProfile {
     }
     
     /// Formatted age string for display
-    var formattedAge: String {
-        let days = ageInDays
-        if days < 7 {
-            return days == 1 ? "1 day old" : "\(days) days old"
-        } else if days < 30 {
-            let weeks = days / 7
-            return weeks == 1 ? "1 week old" : "\(weeks) weeks old"
+    var ageDescription: String {
+        let now = Date()
+        let components = Calendar.current.dateComponents([.year, .month, .weekOfYear], from: dateOfBirth, to: now)
+        let months = (components.year ?? 0) * 12 + (components.month ?? 0)
+        let weeks = components.weekOfYear ?? 0
+
+        if months < 1 {
+            return "\(weeks) week\(weeks == 1 ? "" : "s") old"
+        } else if months < 24 {
+            return "\(months) month\(months == 1 ? "" : "s") old"
         } else {
-            let components = Calendar.current.dateComponents([.year, .month], from: dateOfBirth, to: Date())
-            let years = components.year ?? 0
-            let months = components.month ?? 0
-            
-            if years >= 1 {
-                let yearString = years == 1 ? "1 year" : "\(years) years"
-                if months == 0 {
-                    return "\(yearString) old"
-                } else {
-                    let monthString = months == 1 ? "1 month" : "\(months) months"
-                    return "\(yearString), \(monthString) old"
-                }
-            } else {
-                let totalMonths = ageInMonths
-                return totalMonths == 1 ? "1 month old" : "\(totalMonths) months old"
-            }
+            let years = months / 12
+            return "\(years) year\(years == 1 ? "" : "s") old"
         }
     }
     

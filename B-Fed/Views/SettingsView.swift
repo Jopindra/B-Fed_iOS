@@ -86,7 +86,7 @@ struct SettingsView: View {
             HStack {
                 Text("Age")
                 Spacer()
-                Text(profile.formattedAge)
+                Text(viewModel.ageDescription)
                     .foregroundStyle(Color.inkSecondary)
             }
             
@@ -233,6 +233,22 @@ final class SettingsViewModel {
     
     var showsFormulaFields: Bool {
         feedingType == .formula || feedingType == .mixed
+    }
+    
+    var ageDescription: String {
+        let now = Date()
+        let components = Calendar.current.dateComponents([.year, .month, .weekOfYear], from: dateOfBirth, to: now)
+        let months = (components.year ?? 0) * 12 + (components.month ?? 0)
+        let weeks = components.weekOfYear ?? 0
+
+        if months < 1 {
+            return "\(weeks) week\(weeks == 1 ? "" : "s") old"
+        } else if months < 24 {
+            return "\(months) month\(months == 1 ? "" : "s") old"
+        } else {
+            let years = months / 12
+            return "\(years) year\(years == 1 ? "" : "s") old"
+        }
     }
     
     func load(from profile: BabyProfile?) {

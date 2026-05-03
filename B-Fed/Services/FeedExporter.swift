@@ -18,7 +18,7 @@ enum FeedExporter {
         
         if let profile = profile {
             lines.append("Baby: \(profile.babyName)")
-            lines.append("Age: \(profile.formattedAge)")
+            lines.append("Age: \(profile.ageDescription)")
             if let weight = profile.weightInKg {
                 lines.append("Weight: \(String(format: "%.2f", weight)) kg")
             }
