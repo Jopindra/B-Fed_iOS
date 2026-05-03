@@ -16,6 +16,8 @@ struct LogFeedSheet: View {
     @State private var showingTimePicker: Bool = false
     @State private var showingFormulaSelector: Bool = false
     @State private var showingFormulaDetail: Bool = false
+    @State private var originalFormula: Formula? = nil
+    @State private var formulaChangedForThisFeed: Bool = false
     
     // MARK: - Derived
     private var formulaDisplayName: String {
@@ -24,6 +26,10 @@ struct LogFeedSheet: View {
         }
         guard let profile = feedStore.babyProfile else { return "Select formula" }
         return profile.customFormulaBrand ?? profile.formulaBrand ?? "Select formula"
+    }
+    
+    private var formulaSubtitle: String {
+        formulaChangedForThisFeed ? "Changed for this feed" : "Your current formula"
     }
     
     private var hasFormulaSet: Bool {
@@ -60,56 +66,69 @@ struct LogFeedSheet: View {
             ZStack {
                 Color.backgroundCard.ignoresSafeArea()
                 
-                ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        // Top handle
-                        sheetHandle
-                        
-                        // Title
-                        Text("Log a feed")
-                            .font(AppFont.screenTitle)
-                            .foregroundStyle(Color.inkPrimary)
-                            .padding(.horizontal, 20)
-                            .padding(.top, 20)
-                        
-                        // Formula section
-                        sectionLabel("FORMULA")
-                            .padding(.top, 8)
-                        
-                        formulaRow
-                            .padding(.horizontal, 20)
-                        
-                        // Amount section
-                        sectionLabel("AMOUNT")
-                            .padding(.top, 12)
-                        
-                        amountInputCard
-                            .padding(.horizontal, 20)
-                        
-                        // Quick amount pills
-                        quickAmountPills
-                            .padding(.horizontal, 20)
-                            .padding(.top, 8)
-                        
-                        // Timer toggle
-                        sectionLabel("FEED TIMER")
-                            .padding(.top, 12)
-                        
-                        timerToggleRow
-                            .padding(.horizontal, 20)
-                        
-                        // Time field
-                        sectionLabel("TIME")
-                            .padding(.top, 8)
-                        
-                        timeField
-                            .padding(.horizontal, 20)
-                            .padding(.bottom, 20)
-                        
-                        // Save button at bottom of scroll content
-                        saveButton
-                            .padding(.top, 12)
+                VStack(spacing: 0) {
+                    ScrollView(showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            // Top handle
+                            sheetHandle
+                            
+                            // Title
+                            Text("Log a feed")
+                                .font(AppFont.screenTitle)
+                                .foregroundStyle(Color.inkPrimary)
+                                .padding(.horizontal, 20)
+                                .padding(.top, 20)
+                            
+                            // Formula section
+                            sectionLabel("FORMULA")
+                                .padding(.top, 8)
+                            
+                            formulaRow
+                                .padding(.horizontal, 20)
+                            
+                            if formulaChangedForThisFeed {
+                                Button(action: resetFormula) {
+                                    Text("Reset to \(originalFormula?.brand ?? originalFormula?.name ?? "original")")
+                                        .font(AppFont.sans(11))
+                                        .foregroundStyle(Color(hex: "5A8A5A"))
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .padding(.horizontal, 20)
+                                .padding(.top, 6)
+                            }
+                            
+                            // Amount section
+                            sectionLabel("AMOUNT")
+                                .padding(.top, 12)
+                            
+                            amountInputCard
+                                .padding(.horizontal, 20)
+                            
+                            // Quick amount pills
+                            quickAmountPills
+                                .padding(.horizontal, 20)
+                                .padding(.top, 8)
+                            
+                            // Timer toggle
+                            sectionLabel("FEED TIMER")
+                                .padding(.top, 12)
+                            
+                            timerToggleRow
+                                .padding(.horizontal, 20)
+                            
+                            // Time field
+                            sectionLabel("TIME")
+                                .padding(.top, 8)
+                            
+                            timeField
+                                .padding(.horizontal, 20)
+                                .padding(.bottom, 8)
+                        }
                     }
+                    
+                    saveButton
+                        .padding(.top, 8)
+                        .padding(.bottom, 8)
                 }
             }
         }
@@ -118,6 +137,12 @@ struct LogFeedSheet: View {
         .presentationBackground(.white)
         .onAppear {
             amount = defaultAmount
+            originalFormula = formulaStore.selectedFormula ?? currentFormula
+        }
+        .onChange(of: showingFormulaSelector) { _, isShowing in
+            if !isShowing {
+                formulaChangedForThisFeed = formulaStore.selectedFormula?.id != originalFormula?.id
+            }
         }
         .sheet(isPresented: $showingTimePicker) {
             TimePickerSheet(selectedTime: $selectedTime)
@@ -154,46 +179,45 @@ struct LogFeedSheet: View {
     // MARK: - Formula Row
     private var formulaRow: some View {
         HStack(spacing: 12) {
-            Button(action: { showingFormulaSelector = true }) {
-                HStack(spacing: 12) {
-                    Circle()
-                        .fill(Color.almostAquaLight)
-                        .frame(minWidth: 44, minHeight: 44)
-                        .overlay(
-                            Text(formulaIcon)
-                                .font(AppFont.sans(10, weight: .semibold))
-                                .foregroundStyle(Color.almostAquaDark)
-                        )
-                    
+            HStack(spacing: 12) {
+                Circle()
+                    .fill(Color.almostAquaLight)
+                    .frame(width: 40, height: 40)
+                    .overlay(
+                        Text(formulaIcon)
+                            .font(AppFont.sans(12, weight: .semibold))
+                            .foregroundStyle(Color.almostAquaDark)
+                    )
+                
+                VStack(alignment: .leading, spacing: 2) {
                     Text(formulaDisplayName)
-                        .font(AppFont.bodyLarge)
-                        .foregroundStyle(hasFormulaSet ? Color.inkPrimary : Color.orchidTint)
+                        .font(AppFont.sans(15, weight: .medium))
+                        .foregroundStyle(Color(hex: "1C2421"))
                     
-                    Spacer()
-                    
-                    Text("›")
-                        .font(AppFont.sans(16, weight: .light))
-                        .foregroundStyle(Color.inkSecondary)
+                    Text(formulaSubtitle)
+                        .font(AppFont.sans(12))
+                        .foregroundStyle(Color(hex: "888780"))
+                        .italic(formulaChangedForThisFeed)
                 }
+            }
+            
+            Spacer()
+            
+            Button(action: { showingFormulaSelector = true }) {
+                Text("Change")
+                    .font(AppFont.sans(12, weight: .medium))
+                    .foregroundStyle(Color(hex: "5A8A5A"))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color(hex: "EEF4EE"))
+                    )
             }
             .buttonStyle(PlainButtonStyle())
-            
-            if hasFormulaSet {
-                Button(action: { showingFormulaDetail = true }) {
-                    Text("?")
-                        .font(AppFont.caption)
-                        .foregroundStyle(Color.inkSecondary)
-                        .frame(width: 24, height: 24)
-                        .background(
-                            Circle()
-                                .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
-                        )
-                }
-                .buttonStyle(PlainButtonStyle())
-            }
         }
         .padding(.horizontal, 12)
-        .frame(height: 44)
+        .frame(height: 56)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(Color.backgroundBase)
@@ -208,6 +232,11 @@ struct LogFeedSheet: View {
         guard hasFormulaSet else { return "?" }
         let name = formulaDisplayName
         return String(name.prefix(1)).uppercased()
+    }
+    
+    private func resetFormula() {
+        formulaStore.selectedFormula = originalFormula
+        formulaChangedForThisFeed = false
     }
     
     // MARK: - Amount Input Card
@@ -376,7 +405,6 @@ struct LogFeedSheet: View {
             }
             .buttonStyle(PlainButtonStyle())
             .padding(.horizontal, 20)
-            .padding(.bottom, 16)
         }
         .background(Color.backgroundCard)
     }

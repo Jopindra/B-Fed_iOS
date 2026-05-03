@@ -123,7 +123,7 @@ struct DashboardView: View {
                     logFeedButton
                         .padding(.horizontal, 20)
                         .padding(.top, 8)
-                        .padding(.bottom, geometry.safeAreaInsets.bottom + 16)
+                        .padding(.bottom, geometry.safeAreaInsets.bottom + 64)
                 }
             }
         }
