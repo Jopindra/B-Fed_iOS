@@ -8,6 +8,10 @@ struct BrandSelectionScreen: View {
     let onBack: () -> Void
     let onContinue: () -> Void
     
+    private var showContinueButton: Bool {
+        viewModel.showingCustomEntry
+    }
+    
     var body: some View {
         OnboardingStepView(
             stepNumber: stepNumber,
@@ -49,7 +53,13 @@ struct BrandSelectionScreen: View {
                             BrandCard(
                                 brand: brand,
                                 isSelected: viewModel.selectedBrandId == brand.id,
-                                action: { viewModel.selectBrand(brand) }
+                                action: {
+                                    viewModel.selectBrand(brand)
+                                    Task {
+                                        try? await Task.sleep(for: .seconds(0.3))
+                                        onContinue()
+                                    }
+                                }
                             )
                         }
                         
@@ -67,7 +77,13 @@ struct BrandSelectionScreen: View {
                             subtitle: "Skip this step for now",
                             icon: "ellipsis",
                             isSelected: viewModel.hasntChosenYet,
-                            action: { viewModel.selectHaventChosen() }
+                            action: {
+                                viewModel.selectHaventChosen()
+                                Task {
+                                    try? await Task.sleep(for: .seconds(0.3))
+                                    onContinue()
+                                }
+                            }
                         )
                     }
                     .padding(.horizontal, AppSpacing.lg)
@@ -98,6 +114,7 @@ struct BrandSelectionScreen: View {
             },
             onContinue: onContinue,
             continueEnabled: viewModel.canProceedFromBrand,
+            showContinue: showContinueButton,
             showSkip: false,
             background: { OnboardingBackground.feedingType() }
         )
