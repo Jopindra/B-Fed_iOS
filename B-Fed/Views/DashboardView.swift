@@ -96,7 +96,7 @@ struct DashboardView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color(hex: "F7F5F2").ignoresSafeArea()
+                Color(hex: "F7F6F2").ignoresSafeArea()
                 
                 blobs(in: geometry)
                 
@@ -136,15 +136,29 @@ struct DashboardView: View {
     
     private func blobs(in geometry: GeometryProxy) -> some View {
         ZStack {
+            // Blob 1 — Lavender, top right
             Circle()
-                .fill(Color(hex: "E8DCD4").opacity(0.5))
-                .frame(width: 160, height: 160)
-                .position(x: geometry.size.width - 30, y: 40)
+                .fill(Color(hex: "C8C0D4").opacity(0.45))
+                .frame(width: 180, height: 180)
+                .position(x: geometry.size.width + 30, y: 30)
             
+            // Blob 2 — Cream, top left
             Circle()
-                .fill(Color(hex: "DCE9DC").opacity(0.4))
-                .frame(width: 100, height: 100)
-                .position(x: 20, y: geometry.size.height - 60)
+                .fill(Color(hex: "DDD8C0").opacity(0.35))
+                .frame(width: 150, height: 150)
+                .position(x: -25, y: 25)
+            
+            // Blob 3 — Terracotta, mid left
+            Circle()
+                .fill(Color(hex: "D4A898").opacity(0.32))
+                .frame(width: 140, height: 140)
+                .position(x: -10, y: 270)
+            
+            // Blob 4 — Sage, mid right
+            Circle()
+                .fill(Color(hex: "B0C4B0").opacity(0.32))
+                .frame(width: 120, height: 120)
+                .position(x: geometry.size.width + 10, y: 320)
         }
         .allowsHitTesting(false)
         .ignoresSafeArea()
@@ -193,12 +207,12 @@ struct DashboardView: View {
     private var progressRing: some View {
         ZStack {
             Circle()
-                .stroke(Color(hex: "E8E4DF"), lineWidth: 8)
+                .stroke(Color(hex: "C8C0D4"), lineWidth: 8)
                 .frame(width: 140, height: 140)
             
             Circle()
                 .trim(from: 0, to: ringProgress)
-                .stroke(Color(hex: "5A8A5A"), style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                .stroke(Color(hex: "7B6A9A"), style: StrokeStyle(lineWidth: 8, lineCap: .round))
                 .frame(width: 140, height: 140)
                 .rotationEffect(.degrees(-90))
             
@@ -211,6 +225,11 @@ struct DashboardView: View {
                     .font(AppFont.sans(11))
                     .foregroundColor(Color(hex: "888780"))
             }
+            .background(
+                Circle()
+                    .fill(Color(hex: "F0EDF5"))
+                    .frame(width: 120, height: 120)
+            )
         }
         .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -223,7 +242,7 @@ struct DashboardView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Feeds today")
                     .font(AppFont.sans(11, weight: .medium))
-                    .foregroundColor(Color(hex: "888780"))
+                    .foregroundColor(Color(hex: "5A8A5A"))
                     .tracking(0.04 * 11)
                     .textCase(.uppercase)
                 
@@ -233,22 +252,22 @@ struct DashboardView: View {
                 
                 Text("today")
                     .font(AppFont.sans(11))
-                    .foregroundColor(Color(hex: "B4B2A9"))
+                    .foregroundColor(Color(hex: "8AB48A"))
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.white)
+            .background(Color(hex: "EEF4EE"))
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(Color.black.opacity(0.07), lineWidth: 0.5)
+                    .stroke(Color(hex: "5A8A5A").opacity(0.15), lineWidth: 0.5)
             )
             
             // Avg per feed
             VStack(alignment: .leading, spacing: 6) {
                 Text("Avg per feed")
                     .font(AppFont.sans(11, weight: .medium))
-                    .foregroundColor(Color(hex: "888780"))
+                    .foregroundColor(Color(hex: "7B6A9A"))
                     .tracking(0.04 * 11)
                     .textCase(.uppercase)
                 
@@ -258,15 +277,15 @@ struct DashboardView: View {
                 
                 Text("per feed")
                     .font(AppFont.sans(11))
-                    .foregroundColor(Color(hex: "B4B2A9"))
+                    .foregroundColor(Color(hex: "A898C4"))
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.white)
+            .background(Color(hex: "F0EDF5"))
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(Color.black.opacity(0.07), lineWidth: 0.5)
+                    .stroke(Color(hex: "7B6A9A").opacity(0.15), lineWidth: 0.5)
             )
         }
     }
