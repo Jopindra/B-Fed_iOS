@@ -131,6 +131,7 @@ struct CustomTabBar: View {
         switch index {
         case 1: return Color(hex: "5A8A5A") // History
         case 2: return Color(hex: "7B6A9A") // Insights
+        case 3: return Color(hex: "5A8A5A") // More
         default: return Color.inkPrimary
         }
     }

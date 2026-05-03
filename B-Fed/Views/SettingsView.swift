@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Settings View
 struct SettingsView: View {
     @Environment(FeedStore.self) private var feedStore
     @State private var viewModel = SettingsViewModel()
@@ -8,29 +9,55 @@ struct SettingsView: View {
     @State private var showingShareSheet = false
     @State private var showingFormulaPicker = false
     @State private var showingCountryPicker = false
+    @State private var showingDatePicker = false
+    @State private var showingTypePicker = false
+    @State private var showingStagePicker = false
+    @State private var showingNameEdit = false
+    @State private var showingWeightEdit = false
     @State private var shareItems: [Any] = []
     @Query(sort: \Feed.startTime, order: .reverse) private var feeds: [Feed]
     
     var body: some View {
-        NavigationStack {
-            List {
-                if let profile = feedStore.babyProfile {
-                    babySection(profile: profile)
-                    feedingSection(profile: profile)
-                    parentSection(profile: profile)
+        ZStack {
+            Color(hex: "F7F6F2").ignoresSafeArea()
+            
+            settingsBlobs
+            
+            VStack(spacing: 0) {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        header
+                            .padding(.top, 20)
+                        
+                        if feedStore.babyProfile != nil {
+                            babyCard
+                                .padding(.top, 24)
+                            
+                            feedingCard
+                                .padding(.top, 20)
+                            
+                            dataCard
+                                .padding(.top, 20)
+                            
+                            guidesCard
+                                .padding(.top, 20)
+                        }
+                        
+                        Spacer(minLength: 20)
+                    }
+                    .padding(.horizontal, 20)
+                }
+                .safeAreaInset(edge: .bottom) {
+                    Color.clear.frame(height: 32)
                 }
                 
-                dataSection
-                guidesSection
+                if feedStore.babyProfile != nil {
+                    saveButton
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
+                        .padding(.bottom, 8)
+                }
             }
-            .listStyle(.insetGrouped)
-            .safeAreaInset(edge: .bottom) {
-                Color.clear.frame(height: 32)
-            }
-            .navigationTitle("Settings")
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.large)
-            #endif
         }
         .onAppear {
             viewModel.load(from: feedStore.babyProfile)
@@ -38,190 +65,368 @@ struct SettingsView: View {
         .onChange(of: feedStore.babyProfile) { _, newProfile in
             viewModel.load(from: newProfile)
         }
-            .sheet(isPresented: $showingShareSheet) {
-                ActivityView(activityItems: shareItems)
-            }
-            .sheet(isPresented: $showingFormulaPicker) {
-                FormulaPickerSheet(
-                    countryCode: viewModel.countryCode,
-                    currentBrand: viewModel.formulaBrand,
-                    currentStage: viewModel.formulaStage,
-                    onSave: { brand, stage in
-                        viewModel.formulaBrand = brand
-                        viewModel.formulaStage = stage
-                    }
-                )
-            }
-            .sheet(isPresented: $showingCountryPicker) {
-                SettingsCountryPickerSheet(
-                    country: $viewModel.country,
-                    countryCode: $viewModel.countryCode,
-                    onSave: {
-                        // Reset formula brand if not available in new country
-                        if !viewModel.formulaBrand.isEmpty {
-                            let brands = FormulaGuidanceService.brands(forCountryCode: viewModel.countryCode)
-                            let isValid = brands.contains { $0.name == viewModel.formulaBrand }
-                            if !isValid {
-                                viewModel.formulaBrand = ""
-                                viewModel.formulaStage = nil
-                            }
+        .sheet(isPresented: $showingShareSheet) {
+            ActivityView(activityItems: shareItems)
+        }
+        .sheet(isPresented: $showingFormulaPicker) {
+            FormulaPickerSheet(
+                countryCode: viewModel.countryCode,
+                currentBrand: viewModel.formulaBrand,
+                currentStage: viewModel.formulaStage,
+                onSave: { brand, stage in
+                    viewModel.formulaBrand = brand
+                    viewModel.formulaStage = stage
+                }
+            )
+        }
+        .sheet(isPresented: $showingCountryPicker) {
+            SettingsCountryPickerSheet(
+                country: $viewModel.country,
+                countryCode: $viewModel.countryCode,
+                onSave: {
+                    if !viewModel.formulaBrand.isEmpty {
+                        let brands = FormulaGuidanceService.brands(forCountryCode: viewModel.countryCode)
+                        let isValid = brands.contains { $0.name == viewModel.formulaBrand }
+                        if !isValid {
+                            viewModel.formulaBrand = ""
+                            viewModel.formulaStage = nil
                         }
                     }
-                )
-            }
-            .alert("Reset All Data?", isPresented: $showingResetConfirmation) {
-                Button("Cancel", role: .cancel) { }
-                Button("Reset", role: .destructive) {
-                    feedStore.deleteAllData()
                 }
-            } message: {
-                Text("This will delete all feeds and your baby profile. This action cannot be undone.")
+            )
+        }
+        .sheet(isPresented: $showingDatePicker) {
+            DatePickerSheet(selectedDate: $viewModel.dateOfBirth)
+        }
+        .sheet(isPresented: $showingTypePicker) {
+            PickerSheet(
+                title: "Feeding Type",
+                options: FeedingType.allCases.map { ($0.displayName, $0) },
+                selection: $viewModel.feedingType
+            )
+        }
+        .sheet(isPresented: $showingStagePicker) {
+            let options: [(String, FormulaStage?)] = [("Not specified", nil)] + FormulaStage.allCases.map { ($0.displayName, $0) }
+            PickerSheet(
+                title: "Formula Stage",
+                options: options,
+                selection: $viewModel.formulaStage
+            )
+        }
+        .sheet(isPresented: $showingNameEdit) {
+            TextEditSheet(title: "Baby's Name", text: $viewModel.babyName)
+        }
+        .sheet(isPresented: $showingWeightEdit) {
+            TextEditSheet(
+                title: "Weight (kg)",
+                text: $viewModel.currentWeight,
+                keyboardType: .decimalPad
+            )
+        }
+        .alert("Reset all data?", isPresented: $showingResetConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Reset", role: .destructive) {
+                feedStore.deleteAllData()
             }
-    }
-    
-    // MARK: - Baby Section
-    private func babySection(profile: BabyProfile) -> some View {
-        Section("Baby") {
-            TextField("Name", text: $viewModel.babyName)
-                .submitLabel(.done)
-            
-            DatePicker("Date of birth", selection: $viewModel.dateOfBirth, in: ...Date(), displayedComponents: .date)
-            
-            HStack {
-                Text("Age")
-                Spacer()
-                Text(viewModel.ageDescription)
-                    .foregroundStyle(Color.inkSecondary)
-            }
-            
-            HStack {
-                Text("Weight (kg)")
-                Spacer()
-                TextField("Weight", text: $viewModel.currentWeight)
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: 80)
-            }
+        } message: {
+            Text("This will permanently delete all feeds and cannot be undone.")
         }
     }
     
-    // MARK: - Feeding Section
-    private func feedingSection(profile: BabyProfile) -> some View {
-        Section("Feeding") {
-            Picker("Type", selection: $viewModel.feedingType) {
-                ForEach(FeedingType.allCases, id: \.self) { type in
-                    Text(type.displayName).tag(type)
-                }
-            }
+    // MARK: — Blobs
+    
+    private var settingsBlobs: some View {
+        ZStack {
+            Circle()
+                .fill(Color(hex: "DDD8C0").opacity(0.30))
+                .frame(width: 140, height: 140)
+                .position(x: UIScreen.main.bounds.width + 50, y: -40)
             
-            Button {
-                showingCountryPicker = true
-            } label: {
-                HStack {
-                    Text("Country")
-                        .foregroundStyle(Color.inkPrimary)
-                    Spacer()
-                    Text(viewModel.country.isEmpty ? "Select" : viewModel.country)
-                        .foregroundStyle(viewModel.country.isEmpty ? Color.orchidTint : Color.inkSecondary)
-                    Image(systemName: "chevron.right")
-                        .font(AppFont.sans(13, weight: .semibold))
-                        .foregroundStyle(Color.inkSecondary.opacity(0.5))
-                }
-            }
-            .buttonStyle(.plain)
+            Circle()
+                .fill(Color(hex: "C8C0D4").opacity(0.25))
+                .frame(width: 120, height: 120)
+                .position(x: -40, y: UIScreen.main.bounds.height + 40)
+        }
+        .allowsHitTesting(false)
+        .ignoresSafeArea()
+    }
+    
+    // MARK: — Header
+    
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Settings")
+                .font(AppFont.sans(22, weight: .semibold))
+                .foregroundColor(Color(hex: "1C2421"))
             
-            if viewModel.showsFormulaFields {
-                Button {
-                    showingFormulaPicker = true
-                } label: {
-                    HStack {
-                        Text("Formula brand")
-                            .foregroundStyle(Color.inkPrimary)
-                        Spacer()
-                        Text(viewModel.formulaBrand.isEmpty ? "Select" : viewModel.formulaBrand)
-                            .foregroundStyle(viewModel.formulaBrand.isEmpty ? Color.orchidTint : Color.inkSecondary)
-                        Image(systemName: "chevron.right")
-                            .font(AppFont.sans(13, weight: .semibold))
-                            .foregroundStyle(Color.inkSecondary.opacity(0.5))
-                    }
+            Text("Manage your profile")
+                .font(AppFont.sans(13))
+                .foregroundColor(Color(hex: "888780"))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    // MARK: — Baby Card
+    
+    private var babyCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sectionLabel("Baby")
+            
+            VStack(spacing: 0) {
+                tappableRow(label: "Name", value: viewModel.babyName) {
+                    showingNameEdit = true
                 }
-                .buttonStyle(.plain)
                 
-                Picker("Stage", selection: $viewModel.formulaStage) {
-                    Text("Not specified").tag(Optional<FormulaStage>.none)
-                    ForEach(FormulaStage.allCases, id: \.self) { stage in
-                        Text(stage.displayName).tag(Optional(stage))
+                rowDivider
+                
+                tappableRow(label: "Date of birth", value: formattedDate(viewModel.dateOfBirth)) {
+                    showingDatePicker = true
+                }
+                
+                rowDivider
+                
+                readOnlyRow(label: "Age", value: viewModel.ageDescription)
+                
+                rowDivider
+                
+                tappableRow(
+                    label: "Weight (kg)",
+                    value: viewModel.currentWeight.isEmpty ? "Not set" : viewModel.currentWeight,
+                    valueColor: viewModel.currentWeight.isEmpty ? Color(hex: "C8C0D4") : Color(hex: "1C2421")
+                ) {
+                    showingWeightEdit = true
+                }
+            }
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+            )
+        }
+    }
+    
+    // MARK: — Feeding Card
+    
+    private var feedingCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sectionLabel("Feeding")
+            
+            VStack(spacing: 0) {
+                tappableRow(label: "Type", value: viewModel.feedingType.displayName) {
+                    showingTypePicker = true
+                }
+                
+                rowDivider
+                
+                tappableRow(
+                    label: "Country",
+                    value: viewModel.country.isEmpty ? "Select" : viewModel.country,
+                    valueColor: viewModel.country.isEmpty ? Color(hex: "C8C0D4") : Color(hex: "1C2421")
+                ) {
+                    showingCountryPicker = true
+                }
+                
+                if viewModel.showsFormulaFields {
+                    rowDivider
+                    
+                    tappableRow(
+                        label: "Formula brand",
+                        value: viewModel.formulaBrand.isEmpty ? "Select" : viewModel.formulaBrand,
+                        valueColor: viewModel.formulaBrand.isEmpty ? Color(hex: "C8C0D4") : Color(hex: "1C2421")
+                    ) {
+                        showingFormulaPicker = true
+                    }
+                    
+                    rowDivider
+                    
+                    tappableRow(
+                        label: "Stage",
+                        value: viewModel.stageDisplayName
+                    ) {
+                        showingStagePicker = true
                     }
                 }
             }
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+            )
+        }
+    }
+    
+    // MARK: — Data Card
+    
+    private var dataCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sectionLabel("Data")
             
-            Button {
-                viewModel.save(to: feedStore)
-                let generator = UINotificationFeedbackGenerator()
-                generator.notificationOccurred(.success)
-            } label: {
-                HStack(spacing: AppSpacing.sm) {
-                    Image(systemName: "checkmark.circle.fill")
-                    Text("Save Changes")
+            VStack(spacing: 0) {
+                tappableRow(label: "Export feeds", value: nil, showsChevron: true) {
+                    exportHistory()
                 }
-                .font(AppFont.button)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, AppSpacing.md)
+                
+                rowDivider
+                
+                Button(action: { showingResetConfirmation = true }) {
+                    HStack {
+                        Text("Reset all data")
+                            .font(AppFont.sans(14))
+                            .foregroundColor(Color(hex: "E24B4A"))
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(AppFont.sans(12, weight: .medium))
+                            .foregroundColor(Color(hex: "E24B4A"))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 13)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
-            .primaryButton()
-            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous))
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+            )
         }
     }
     
-    // MARK: - Parent Section
-    private func parentSection(profile: BabyProfile) -> some View {
-        Section("Parent") {
-            TextField("Name", text: $viewModel.parentName)
-                .submitLabel(.done)
+    // MARK: — Guides Card
+    
+    private var guidesCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sectionLabel("Guides")
             
-            TextField("Email", text: $viewModel.parentEmail)
-                .keyboardType(.emailAddress)
-                .submitLabel(.done)
-                .textContentType(.emailAddress)
-        }
-    }
-    
-    // MARK: - Guides Section
-    private var guidesSection: some View {
-        Section("Guides") {
             NavigationLink {
                 BottlePrepGuideView()
             } label: {
-                Label("Bottle prep guide", systemImage: "list.bullet.clipboard")
+                HStack {
+                    Text("Bottle prep guide")
+                        .font(AppFont.sans(14))
+                        .foregroundColor(Color(hex: "1C2421"))
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(AppFont.sans(12, weight: .medium))
+                        .foregroundColor(Color(hex: "B4B2A9"))
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 13)
             }
+            .buttonStyle(PlainButtonStyle())
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+            )
         }
     }
     
-    // MARK: - Data Section
-    private var dataSection: some View {
-        Section("Data") {
-            Button {
-                exportHistory()
-            } label: {
-                HStack {
-                    Image(systemName: "square.and.arrow.up")
-                        .foregroundStyle(Color.almostAquaDark)
-                    Text("Export feed history")
-                        .foregroundStyle(Color.inkPrimary)
-                }
-            }
-            
-            Button {
-                showingResetConfirmation = true
-            } label: {
-                HStack {
-                    Image(systemName: "arrow.counterclockwise")
-                        .foregroundStyle(Color.peachDustDark)
-                    Text("Reset all data")
-                        .foregroundStyle(Color.peachDustDark)
-                }
-            }
+    // MARK: — Save Button
+    
+    private var saveButton: some View {
+        Button(action: saveChanges) {
+            Text("Save changes")
+                .font(AppFont.sans(15, weight: .medium))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(Color(hex: "1C2421"))
+                )
         }
+        .buttonStyle(PlainButtonStyle())
+        .opacity(viewModel.hasChanges ? 1.0 : 0.4)
+        .disabled(!viewModel.hasChanges)
+    }
+    
+    // MARK: — Helpers
+    
+    private func sectionLabel(_ text: String) -> some View {
+        Text(text)
+            .font(AppFont.sans(10, weight: .semibold))
+            .foregroundColor(Color(hex: "888780"))
+            .tracking(0.06 * 10)
+            .textCase(.uppercase)
+            .padding(.bottom, 8)
+    }
+    
+    private var rowDivider: some View {
+        Divider()
+            .background(Color.black.opacity(0.05))
+            .padding(.horizontal, 16)
+    }
+    
+    private func tappableRow(
+        label: String,
+        value: String?,
+        valueColor: Color = Color(hex: "1C2421"),
+        showsChevron: Bool = true,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(label)
+                    .font(AppFont.sans(14))
+                    .foregroundColor(Color(hex: "888780"))
+                
+                Spacer()
+                
+                if let value = value {
+                    Text(value)
+                        .font(AppFont.sans(14, weight: .medium))
+                        .foregroundColor(valueColor)
+                }
+                
+                if showsChevron {
+                    Image(systemName: "chevron.right")
+                        .font(AppFont.sans(12, weight: .medium))
+                        .foregroundColor(Color(hex: "B4B2A9"))
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 13)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private func readOnlyRow(label: String, value: String) -> some View {
+        HStack {
+            Text(label)
+                .font(AppFont.sans(14))
+                .foregroundColor(Color(hex: "B4B2A9"))
+            
+            Spacer()
+            
+            Text(value)
+                .font(AppFont.sans(13))
+                .foregroundColor(Color(hex: "B4B2A9"))
+                .italic()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 13)
+        .background(Color(hex: "FAFAF8"))
+    }
+    
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
+    }
+    
+    private func saveChanges() {
+        guard viewModel.hasChanges else { return }
+        viewModel.save(to: feedStore)
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
     }
     
     private func exportHistory() {
@@ -246,6 +451,8 @@ final class SettingsViewModel {
     var parentName = ""
     var parentEmail = ""
     
+    private var originalSnapshot: Snapshot?
+    
     var showsFormulaFields: Bool {
         feedingType == .formula || feedingType == .mixed
     }
@@ -255,7 +462,7 @@ final class SettingsViewModel {
         let components = Calendar.current.dateComponents([.year, .month, .weekOfYear], from: dateOfBirth, to: now)
         let months = (components.year ?? 0) * 12 + (components.month ?? 0)
         let weeks = components.weekOfYear ?? 0
-
+        
         if months < 1 {
             return "\(weeks) week\(weeks == 1 ? "" : "s") old"
         } else if months < 24 {
@@ -266,9 +473,26 @@ final class SettingsViewModel {
         }
     }
     
+    var stageDisplayName: String {
+        formulaStage?.displayName ?? "Not specified"
+    }
+    
+    var hasChanges: Bool {
+        guard let orig = originalSnapshot else { return false }
+        return babyName != orig.babyName
+            || !Calendar.current.isDate(dateOfBirth, inSameDayAs: orig.dateOfBirth)
+            || currentWeight != orig.currentWeight
+            || feedingType != orig.feedingType
+            || formulaBrand != orig.formulaBrand
+            || formulaStage != orig.formulaStage
+            || country != orig.country
+            || countryCode != orig.countryCode
+            || parentName != orig.parentName
+            || parentEmail != orig.parentEmail
+    }
+    
     func load(from profile: BabyProfile?) {
         guard let profile = profile else {
-            // Reset all fields when profile is nil
             babyName = ""
             dateOfBirth = Date()
             currentWeight = ""
@@ -279,6 +503,7 @@ final class SettingsViewModel {
             countryCode = ""
             parentName = ""
             parentEmail = ""
+            originalSnapshot = nil
             return
         }
         babyName = profile.babyName
@@ -296,6 +521,19 @@ final class SettingsViewModel {
         } else {
             currentWeight = ""
         }
+        
+        originalSnapshot = Snapshot(
+            babyName: babyName,
+            dateOfBirth: dateOfBirth,
+            currentWeight: currentWeight,
+            feedingType: feedingType,
+            formulaBrand: formulaBrand,
+            formulaStage: formulaStage,
+            country: country,
+            countryCode: countryCode,
+            parentName: parentName,
+            parentEmail: parentEmail
+        )
     }
     
     func save(to feedStore: FeedStore) {
@@ -316,6 +554,131 @@ final class SettingsViewModel {
             parentName: parentName,
             parentEmail: parentEmail
         )
+    }
+    
+    private struct Snapshot {
+        let babyName: String
+        let dateOfBirth: Date
+        let currentWeight: String
+        let feedingType: FeedingType
+        let formulaBrand: String
+        let formulaStage: FormulaStage?
+        let country: String
+        let countryCode: String
+        let parentName: String
+        let parentEmail: String
+    }
+}
+
+// MARK: - Text Edit Sheet
+struct TextEditSheet: View {
+    let title: String
+    @Binding var text: String
+    var keyboardType: UIKeyboardType = .default
+    @Environment(\.dismiss) private var dismiss
+    @FocusState private var isFocused: Bool
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                TextField(title, text: $text)
+                    .font(AppFont.sans(17))
+                    .keyboardType(keyboardType)
+                    .submitLabel(.done)
+                    .focused($isFocused)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 20)
+                
+                Spacer()
+            }
+            .background(Color(hex: "F7F6F2"))
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") { dismiss() }
+                }
+            }
+            .onAppear {
+                isFocused = true
+            }
+        }
+    }
+}
+
+// MARK: - Date Picker Sheet
+struct DatePickerSheet: View {
+    @Binding var selectedDate: Date
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                DatePicker(
+                    "Date of birth",
+                    selection: $selectedDate,
+                    in: ...Date(),
+                    displayedComponents: .date
+                )
+                .datePickerStyle(.graphical)
+                .padding()
+                
+                Spacer()
+            }
+            .background(Color(hex: "F7F6F2"))
+            .navigationTitle("Date of birth")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Picker Sheet
+struct PickerSheet<T: Hashable>: View {
+    let title: String
+    let options: [(String, T)]
+    @Binding var selection: T
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(options, id: \.1) { label, value in
+                    Button(action: {
+                        selection = value
+                        dismiss()
+                    }) {
+                        HStack {
+                            Text(label)
+                                .font(AppFont.sans(16))
+                                .foregroundColor(.inkPrimary)
+                            Spacer()
+                            if selection == value {
+                                Image(systemName: "checkmark")
+                                    .font(AppFont.sans(14, weight: .semibold))
+                                    .foregroundColor(.inkPrimary)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .listStyle(.plain)
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
     }
 }
 
@@ -360,7 +723,6 @@ struct FormulaPickerSheet: View {
         .onAppear {
             viewModel.countryCode = countryCode
             viewModel.feedingType = .formula
-            // Pre-select current brand if it matches seed data
             if let match = FormulaSeedData.brands.first(where: { $0.name == currentBrand }) {
                 viewModel.selectBrand(match)
             } else if !currentBrand.isEmpty {
