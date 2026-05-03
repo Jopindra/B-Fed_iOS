@@ -21,6 +21,7 @@ struct SettingsView: View {
                 }
                 
                 dataSection
+                guidesSection
             }
             .listStyle(.insetGrouped)
             .safeAreaInset(edge: .bottom) {
@@ -182,6 +183,17 @@ struct SettingsView: View {
                 .keyboardType(.emailAddress)
                 .submitLabel(.done)
                 .textContentType(.emailAddress)
+        }
+    }
+    
+    // MARK: - Guides Section
+    private var guidesSection: some View {
+        Section("Guides") {
+            NavigationLink {
+                BottlePrepGuideView()
+            } label: {
+                Label("Bottle prep guide", systemImage: "list.bullet.clipboard")
+            }
         }
     }
     

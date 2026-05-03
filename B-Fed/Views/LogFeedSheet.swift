@@ -21,6 +21,7 @@ struct LogFeedSheet: View {
     @State private var showingTimePicker: Bool = false
     @State private var showingFormulaSelector: Bool = false
     @State private var showingFormulaDetail: Bool = false
+    @State private var showingBottlePrepGuide: Bool = false
     @State private var originalFormula: Formula? = nil
     @State private var formulaChangedForThisFeed: Bool = false
     
@@ -164,9 +165,14 @@ struct LogFeedSheet: View {
                                 .padding(.horizontal, 20)
                                 .padding(.top, 20)
                             
+                            // Prepare bottle guide
+                            prepareBottleRow
+                                .padding(.horizontal, 20)
+                                .padding(.top, 8)
+                            
                             // Formula section
                             sectionLabel("FORMULA")
-                                .padding(.top, 8)
+                                .padding(.top, 12)
                             
                             formulaRow
                                 .padding(.horizontal, 20)
@@ -267,6 +273,9 @@ struct LogFeedSheet: View {
                 FormulaDetailView(formula: formula, volumeMl: amount)
             }
         }
+        .sheet(isPresented: $showingBottlePrepGuide) {
+            BottlePrepGuideView()
+        }
     }
     
     // MARK: - Sheet Handle
@@ -286,6 +295,33 @@ struct LogFeedSheet: View {
             .tracking(0.3)
             .padding(.horizontal, 20)
             .padding(.bottom, 4)
+    }
+    
+    // MARK: - Prepare Bottle Row
+    private var prepareBottleRow: some View {
+        Button(action: { showingBottlePrepGuide = true }) {
+            HStack(spacing: 12) {
+                Image(systemName: "drop.fill")
+                    .font(AppFont.sans(16))
+                    .foregroundStyle(Color(hex: "5A8A5A"))
+                
+                Text("How to prepare a bottle")
+                    .font(AppFont.sans(14, weight: .medium))
+                    .foregroundStyle(Color(hex: "3D6B3D"))
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(AppFont.sans(14, weight: .medium))
+                    .foregroundStyle(Color(hex: "5A8A5A"))
+            }
+            .padding(14)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color(hex: "EEF4EE"))
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
     
     // MARK: - Formula Row
