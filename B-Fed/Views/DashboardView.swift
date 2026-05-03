@@ -69,7 +69,10 @@ struct DashboardView: View {
     }
     
     private var recommendedDailyMl: Int? {
-        guidance?.dailyMax
+        if let weightKg = feedStore.babyProfile?.weightInKg, weightKg > 0 {
+            return Int(weightKg * 150)
+        }
+        return guidance?.dailyMax
     }
     
     private var recommendedFeedsPerDay: Int? {
@@ -338,6 +341,10 @@ struct DashboardView: View {
         }
         .buttonStyle(.plain)
     }
+}
+
+extension Notification.Name {
+    static let switchToSettingsTab = Notification.Name("switchToSettingsTab")
 }
 
 // MARK: - Dashboard Guidance
@@ -843,6 +850,9 @@ struct InsightsView: View {
                 .font(AppFont.sans(12).italic())
                 .foregroundStyle(Color(hex: "B4B2A9"))
                 .padding(.top, 8)
+            
+            weightContextLine
+                .padding(.top, 6)
         }
         .padding(18)
         .background(Color.white)
@@ -853,9 +863,30 @@ struct InsightsView: View {
         )
     }
     
+    private var weightContextLine: some View {
+        Group {
+            if let weightKg = feedStore.babyProfile?.weightInKg, weightKg > 0 {
+                let rec = Int(weightKg * 150)
+                Text("Based on \(String(format: "%.1f", weightKg)) kg · \(rec) ml recommended daily")
+                    .font(AppFont.sans(11))
+                    .foregroundStyle(Color(hex: "B4B2A9"))
+            } else {
+                Button(action: {
+                    NotificationCenter.default.post(name: .switchToSettingsTab, object: nil)
+                }) {
+                    Text("Add \(babyName)'s weight in Settings for a personalised daily guide")
+                        .font(AppFont.sans(11))
+                        .foregroundStyle(Color(hex: "B07850"))
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+    }
+    
     private var trendBarChart: some View {
         let data = currentWeekData
         let maxAmount = data.map { $0.amount }.max() ?? 1
+        let yMax = max(maxAmount * 1.2, Double(recommendedDailyForChart))
         return Chart(data) { item in
             BarMark(
                 x: .value("Day", item.letter),
@@ -878,7 +909,25 @@ struct InsightsView: View {
             }
         }
         .chartLegend(.hidden)
-        .chartYScale(domain: 0...max(maxAmount * 1.2, 1))
+        .chartYScale(domain: 0...yMax)
+    }
+    
+    private var recommendedDailyForChart: Int {
+        if let weightKg = feedStore.babyProfile?.weightInKg, weightKg > 0 {
+            return Int(weightKg * 150)
+        }
+        guard let dob = feedStore.babyProfile?.dateOfBirth else { return 600 }
+        let months = FormulaStageService.ageInMonths(from: dob)
+        switch months {
+        case 0..<1: return 600
+        case 1..<2: return 700
+        case 2..<4: return 900
+        case 4..<6: return 1000
+        case 6..<9: return 900
+        case 9..<12: return 800
+        case 12..<24: return 500
+        default: return 400
+        }
     }
     
     // MARK: — Card 3: Growth stage nudge

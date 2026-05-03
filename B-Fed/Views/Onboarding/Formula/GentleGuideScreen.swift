@@ -21,6 +21,20 @@ struct GentleGuideScreen: View {
     }
 
     private var guidance: AgeGuidance {
+        // Weight-based for first 6 months
+        if let weightKg = babyProfile.weightInKg, weightKg > 0, ageInMonths < 6 {
+            let daily = Int(weightKg * 150)
+            let perFeed = daily / 6
+            return AgeGuidance(
+                dailyMin: max(300, daily - 50),
+                dailyMax: daily + 50,
+                feedMin: max(60, perFeed - 30),
+                feedMax: perFeed + 30,
+                feedsPerDayMin: 4,
+                feedsPerDayMax: 8
+            )
+        }
+        // Age-based fallback
         switch ageInMonths {
         case 0..<1:
             return AgeGuidance(dailyMin: 450, dailyMax: 600, feedMin: 60, feedMax: 90, feedsPerDayMin: 8, feedsPerDayMax: 12)

@@ -120,7 +120,13 @@ struct SettingsView: View {
             TextEditSheet(
                 title: "Weight (kg)",
                 text: $viewModel.currentWeight,
-                keyboardType: .decimalPad
+                keyboardType: .decimalPad,
+                validator: { text in
+                    guard let value = Double(text), value >= 0.5, value <= 30 else {
+                        return "Please enter a weight between 0.5 and 30 kg"
+                    }
+                    return nil
+                }
             )
         }
         .alert("Reset all data?", isPresented: $showingResetConfirmation) {
@@ -575,8 +581,10 @@ struct TextEditSheet: View {
     let title: String
     @Binding var text: String
     var keyboardType: UIKeyboardType = .default
+    var validator: ((String) -> String?)? = nil
     @Environment(\.dismiss) private var dismiss
     @FocusState private var isFocused: Bool
+    @State private var errorMessage: String? = nil
     
     var body: some View {
         NavigationStack {
@@ -589,6 +597,15 @@ struct TextEditSheet: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 20)
                 
+                if let error = errorMessage {
+                    Text(error)
+                        .font(AppFont.sans(12))
+                        .foregroundColor(Color(hex: "E24B4A"))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
+                }
+                
                 Spacer()
             }
             .background(Color(hex: "F7F6F2"))
@@ -599,7 +616,13 @@ struct TextEditSheet: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { dismiss() }
+                    Button("Save") {
+                        if let validator = validator, let error = validator(text) {
+                            errorMessage = error
+                        } else {
+                            dismiss()
+                        }
+                    }
                 }
             }
             .onAppear {

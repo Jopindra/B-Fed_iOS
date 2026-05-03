@@ -42,6 +42,9 @@ struct ContentView: View {
                 populateDemoDataIfNeeded()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .switchToSettingsTab)) { _ in
+            selectedTab = 3
+        }
     }
     
     private func populateDemoDataIfNeeded() {
