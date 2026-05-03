@@ -79,43 +79,31 @@ struct GentleGuideScreen: View {
             blobs
 
             VStack(spacing: 0) {
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        // Zone 1: Icon + Headline
-                        VStack(spacing: 16) {
-                            animatedIcon
+                Spacer(minLength: 0)
 
-                            headline
-                        }
-                        .padding(.top, 60)
+                animatedIcon
+                    .padding(.bottom, 20)
 
-                        // Zone 2: Formula pill + Card + Reassurance
-                        VStack(spacing: 0) {
-                            if hasFormulaInfo {
-                                formulaPill
-                                    .offset(y: showCard ? 0 : 16)
-                                    .opacity(showCard ? 1 : 0)
-                                    .padding(.top, 24)
-                            }
-                            
-                            cardSection
-                                .padding(.top, hasFormulaInfo ? 20 : 24)
-                                .padding(.bottom, 16)
-                        }
-                    }
-                    .padding(.horizontal, 20)
+                headline
+                    .padding(.bottom, 28)
+
+                if hasFormulaInfo {
+                    formulaPill
+                        .offset(y: showCard ? 0 : 16)
+                        .opacity(showCard ? 1 : 0)
+                        .padding(.bottom, 24)
                 }
+
+                cardSection
 
                 Spacer(minLength: 0)
 
-                // Zone 3: Button
                 button
                     .offset(y: showButton ? 0 : 16)
                     .opacity(showButton ? 1 : 0)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, 16)
             }
+            .padding(.horizontal, 24)
         }
         .onAppear(perform: startAnimations)
     }
