@@ -11,6 +11,7 @@ struct LogFeedSheet: View {
     @Query(sort: \Feed.startTime, order: .reverse) private var allFeeds: [Feed]
     
     @State private var amount: Double = 120
+    @State private var consumedMl: Int? = nil
     @State private var timerActive: Bool = false
     @State private var feedTime: Date = Date()
     @State private var isTimeManuallySet: Bool = false
@@ -200,6 +201,23 @@ struct LogFeedSheet: View {
                                 .padding(.horizontal, 20)
                                 .padding(.top, 8)
                             
+                            // Consumed section
+                            sectionLabel("CONSUMED")
+                                .padding(.top, 12)
+                            
+                            Text("How much did \(feedStore.babyProfile?.babyName ?? "your baby") actually drink?")
+                                .font(AppFont.sans(12))
+                                .foregroundStyle(Color(hex: "888780"))
+                                .padding(.horizontal, 20)
+                                .padding(.bottom, 4)
+                            
+                            consumedInputCard
+                                .padding(.horizontal, 20)
+                            
+                            consumedQuickPills
+                                .padding(.horizontal, 20)
+                                .padding(.top, 8)
+                            
                             // Timer toggle
                             sectionLabel("FEED TIMER")
                                 .padding(.top, 12)
@@ -235,6 +253,7 @@ struct LogFeedSheet: View {
         .presentationBackground(.white)
         .onAppear {
             amount = defaultAmount
+            consumedMl = Int(amount)
             originalFormula = formulaStore.selectedFormula ?? currentFormula
             feedTime = Date()
             isTimeManuallySet = false
@@ -484,6 +503,112 @@ struct LogFeedSheet: View {
         Int(amount) == value
     }
     
+    // MARK: - Consumed Input Card
+    private var consumedInputCard: some View {
+        let current = consumedMl ?? Int(amount)
+        return HStack {
+            Button(action: {
+                consumedMl = max(0, current - 10)
+            }) {
+                Text("−")
+                    .font(AppFont.lead)
+                    .foregroundStyle(Color.inkPrimary)
+                    .frame(width: 36, height: 36)
+                    .background(Circle().fill(Color.backgroundCard))
+            }
+            .buttonStyle(PlainButtonStyle())
+            .simultaneousGesture(
+                LongPressGesture(minimumDuration: 0.5)
+                    .onEnded { _ in consumedMl = max(0, current - 50) }
+            )
+            
+            Spacer()
+            
+            VStack(spacing: 2) {
+                Text("\(current)")
+                    .font(AppFont.serif(32))
+                    .foregroundStyle(Color.inkPrimary)
+                    .monospacedDigit()
+                
+                Text("ml")
+                    .font(AppFont.caption)
+                    .foregroundStyle(Color.inkSecondary)
+            }
+            
+            Spacer()
+            
+            Button(action: {
+                consumedMl = min(Int(amount), current + 10)
+            }) {
+                Text("+")
+                    .font(AppFont.lead)
+                    .foregroundStyle(Color.inkPrimary)
+                    .frame(width: 36, height: 36)
+                    .background(Circle().fill(Color.backgroundCard))
+            }
+            .buttonStyle(PlainButtonStyle())
+            .simultaneousGesture(
+                LongPressGesture(minimumDuration: 0.5)
+                    .onEnded { _ in consumedMl = min(Int(amount), current + 50) }
+            )
+        }
+        .padding(.horizontal, 16)
+        .frame(height: 64)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color.backgroundBase)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                )
+        )
+    }
+    
+    private var consumedQuickPills: some View {
+        let prepared = Int(amount)
+        let pills = consumedPillOptions(prepared: prepared)
+        return HStack(spacing: 8) {
+            ForEach(0..<pills.count, id: \.self) { index in
+                let pill = pills[index]
+                Button(action: { consumedMl = pill.value }) {
+                    Text(pill.label)
+                        .font(AppFont.caption)
+                        .foregroundStyle(isConsumedPillActive(pill.value) ? Color.backgroundCard : Color.inkPrimary)
+                        .frame(height: 28)
+                        .padding(.horizontal, 12)
+                        .background(
+                            Capsule()
+                                .fill(isConsumedPillActive(pill.value) ? Color.inkPrimary : Color.backgroundCard)
+                                .overlay(
+                                    Capsule()
+                                        .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                                )
+                        )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+    }
+    
+    private func consumedPillOptions(prepared: Int) -> [(label: String, value: Int)] {
+        let v25 = max(5, Int(round(Double(prepared) * 0.25 / 5.0) * 5.0))
+        let v50 = max(5, Int(round(Double(prepared) * 0.50 / 5.0) * 5.0))
+        let v75 = max(5, Int(round(Double(prepared) * 0.75 / 5.0) * 5.0))
+        let custom = max(5, Int(round(Double(prepared) * 0.60 / 5.0) * 5.0))
+        return [
+            ("\(v25)ml", v25),
+            ("\(v50)ml", v50),
+            ("\(v75)ml", v75),
+            ("All of it", prepared),
+            ("+", custom)
+        ]
+    }
+    
+    private func isConsumedPillActive(_ value: Int) -> Bool {
+        consumedMl == value
+    }
+    
     // MARK: - Timer Toggle Row
     private var timerToggleRow: some View {
         HStack {
@@ -632,7 +757,8 @@ struct LogFeedSheet: View {
             startTime: feedTime,
             notes: "",
             completed: true,
-            duration: feedDuration
+            duration: feedDuration,
+            consumedMl: consumedMl
         )
 
         if timerActive {

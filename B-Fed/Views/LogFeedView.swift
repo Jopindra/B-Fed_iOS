@@ -7,8 +7,6 @@ struct LogFeedView: View {
     @State private var amount: Double = 90
     @State private var isDragging = false
     @State private var showingTimer = false
-    @State private var showingConfirmation = false
-    @State private var lastSavedFeed: Feed?
     
     private var perFeedGuidance: String {
         feedStore.perFeedGuide.display
@@ -116,15 +114,7 @@ struct LogFeedView: View {
                 amount = Double(midPoint)
             }
             .onDisappear {
-                if !showingConfirmation {
-                    feedStore.resetFeedTimer()
-                }
-            }
-            .fullScreenCover(isPresented: $showingConfirmation) {
-                FeedConfirmationView(
-                    babyName: feedStore.babyProfile?.babyName ?? "your baby",
-                    onComplete: confirmFeed
-                )
+                feedStore.resetFeedTimer()
             }
         }
     }
@@ -141,14 +131,7 @@ struct LogFeedView: View {
     private func saveFeed() {
         guard amount > 0 else { return }
         
-        lastSavedFeed = feedStore.createFeed(amount: amount)
-        showingConfirmation = true
-    }
-    
-    private func confirmFeed(completed: Bool) {
-        if let feed = lastSavedFeed {
-            feedStore.updateFeed(feed, amount: feed.amount, startTime: feed.startTime, endTime: feed.endTime, notes: feed.notes, completed: completed)
-        }
+        _ = feedStore.createFeed(amount: amount)
         dismiss()
     }
 }
@@ -346,82 +329,6 @@ struct FeedTimerView: View {
 }
 
 
-
-// MARK: - Feed Confirmation View
-struct FeedConfirmationView: View {
-    let babyName: String
-    let onComplete: (Bool) -> Void
-    
-    var body: some View {
-        ZStack {
-            Color.backgroundBase.ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                Spacer().frame(height: AppSpacing.xxl)
-                
-                ZStack {
-                    Circle()
-                        .fill(Color.almostAquaDark.opacity(0.08))
-                        .frame(width: 140, height: 140)
-                    
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(AppFont.sans(56, weight: .light))
-                        .foregroundStyle(Color.almostAquaDark)
-                }
-                
-                Spacer().frame(height: AppSpacing.xl)
-                
-                Text("Feed logged")
-                    .font(AppFont.serif(28))
-                    .foregroundStyle(Color.inkPrimary)
-                
-                Spacer().frame(height: AppSpacing.md)
-                
-                Text("Did \(babyName) finish the whole bottle?")
-                    .font(AppFont.bodyLarge)
-                    .foregroundStyle(Color.inkSecondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, AppSpacing.xl)
-                
-                Spacer().frame(height: AppSpacing.xxl)
-                
-                VStack(spacing: AppSpacing.md) {
-                    Button {
-                        onComplete(true)
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "checkmark")
-                                .font(AppFont.body)
-                            Text("Yes, all of it")
-                                .font(AppFont.bodyLarge)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .primaryButton()
-                    }
-                    .accessibilityLabel("Yes, finished whole bottle")
-                    
-                    Button {
-                        onComplete(false)
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "minus.circle")
-                                .font(AppFont.body)
-                            Text("Left some")
-                                .font(AppFont.bodyLarge)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .foregroundStyle(Color.inkSecondary)
-                        .padding(.vertical, AppSpacing.md)
-                    }
-                    .accessibilityLabel("No, left some milk")
-                }
-                .padding(.horizontal, AppSpacing.xl)
-                
-                Spacer(minLength: 60)
-            }
-        }
-    }
-}
 
 // MARK: - Formula Feed Context
 struct FormulaFeedContext: View {

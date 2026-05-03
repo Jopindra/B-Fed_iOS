@@ -142,7 +142,7 @@ class FeedStore {
 
     // MARK: - CRUD Operations
 
-    func createFeed(amount: Double, startTime: Date = Date(), notes: String = "", completed: Bool = true, duration: TimeInterval? = nil) -> Feed {
+    func createFeed(amount: Double, startTime: Date = Date(), notes: String = "", completed: Bool = true, duration: TimeInterval? = nil, consumedMl: Int? = nil) -> Feed {
         var endTime: Date? = nil
         if let duration = duration, duration > 0 {
             endTime = startTime.addingTimeInterval(duration)
@@ -157,6 +157,7 @@ class FeedStore {
             startTime: startTime,
             endTime: endTime,
             amount: amount,
+            consumedMl: consumedMl,
             unit: .milliliters,
             notes: notes,
             completed: completed
@@ -211,13 +212,16 @@ class FeedStore {
         syncWidgetData()
     }
 
-    func updateFeed(_ feed: Feed, amount: Double, startTime: Date, endTime: Date?, notes: String, completed: Bool? = nil) {
+    func updateFeed(_ feed: Feed, amount: Double, startTime: Date, endTime: Date?, notes: String, completed: Bool? = nil, consumedMl: Int? = nil) {
         feed.amount = amount
         feed.startTime = startTime
         feed.endTime = endTime
         feed.notes = notes
         if let completed = completed {
             feed.completed = completed
+        }
+        if let consumedMl = consumedMl {
+            feed.consumedMl = consumedMl
         }
         persist()
         syncWidgetData()

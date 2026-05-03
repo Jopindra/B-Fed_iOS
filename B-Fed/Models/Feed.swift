@@ -7,6 +7,7 @@ class Feed {
     var startTime: Date = Date()
     var endTime: Date?
     var amount: Double = 0
+    var consumedMl: Int? = nil
     var unit: FeedUnit = FeedUnit.milliliters
     var notes: String = ""
     var createdAt: Date = Date()
@@ -17,6 +18,7 @@ class Feed {
         startTime: Date = Date(),
         endTime: Date? = nil,
         amount: Double,
+        consumedMl: Int? = nil,
         unit: FeedUnit = .milliliters,
         notes: String = "",
         completed: Bool = true
@@ -25,6 +27,7 @@ class Feed {
         self.startTime = startTime
         self.endTime = endTime
         self.amount = amount
+        self.consumedMl = consumedMl
         self.unit = unit
         self.notes = notes
         self.createdAt = Date()

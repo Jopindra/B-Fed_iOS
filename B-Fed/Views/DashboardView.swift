@@ -83,7 +83,8 @@ struct DashboardView: View {
     
     private var avgPerFeedDisplay: String {
         guard !todayFeeds.isEmpty else { return "—" }
-        let avg = Double(totalMlToday) / Double(todayFeeds.count)
+        let totalConsumed = todayFeeds.reduce(0) { $0 + Int($1.consumedMl ?? Int($1.amount)) }
+        let avg = Double(totalConsumed) / Double(todayFeeds.count)
         return "\(Int(round(avg))) ml"
     }
     
@@ -275,7 +276,7 @@ struct DashboardView: View {
                     .font(AppFont.sans(22, weight: .semibold))
                     .foregroundColor(Color(hex: "1C2421"))
                 
-                Text("per feed")
+                Text("consumed avg")
                     .font(AppFont.sans(11))
                     .foregroundColor(Color(hex: "A898C4"))
             }

@@ -220,7 +220,7 @@ struct TimelineRow: View {
             // Timeline connector
             TimelineConnector(
                 isActive: feed.endTime == nil,
-                isCompleted: feed.completed,
+                isFullyConsumed: feed.consumedMl == nil || feed.consumedMl == Int(feed.amount),
                 isLast: isLast
             )
             .frame(width: 24)
@@ -251,7 +251,7 @@ struct TimelineRow: View {
 // MARK: - Timeline Connector
 struct TimelineConnector: View {
     let isActive: Bool
-    let isCompleted: Bool
+    let isFullyConsumed: Bool
     let isLast: Bool
     
     var body: some View {
@@ -278,7 +278,7 @@ struct TimelineConnector: View {
     private var dotColor: Color {
         if isActive {
             return Color.peachDustDark
-        } else if !isCompleted {
+        } else if !isFullyConsumed {
             return Color.peachDustDark.opacity(0.6)
         } else {
             return Color.almostAquaDark
@@ -290,10 +290,19 @@ struct TimelineConnector: View {
 struct FeedTimelineCard: View {
     let feed: Feed
     
+    private var amountDisplay: String {
+        let prepared = Int(feed.amount)
+        let consumed = feed.consumedMl ?? prepared
+        if consumed != prepared {
+            return "\(prepared)ml prepared · \(consumed)ml consumed"
+        }
+        return "\(prepared)ml"
+    }
+    
     var body: some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 6) {
-                Text(feed.formattedAmount)
+                Text(amountDisplay)
                     .font(AppFont.body)
                 
                 HStack(spacing: 12) {
@@ -301,12 +310,6 @@ struct FeedTimelineCard: View {
                         Label(feed.durationInMinutes, systemImage: "clock")
                             .font(AppFont.caption)
                             .foregroundStyle(Color.inkSecondary)
-                    }
-                    
-                    if !feed.completed {
-                        Label("Left some", systemImage: "minus.circle")
-                            .font(AppFont.caption)
-                            .foregroundStyle(Color.peachDustDark.opacity(0.9))
                     }
                     
                     if !feed.notes.isEmpty {
