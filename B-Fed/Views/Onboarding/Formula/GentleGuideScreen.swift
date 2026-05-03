@@ -176,26 +176,23 @@ struct GentleGuideScreen: View {
 
     // MARK: - Formula Pill
     private var formulaPill: some View {
-        Button(action: {}) {
-            HStack(spacing: 4) {
-                Text("\(viewModel.displayBrandName) · \(stageShortName)")
-                    .font(AppFont.sans(13, weight: .medium))
-                    .foregroundColor(Color(hex: "3D6B3D"))
-                
-                Text("· Change in Settings")
-                    .font(AppFont.sans(13, weight: .regular))
-                    .foregroundColor(Color(hex: "5A8A5A"))
-            }
-            .padding(.vertical, 10)
-            .padding(.horizontal, 16)
-            .background(Color(hex: "EEF4EE"))
-            .clipShape(Capsule())
-            .overlay(
-                Capsule()
-                    .stroke(Color(hex: "5A8A5A").opacity(0.2), lineWidth: 0.5)
-            )
+        VStack(spacing: 6) {
+            Text("\(viewModel.displayBrandName) · \(stageShortName)")
+                .font(AppFont.sans(13, weight: .medium))
+                .foregroundColor(Color(hex: "3D6B3D"))
+                .padding(.vertical, 10)
+                .padding(.horizontal, 16)
+                .background(Color(hex: "EEF4EE"))
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(Color(hex: "5A8A5A").opacity(0.2), lineWidth: 0.5)
+                )
+            
+            Text("You can change this in Settings")
+                .font(AppFont.sans(12, weight: .regular))
+                .foregroundColor(Color(hex: "888780"))
         }
-        .buttonStyle(.plain)
         .frame(maxWidth: .infinity, alignment: .center)
     }
 
