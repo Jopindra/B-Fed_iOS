@@ -198,6 +198,7 @@ struct LogFeedSheet: View {
             amount = defaultAmount
             originalFormula = formulaStore.selectedFormula ?? currentFormula
             feedTime = Date()
+            isTimeManuallySet = false
             startTimeTimer()
         }
         .onDisappear {
@@ -433,6 +434,7 @@ struct LogFeedSheet: View {
         HStack(spacing: 12) {
             Button(action: {
                 isTimeManuallySet = true
+                stopTimeTimer()
                 showingTimePicker = true
             }) {
                 HStack {
@@ -463,6 +465,7 @@ struct LogFeedSheet: View {
                 Button(action: {
                     isTimeManuallySet = false
                     feedTime = Date()
+                    startTimeTimer()
                 }) {
                     Text("Now")
                         .font(AppFont.sans(11, weight: .medium))
