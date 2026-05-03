@@ -113,7 +113,7 @@ struct CustomTabBar: View {
                         }
                         .foregroundStyle(
                             selectedTab == index
-                                ? Color.inkPrimary
+                                ? activeColor(for: index)
                                 : Color.inkSecondary.opacity(0.5)
                         )
                         .frame(maxWidth: .infinity)
@@ -124,6 +124,14 @@ struct CustomTabBar: View {
             }
             .frame(height: 56)
             .background(Color.backgroundCard)
+        }
+    }
+    
+    private func activeColor(for index: Int) -> Color {
+        switch index {
+        case 1: return Color(hex: "5A8A5A") // History
+        case 2: return Color(hex: "7B6A9A") // Insights
+        default: return Color.inkPrimary
         }
     }
 }
