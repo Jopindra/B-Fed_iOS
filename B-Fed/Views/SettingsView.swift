@@ -23,6 +23,9 @@ struct SettingsView: View {
                 dataSection
             }
             .listStyle(.insetGrouped)
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 32)
+            }
             .navigationTitle("Settings")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
