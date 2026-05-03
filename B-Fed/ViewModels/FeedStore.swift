@@ -142,9 +142,11 @@ class FeedStore {
 
     // MARK: - CRUD Operations
 
-    func createFeed(amount: Double, startTime: Date = Date(), notes: String = "", completed: Bool = true) -> Feed {
+    func createFeed(amount: Double, startTime: Date = Date(), notes: String = "", completed: Bool = true, duration: TimeInterval? = nil) -> Feed {
         var endTime: Date? = nil
-        if timerService.isRunning {
+        if let duration = duration, duration > 0 {
+            endTime = startTime.addingTimeInterval(duration)
+        } else if timerService.isRunning {
             let duration = stopFeedTimer()
             if duration > 0 {
                 endTime = startTime.addingTimeInterval(duration)

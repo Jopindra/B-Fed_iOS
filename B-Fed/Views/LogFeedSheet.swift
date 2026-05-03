@@ -15,6 +15,9 @@ struct LogFeedSheet: View {
     @State private var feedTime: Date = Date()
     @State private var isTimeManuallySet: Bool = false
     @State private var timeUpdateTimer: Timer? = nil
+    @State private var feedTimer: Timer? = nil
+    @State private var elapsedSeconds: Int = 0
+    @State private var isFeedTimerRunning: Bool = false
     @State private var showingTimePicker: Bool = false
     @State private var showingFormulaSelector: Bool = false
     @State private var showingFormulaDetail: Bool = false
@@ -119,6 +122,29 @@ struct LogFeedSheet: View {
         timeUpdateTimer = nil
     }
     
+    private func startFeedTimer() {
+        feedTimer?.invalidate()
+        isFeedTimerRunning = true
+        feedTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            Task { @MainActor in
+                if isFeedTimerRunning {
+                    elapsedSeconds += 1
+                }
+            }
+        }
+    }
+    
+    private func stopFeedTimer() {
+        feedTimer?.invalidate()
+        feedTimer = nil
+        isFeedTimerRunning = false
+    }
+    
+    private func resetFeedTimer() {
+        elapsedSeconds = 0
+        startFeedTimer()
+    }
+    
     // MARK: - Body
     var body: some View {
         NavigationStack {
@@ -175,6 +201,13 @@ struct LogFeedSheet: View {
                             timerToggleRow
                                 .padding(.horizontal, 20)
                             
+                            if timerActive {
+                                feedTimerDisplay
+                                    .padding(.horizontal, 20)
+                                    .padding(.top, 8)
+                                    .transition(.opacity)
+                            }
+                            
                             // Time field
                             sectionLabel("TIME")
                                 .padding(.top, 8)
@@ -203,7 +236,18 @@ struct LogFeedSheet: View {
         }
         .onDisappear {
             stopTimeTimer()
+            stopFeedTimer()
         }
+        .onChange(of: timerActive) { _, isActive in
+            if isActive {
+                elapsedSeconds = 0
+                startFeedTimer()
+            } else {
+                stopFeedTimer()
+                elapsedSeconds = 0
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: timerActive)
         .onChange(of: showingFormulaSelector) { _, isShowing in
             if !isShowing {
                 formulaChangedForThisFeed = formulaStore.selectedFormula?.id != originalFormula?.id
@@ -429,6 +473,45 @@ struct LogFeedSheet: View {
         )
     }
     
+    // MARK: - Feed Timer Display
+    private var feedTimerDisplay: some View {
+        VStack(spacing: 6) {
+            Text(String(format: "%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60))
+                .font(AppFont.sans(32, weight: .semibold))
+                .foregroundStyle(Color(hex: "1C2421"))
+                .monospacedDigit()
+            
+            Text(isFeedTimerRunning ? "Feed in progress" : "Feed complete")
+                .font(AppFont.sans(12))
+                .foregroundStyle(Color(hex: "888780"))
+            
+            Button(action: {
+                if isFeedTimerRunning {
+                    stopFeedTimer()
+                } else {
+                    resetFeedTimer()
+                }
+            }) {
+                Text(isFeedTimerRunning ? "Stop" : "Reset")
+                    .font(AppFont.sans(13, weight: .medium))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 8)
+                    .background(
+                        Capsule()
+                            .fill(Color(hex: "1C2421"))
+                    )
+            }
+            .buttonStyle(PlainButtonStyle())
+        }
+        .frame(maxWidth: .infinity)
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(hex: "F5F5F5"))
+        )
+    }
+    
     // MARK: - Time Field
     private var timeField: some View {
         HStack(spacing: 12) {
@@ -506,11 +589,14 @@ struct LogFeedSheet: View {
     private func saveFeed() {
         guard amount > 0 else { return }
 
+        let feedDuration: TimeInterval? = timerActive ? TimeInterval(elapsedSeconds) : nil
+
         _ = feedStore.createFeed(
             amount: amount,
             startTime: feedTime,
             notes: "",
-            completed: true
+            completed: true,
+            duration: feedDuration
         )
 
         if timerActive {
