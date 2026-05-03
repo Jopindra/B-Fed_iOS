@@ -89,10 +89,19 @@ struct GentleGuideScreen: View {
                         }
                         .padding(.top, 80)
 
-                        // Zone 2: Summary Card + Reassurance
-                        cardSection
-                            .padding(.top, 40)
-                            .padding(.bottom, 16)
+                        // Zone 2: Formula pill + Card + Reassurance
+                        VStack(spacing: 0) {
+                            if hasFormulaInfo {
+                                formulaPill
+                                    .offset(y: showCard ? 0 : 16)
+                                    .opacity(showCard ? 1 : 0)
+                                    .padding(.top, 28)
+                            }
+                            
+                            cardSection
+                                .padding(.top, hasFormulaInfo ? 12 : 28)
+                                .padding(.bottom, 16)
+                        }
                     }
                     .padding(.horizontal, 20)
                 }
@@ -165,9 +174,34 @@ struct GentleGuideScreen: View {
         .opacity(showHeadline ? 1 : 0)
     }
 
+    // MARK: - Formula Pill
+    private var formulaPill: some View {
+        Button(action: {}) {
+            HStack(spacing: 4) {
+                Text("\(viewModel.displayBrandName) · \(stageShortName)")
+                    .font(AppFont.sans(13, weight: .medium))
+                    .foregroundColor(Color(hex: "3D6B3D"))
+                
+                Text("· Change in Settings")
+                    .font(AppFont.sans(13, weight: .regular))
+                    .foregroundColor(Color(hex: "5A8A5A"))
+            }
+            .padding(.vertical, 10)
+            .padding(.horizontal, 16)
+            .background(Color(hex: "EEF4EE"))
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(Color(hex: "5A8A5A").opacity(0.2), lineWidth: 0.5)
+            )
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .center)
+    }
+
     // MARK: - Card Section (warm container + card + reassurance)
     private var cardSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
             summaryCard
                 .offset(y: showCard ? 0 : 16)
                 .opacity(showCard ? 1 : 0)
@@ -184,29 +218,6 @@ struct GentleGuideScreen: View {
     // MARK: - Summary Card
     private var summaryCard: some View {
         VStack(spacing: 0) {
-            if hasFormulaInfo {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Formula")
-                        .font(AppFont.sans(11, weight: .medium))
-                        .foregroundColor(Color(hex: "5A8A5A"))
-                        .tracking(0.05 * 11)
-                        .textCase(.uppercase)
-
-                    Text("\(viewModel.displayBrandName) · \(stageShortName)")
-                        .font(AppFont.sans(16, weight: .medium))
-                        .foregroundColor(Color(hex: "1C2421"))
-
-                    Text(stageAgeRange)
-                        .font(AppFont.sans(13))
-                        .foregroundColor(Color(hex: "888780"))
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                Divider()
-                    .background(Color.black.opacity(0.07))
-                    .padding(.vertical, 16)
-            }
-
             HStack(spacing: 0) {
                 // Daily guide
                 VStack(alignment: .leading, spacing: 4) {
@@ -245,7 +256,7 @@ struct GentleGuideScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .padding(22)
+        .padding(20)
         .background(Color(hex: "FDFAF7"))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
