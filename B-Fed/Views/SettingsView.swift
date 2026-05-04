@@ -14,6 +14,7 @@ struct SettingsView: View {
     @State private var showingStagePicker = false
     @State private var showingNameEdit = false
     @State private var showingWeightEdit = false
+    @State private var showingSavedConfirmation = false
     @State private var shareItems: [Any] = []
     @Query(sort: \Feed.startTime, order: .reverse) private var feeds: [Feed]
     
@@ -23,40 +24,40 @@ struct SettingsView: View {
             
             settingsBlobs
             
-            VStack(spacing: 0) {
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        header
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+                    header
+                        .padding(.top, 20)
+                    
+                    if feedStore.babyProfile != nil {
+                        babyCard
+                            .padding(.top, 24)
+                        
+                        feedingCard
                             .padding(.top, 20)
                         
-                        if feedStore.babyProfile != nil {
-                            babyCard
-                                .padding(.top, 24)
-                            
-                            feedingCard
-                                .padding(.top, 20)
-                            
-                            dataCard
-                                .padding(.top, 20)
-                            
-                            guidesCard
-                                .padding(.top, 20)
-                        }
+                        dataCard
+                            .padding(.top, 20)
                         
-                        Spacer(minLength: 20)
+                        guidesCard
+                            .padding(.top, 20)
                     }
-                    .padding(.horizontal, 20)
+                    
+                    Spacer(minLength: 20)
                 }
-                .safeAreaInset(edge: .bottom) {
-                    Color.clear.frame(height: 32)
-                }
-                
-                if feedStore.babyProfile != nil {
-                    saveButton
-                        .padding(.horizontal, 20)
-                        .padding(.top, 8)
-                        .padding(.bottom, 8)
-                }
+                .padding(.horizontal, 20)
+            }
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 80)
+            }
+            
+            if showingSavedConfirmation {
+                savedToast
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            if feedStore.babyProfile != nil {
+                saveButtonContainer
             }
         }
         .onAppear {
@@ -330,21 +331,43 @@ struct SettingsView: View {
     
     // MARK: — Save Button
     
-    private var saveButton: some View {
-        Button(action: saveChanges) {
-            Text("Save changes")
+    private var saveButtonContainer: some View {
+        VStack(spacing: 0) {
+            Button(action: saveChanges) {
+                Text("Save changes")
+                    .font(AppFont.sans(15, weight: .medium))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(Color(hex: "1C2421"))
+                    )
+            }
+            .buttonStyle(PlainButtonStyle())
+            .opacity(viewModel.hasChanges ? 1.0 : 0.4)
+            .disabled(!viewModel.hasChanges)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+        }
+        .background(Color(hex: "F7F6F2"))
+    }
+    
+    private var savedToast: some View {
+        VStack {
+            Text("Saved")
                 .font(AppFont.sans(15, weight: .medium))
                 .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
                 .background(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(Color(hex: "1C2421"))
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(Color(hex: "5A8A5A"))
                 )
+            Spacer()
         }
-        .buttonStyle(PlainButtonStyle())
-        .opacity(viewModel.hasChanges ? 1.0 : 0.4)
-        .disabled(!viewModel.hasChanges)
+        .padding(.top, 60)
+        .transition(.move(edge: .top).combined(with: .opacity))
     }
     
     // MARK: — Helpers
@@ -426,6 +449,15 @@ struct SettingsView: View {
         viewModel.save(to: feedStore)
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
+        
+        withAnimation(.easeInOut(duration: 0.25)) {
+            showingSavedConfirmation = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                showingSavedConfirmation = false
+            }
+        }
     }
     
     private func exportHistory() {
