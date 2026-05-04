@@ -156,9 +156,9 @@ struct OnboardingView: View {
     
     /// Temporary profile for guidance preview during onboarding
     private var previewProfile: BabyProfile {
-        let weightGrams = viewModel.isKg
-            ? Double(viewModel.currentWeight).map { $0 * 1000 }
-            : nil
+        let weightGrams = Double(viewModel.currentWeight).map {
+            viewModel.isKg ? $0 * 1000 : $0 * 453.592
+        }
         
         let profile = BabyProfile(
             parentName: viewModel.parentName,

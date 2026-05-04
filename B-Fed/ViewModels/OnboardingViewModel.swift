@@ -105,13 +105,13 @@ class OnboardingViewModel {
         default: mappedFeedingType = .formula
         }
 
-        let birthWeightGrams = isKg
-            ? Double(birthWeight).map { $0 * 1000 }
-            : nil
+        let birthWeightGrams = Double(birthWeight).map {
+            isKg ? $0 * 1000 : $0 * 453.592
+        }
 
-        let currentWeightGrams = isKg
-            ? Double(currentWeight).map { $0 * 1000 }
-            : nil
+        let currentWeightGrams = Double(currentWeight).map {
+            isKg ? $0 * 1000 : $0 * 453.592
+        }
 
         let parentDOB = Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date()
         

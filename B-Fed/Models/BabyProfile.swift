@@ -17,19 +17,19 @@ class BabyProfile {
     // Baby information
     var babyName: String = "Baby"
     var dateOfBirth: Date = Date()
-    var birthWeight: Double? // in grams
-    var currentWeight: Double? // in grams
+    var birthWeight: Double? = nil // in grams
+    var currentWeight: Double? = nil // in grams
     var weightUnit: String = "kg"
     var feedingType: FeedingType = FeedingType.formula
-    var formulaBrand: String?
-    var formulaStage: FormulaStage?
+    var formulaBrand: String? = nil
+    var formulaStage: FormulaStage? = nil
     
     // Formula Library + Smart Guide
-    var selectedBrandId: String?
-    var selectedProductId: String?
+    var selectedBrandId: String? = nil
+    var selectedProductId: String? = nil
     var usesFormulaGuide: Bool = false
-    var customFormulaBrand: String?
-    var customFormulaProduct: String?
+    var customFormulaBrand: String? = nil
+    var customFormulaProduct: String? = nil
     
     var createdAt: Date = Date()
     var updatedAt: Date = Date()

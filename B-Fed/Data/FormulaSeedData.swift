@@ -163,6 +163,7 @@ enum FormulaSeedData {
         FeedingGuideline(countryCode: nil, minAgeMonths: 0, maxAgeMonths: 3, mlPerKgPerDayMin: 120, mlPerKgPerDayMax: 180, feedsPerDayMin: 6, feedsPerDayMax: 10, notes: "Newborns feed frequently. Follow hunger cues."),
         FeedingGuideline(countryCode: nil, minAgeMonths: 3, maxAgeMonths: 6, mlPerKgPerDayMin: 100, mlPerKgPerDayMax: 150, feedsPerDayMin: 5, feedsPerDayMax: 8, notes: "Feeding intervals may lengthen."),
         FeedingGuideline(countryCode: nil, minAgeMonths: 6, maxAgeMonths: 12, mlPerKgPerDayMin: 80, mlPerKgPerDayMax: 120, feedsPerDayMin: 4, feedsPerDayMax: 6, notes: "Complementary foods introduced around 6 months."),
-        FeedingGuideline(countryCode: nil, minAgeMonths: 12, maxAgeMonths: 24, mlPerKgPerDayMin: 60, mlPerKgPerDayMax: 100, feedsPerDayMin: 3, feedsPerDayMax: 4, notes: "Toddler milk as part of a balanced diet.")
+        FeedingGuideline(countryCode: nil, minAgeMonths: 12, maxAgeMonths: 24, mlPerKgPerDayMin: 60, mlPerKgPerDayMax: 100, feedsPerDayMin: 3, feedsPerDayMax: 4, notes: "Toddler milk as part of a balanced diet."),
+        FeedingGuideline(countryCode: nil, minAgeMonths: 24, maxAgeMonths: nil, mlPerKgPerDayMin: 50, mlPerKgPerDayMax: 80, feedsPerDayMin: 2, feedsPerDayMax: 3, notes: "Older toddler — milk intake naturally decreases as solid foods increase.")
     ]
 }

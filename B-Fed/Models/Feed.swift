@@ -5,7 +5,7 @@ import SwiftData
 class Feed {
     var id: UUID = UUID()
     var startTime: Date = Date()
-    var endTime: Date?
+    var endTime: Date? = nil
     var amount: Double = 0
     var consumedMl: Int? = nil
     var unit: FeedUnit = FeedUnit.milliliters
@@ -130,9 +130,10 @@ struct FeedStatistics {
     
     /// Feeds per day average
     var feedsPerDay: Double {
-        let days = dateRange.duration / 86400 // seconds in a day
-        guard days > 0 else { return 0 }
-        return Double(feeds.count) / days
+        let calendar = Calendar.current
+        let dayCount = calendar.dateComponents([.day], from: dateRange.start, to: dateRange.end).day ?? 0
+        guard dayCount > 0 else { return 0 }
+        return Double(feeds.count) / Double(dayCount)
     }
     
     /// Maximum single feed amount

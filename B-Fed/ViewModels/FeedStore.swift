@@ -159,7 +159,7 @@ class FeedStore {
             startTime: startTime,
             endTime: endTime,
             amount: amount,
-            consumedMl: consumedMl,
+            consumedMl: consumedMl ?? Int(amount),
             unit: .milliliters,
             notes: notes,
             completed: completed
