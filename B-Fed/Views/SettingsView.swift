@@ -41,6 +41,9 @@ struct SettingsView: View {
                         
                         guidesCard
                             .padding(.top, 20)
+                    } else {
+                        noProfileCard
+                            .padding(.top, 40)
                     }
                     
                     Spacer(minLength: 20)
@@ -327,6 +330,35 @@ struct SettingsView: View {
                     .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
             )
         }
+    }
+    
+    // MARK: — No Profile Card
+    
+    private var noProfileCard: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "person.crop.circle.badge.plus")
+                .font(.system(size: 48))
+                .foregroundColor(Color(hex: "C8C0D4"))
+            
+            Text("Add your baby's details")
+                .font(AppFont.sans(17, weight: .medium))
+                .foregroundColor(Color(hex: "1C2421"))
+            
+            Text("Set up your baby's profile to get personalised feeding guidance and track their progress.")
+                .font(AppFont.sans(13))
+                .foregroundColor(Color(hex: "888780"))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 40)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+        )
+        .padding(.horizontal, 20)
     }
     
     // MARK: — Save Button

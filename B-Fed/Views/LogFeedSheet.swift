@@ -18,6 +18,8 @@ struct LogFeedSheet: View {
     @State private var timeUpdateTimer: Timer? = nil
     @State private var feedTimer: Timer? = nil
     @State private var elapsedSeconds: Int = 0
+    @State private var accumulatedSeconds: Int = 0
+    @State private var feedTimerStartDate: Date? = nil
     @State private var isFeedTimerRunning: Bool = false
     @State private var showingTimePicker: Bool = false
     @State private var showingFormulaSelector: Bool = false
@@ -126,12 +128,12 @@ struct LogFeedSheet: View {
     
     private func startFeedTimer() {
         feedTimer?.invalidate()
+        feedTimerStartDate = Date()
         isFeedTimerRunning = true
         feedTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             Task { @MainActor in
-                if isFeedTimerRunning {
-                    elapsedSeconds += 1
-                }
+                guard isFeedTimerRunning, let startDate = feedTimerStartDate else { return }
+                elapsedSeconds = accumulatedSeconds + Int(Date().timeIntervalSince(startDate))
             }
         }
     }
@@ -140,10 +142,14 @@ struct LogFeedSheet: View {
         feedTimer?.invalidate()
         feedTimer = nil
         isFeedTimerRunning = false
+        accumulatedSeconds = elapsedSeconds
+        feedTimerStartDate = nil
     }
     
     private func resetFeedTimer() {
         elapsedSeconds = 0
+        accumulatedSeconds = 0
+        feedTimerStartDate = nil
         startFeedTimer()
     }
     

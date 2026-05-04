@@ -59,7 +59,7 @@ enum FormulaGuidanceService {
         
         // Find applicable guideline
         let guideline = FormulaSeedData.guidelines.first { g in
-            ageMonths >= g.minAgeMonths && (g.maxAgeMonths == nil || ageMonths < g.maxAgeMonths!)
+            ageMonths >= g.minAgeMonths && (g.maxAgeMonths == nil || ageMonths < (g.maxAgeMonths ?? Int.max))
         }
         
         // Determine stage label
@@ -87,8 +87,8 @@ enum FormulaGuidanceService {
             let feedsMin = guideline?.feedsPerDayMin ?? 6
             let feedsMax = guideline?.feedsPerDayMax ?? 8
             
-            let feedSizeMin = dailyMin / feedsMax
-            let feedSizeMax = dailyMax / feedsMin
+            let feedSizeMin = dailyMin / max(1, feedsMax)
+            let feedSizeMax = dailyMax / max(1, feedsMin)
             
             let explanation: String
             if ageDays < 30 {
@@ -130,8 +130,8 @@ enum FormulaGuidanceService {
             (dailyMin, dailyMax, feedsMin, feedsMax) = (600, 900, 3, 5)
         }
         
-        let feedSizeMin = dailyMin / feedsMax
-        let feedSizeMax = dailyMax / feedsMin
+        let feedSizeMin = dailyMin / max(1, feedsMax)
+        let feedSizeMax = dailyMax / max(1, feedsMin)
         
         let explanation: String
         if ageDays < 30 {

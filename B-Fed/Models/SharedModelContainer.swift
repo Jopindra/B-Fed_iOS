@@ -12,7 +12,12 @@ let sharedModelContainer: ModelContainer = {
     do {
         return try ModelContainer(for: schema, configurations: [modelConfiguration])
     } catch {
-        let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-        return try! ModelContainer(for: schema, configurations: [fallbackConfig])
+        // Fallback to in-memory storage so the app can still launch
+        let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        do {
+            return try ModelContainer(for: schema, configurations: [fallbackConfig])
+        } catch {
+            fatalError("Unable to create ModelContainer: \(error)")
+        }
     }
 }()

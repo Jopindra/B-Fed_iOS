@@ -84,6 +84,7 @@ enum FeedingIntelligence {
     static func bottleFillLevel(current: Double, profile: BabyProfile?) -> CGFloat {
         let guide = dailyIntakeGuide(for: profile)
         let target = Double(guide.typical.max)
+        guard target > 0 else { return CGFloat(0.1) }
         
         let percentage = current / target
         let capped = min(percentage, 0.85) // Cap at 85%
@@ -96,7 +97,9 @@ enum FeedingIntelligence {
     /// Provides gentle, supportive message based on progress
     static func supportingMessage(current: Double, profile: BabyProfile?) -> String {
         let guide = dailyIntakeGuide(for: profile)
-        let percentage = (current / Double(guide.typical.max)) * 100
+        let maxIntake = Double(guide.typical.max)
+        guard maxIntake > 0 else { return "You're here — that matters" }
+        let percentage = (current / maxIntake) * 100
         
         // On track
         if percentage >= 80 {
@@ -128,7 +131,9 @@ enum FeedingIntelligence {
         guard let profile = profile else { return nil }
         
         let guide = dailyIntakeGuide(for: profile)
-        let percentage = (current / Double(guide.typical.max)) * 100
+        let maxIntake = Double(guide.typical.max)
+        guard maxIntake > 0 else { return nil }
+        let percentage = (current / maxIntake) * 100
         let hour = Calendar.current.component(.hour, from: Date())
         
         // Morning context

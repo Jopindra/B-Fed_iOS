@@ -194,6 +194,25 @@ class FeedStore {
         observationTimer = nil
     }
 
+    func syncTimerState() {
+        isTimerRunning = timerService.isRunning
+        timerElapsed = timerService.elapsed
+        if timerService.isRunning {
+            startObservationTimer()
+        }
+    }
+    
+    func pauseTimerObservation() {
+        observationTimer?.invalidate()
+        observationTimer = nil
+    }
+    
+    func resumeTimerObservation() {
+        if timerService.isRunning {
+            startObservationTimer()
+        }
+    }
+
     private func startObservationTimer() {
         observationTimer?.invalidate()
         observationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in

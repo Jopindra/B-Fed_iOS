@@ -219,7 +219,8 @@ struct FormulaService {
     
     // MARK: - Preparation Guidance
     static func scoopsForVolume(_ ml: Double, formula: Formula) -> Int {
-        Int(round(ml / formula.mlPerScoop))
+        guard formula.mlPerScoop > 0 else { return 0 }
+        return Int(round(ml / formula.mlPerScoop))
     }
     
     static func preparationSteps(volumeMl: Double, formula: Formula) -> [String] {

@@ -4,6 +4,7 @@ import SwiftData
 struct ContentView: View {
     @Environment(FeedStore.self) private var feedStore
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab = 0
     @State private var showingLogFeedSheet = false
     
@@ -38,8 +39,19 @@ struct ContentView: View {
         }
         .onAppear {
             feedStore.setModelContext(modelContext)
+            feedStore.syncTimerState()
             if CommandLine.arguments.contains("--demo") {
                 populateDemoDataIfNeeded()
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .background, .inactive:
+                feedStore.pauseTimerObservation()
+            case .active:
+                feedStore.resumeTimerObservation()
+            default:
+                break
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .switchToSettingsTab)) { _ in
