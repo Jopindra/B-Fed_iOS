@@ -117,16 +117,9 @@ struct SettingsView: View {
             TextEditSheet(title: "Baby's Name", text: $viewModel.babyName)
         }
         .sheet(isPresented: $showingWeightEdit) {
-            TextEditSheet(
-                title: "Weight (kg)",
-                text: $viewModel.currentWeight,
-                keyboardType: .decimalPad,
-                validator: { text in
-                    guard let value = Double(text), value >= 0.5, value <= 30 else {
-                        return "Please enter a weight between 0.5 and 30 kg"
-                    }
-                    return nil
-                }
+            WeightEditSheet(
+                weightKg: $viewModel.weightKg,
+                weightUnit: $viewModel.weightUnit
             )
         }
         .alert("Reset all data?", isPresented: $showingResetConfirmation) {
@@ -196,9 +189,9 @@ struct SettingsView: View {
                 rowDivider
                 
                 tappableRow(
-                    label: "Weight (kg)",
-                    value: viewModel.currentWeight.isEmpty ? "Not set" : viewModel.currentWeight,
-                    valueColor: viewModel.currentWeight.isEmpty ? Color(hex: "C8C0D4") : Color(hex: "1C2421")
+                    label: "Weight",
+                    value: viewModel.weightDisplayString,
+                    valueColor: viewModel.weightKg == nil ? Color(hex: "C8C0D4") : Color(hex: "1C2421")
                 ) {
                     showingWeightEdit = true
                 }
@@ -448,7 +441,8 @@ struct SettingsView: View {
 final class SettingsViewModel {
     var babyName = ""
     var dateOfBirth: Date = Date()
-    var currentWeight = ""
+    var weightKg: Double? = nil
+    var weightUnit: String = "kg"
     var feedingType: FeedingType = .formula
     var formulaBrand = ""
     var formulaStage: FormulaStage?
@@ -483,11 +477,24 @@ final class SettingsViewModel {
         formulaStage?.displayName ?? "Not specified"
     }
     
+    var weightDisplayString: String {
+        guard let kg = weightKg else { return "Not set" }
+        if weightUnit == "kg" {
+            return String(format: "%.1f kg", kg)
+        } else {
+            let totalLb = kg * 2.20462
+            let lb = Int(totalLb)
+            let oz = Int(round((totalLb - Double(lb)) * 16))
+            return "\(lb) lb \(oz) oz"
+        }
+    }
+    
     var hasChanges: Bool {
         guard let orig = originalSnapshot else { return false }
         return babyName != orig.babyName
             || !Calendar.current.isDate(dateOfBirth, inSameDayAs: orig.dateOfBirth)
-            || currentWeight != orig.currentWeight
+            || weightKg != orig.weightKg
+            || weightUnit != orig.weightUnit
             || feedingType != orig.feedingType
             || formulaBrand != orig.formulaBrand
             || formulaStage != orig.formulaStage
@@ -501,7 +508,8 @@ final class SettingsViewModel {
         guard let profile = profile else {
             babyName = ""
             dateOfBirth = Date()
-            currentWeight = ""
+            weightKg = nil
+            weightUnit = "kg"
             feedingType = .formula
             formulaBrand = ""
             formulaStage = nil
@@ -522,16 +530,14 @@ final class SettingsViewModel {
         parentName = profile.parentName
         parentEmail = profile.parentEmail
         
-        if let weight = profile.currentWeight ?? profile.birthWeight {
-            currentWeight = String(format: "%.2f", weight / 1000)
-        } else {
-            currentWeight = ""
-        }
+        weightKg = profile.weightInKg
+        weightUnit = profile.weightUnit
         
         originalSnapshot = Snapshot(
             babyName: babyName,
             dateOfBirth: dateOfBirth,
-            currentWeight: currentWeight,
+            weightKg: weightKg,
+            weightUnit: weightUnit,
             feedingType: feedingType,
             formulaBrand: formulaBrand,
             formulaStage: formulaStage,
@@ -543,7 +549,7 @@ final class SettingsViewModel {
     }
     
     func save(to feedStore: FeedStore) {
-        let weightGrams = Double(currentWeight).map { $0 * 1000 }
+        let weightGrams = weightKg.map { $0 * 1000 }
         let brand = formulaBrand.isEmpty ? nil : formulaBrand
         let countryValue = country.isEmpty ? nil : country
         let countryCodeValue = countryCode.isEmpty ? nil : countryCode
@@ -554,6 +560,7 @@ final class SettingsViewModel {
             formulaBrand: brand,
             formulaStage: showsFormulaFields ? formulaStage : nil,
             currentWeight: weightGrams,
+            weightUnit: weightUnit,
             country: countryValue,
             countryCode: countryCodeValue,
             dateOfBirth: dateOfBirth,
@@ -565,7 +572,8 @@ final class SettingsViewModel {
     private struct Snapshot {
         let babyName: String
         let dateOfBirth: Date
-        let currentWeight: String
+        let weightKg: Double?
+        let weightUnit: String
         let feedingType: FeedingType
         let formulaBrand: String
         let formulaStage: FormulaStage?
@@ -816,6 +824,234 @@ struct SettingsCountryPickerSheet: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Weight Edit Sheet
+struct WeightEditSheet: View {
+    @Binding var weightKg: Double?
+    @Binding var weightUnit: String
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var selectedUnit: String
+    @State private var kgText: String
+    @State private var lbText: String
+    @State private var ozText: String
+    @State private var errorMessage: String?
+    
+    @FocusState private var kgFocused: Bool
+    @FocusState private var lbFocused: Bool
+    @FocusState private var ozFocused: Bool
+    
+    init(weightKg: Binding<Double?>, weightUnit: Binding<String>) {
+        self._weightKg = weightKg
+        self._weightUnit = weightUnit
+        let initialUnit = weightUnit.wrappedValue
+        _selectedUnit = State(initialValue: initialUnit)
+        
+        if let kg = weightKg.wrappedValue {
+            if initialUnit == "kg" {
+                _kgText = State(initialValue: String(format: "%.1f", kg))
+                _lbText = State(initialValue: "")
+                _ozText = State(initialValue: "")
+            } else {
+                _kgText = State(initialValue: "")
+                let totalLb = kg * 2.20462
+                let lb = Int(totalLb)
+                let oz = Int(round((totalLb - Double(lb)) * 16))
+                _lbText = State(initialValue: String(lb))
+                _ozText = State(initialValue: String(oz))
+            }
+        } else {
+            _kgText = State(initialValue: "")
+            _lbText = State(initialValue: "")
+            _ozText = State(initialValue: "")
+        }
+    }
+    
+    private var isKg: Bool { selectedUnit == "kg" }
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                Picker("Unit", selection: $selectedUnit) {
+                    Text("kg").tag("kg")
+                    Text("lb & oz").tag("lb_oz")
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .tint(Color(hex: "5A8A5A"))
+                .onChange(of: selectedUnit) { _, newUnit in
+                    convertValues(to: newUnit)
+                }
+                
+                if isKg {
+                    kgInput
+                } else {
+                    lbOzInput
+                }
+                
+                if let error = errorMessage {
+                    Text(error)
+                        .font(AppFont.sans(12))
+                        .foregroundColor(Color(hex: "E24B4A"))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
+                }
+                
+                Spacer()
+            }
+            .background(Color(hex: "F7F6F2"))
+            .navigationTitle("Weight")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        if validateAndSave() {
+                            dismiss()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private var kgInput: some View {
+        HStack(spacing: 8) {
+            TextField("e.g. 5.2", text: $kgText)
+                .font(AppFont.sans(17))
+                .keyboardType(.decimalPad)
+                .focused($kgFocused)
+            
+            Text("kg")
+                .font(AppFont.sans(15))
+                .foregroundStyle(Color(hex: "888780"))
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 14)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.white)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                )
+        )
+        .padding(.horizontal, 20)
+        .padding(.top, 24)
+    }
+    
+    private var lbOzInput: some View {
+        HStack(spacing: 12) {
+            HStack(spacing: 8) {
+                TextField("lb", text: $lbText)
+                    .font(AppFont.sans(17))
+                    .keyboardType(.numberPad)
+                    .focused($lbFocused)
+                
+                Text("lb")
+                    .font(AppFont.sans(15))
+                    .foregroundStyle(Color(hex: "888780"))
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                    )
+            )
+            
+            HStack(spacing: 8) {
+                TextField("oz", text: $ozText)
+                    .font(AppFont.sans(17))
+                    .keyboardType(.numberPad)
+                    .focused($ozFocused)
+                    .onChange(of: ozText) { _, newValue in
+                        if let oz = Int(newValue), oz > 15 {
+                            ozText = "15"
+                        }
+                    }
+                
+                Text("oz")
+                    .font(AppFont.sans(15))
+                    .foregroundStyle(Color(hex: "888780"))
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(Color.black.opacity(0.08), lineWidth: 0.5)
+                    )
+            )
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 24)
+    }
+    
+    private func convertValues(to newUnit: String) {
+        errorMessage = nil
+        if newUnit == "kg" {
+            if let lb = Int(lbText), lb >= 0,
+               let oz = Int(ozText.isEmpty ? "0" : ozText), oz >= 0 {
+                let totalLb = Double(lb) + Double(oz) / 16.0
+                let kg = totalLb / 2.20462
+                kgText = String(format: "%.1f", kg)
+            } else {
+                kgText = ""
+            }
+            lbText = ""
+            ozText = ""
+        } else {
+            if let kg = Double(kgText), kg >= 0 {
+                let totalLb = kg * 2.20462
+                let lb = Int(totalLb)
+                let oz = Int(round((totalLb - Double(lb)) * 16))
+                lbText = String(lb)
+                ozText = String(oz)
+            } else {
+                lbText = ""
+                ozText = ""
+            }
+            kgText = ""
+        }
+    }
+    
+    private func validateAndSave() -> Bool {
+        if selectedUnit == "kg" {
+            guard let kg = Double(kgText), kg >= 0.5, kg <= 30 else {
+                errorMessage = "Please enter a weight between 0.5 and 30 kg"
+                return false
+            }
+            weightKg = kg
+            weightUnit = "kg"
+        } else {
+            guard let lb = Int(lbText), lb >= 0,
+                  let oz = Int(ozText.isEmpty ? "0" : ozText), oz >= 0, oz <= 15 else {
+                errorMessage = "Please enter a valid weight"
+                return false
+            }
+            let totalOz = lb * 16 + oz
+            guard totalOz >= 16, totalOz <= 1056 else {
+                errorMessage = "Please enter a valid weight"
+                return false
+            }
+            let kg = Double(totalOz) / 35.27396
+            weightKg = kg
+            weightUnit = "lb_oz"
+        }
+        errorMessage = nil
+        return true
     }
 }
 

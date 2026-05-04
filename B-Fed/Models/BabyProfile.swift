@@ -19,6 +19,7 @@ class BabyProfile {
     var dateOfBirth: Date = Date()
     var birthWeight: Double? // in grams
     var currentWeight: Double? // in grams
+    var weightUnit: String = "kg"
     var feedingType: FeedingType = FeedingType.formula
     var formulaBrand: String?
     var formulaStage: FormulaStage?
@@ -49,6 +50,7 @@ class BabyProfile {
         dateOfBirth: Date = Date(),
         birthWeight: Double? = nil,
         currentWeight: Double? = nil,
+        weightUnit: String = "kg",
         feedingType: FeedingType = .formula,
         formulaBrand: String? = nil,
         formulaStage: FormulaStage? = nil,
@@ -68,6 +70,7 @@ class BabyProfile {
         self.dateOfBirth = dateOfBirth
         self.birthWeight = birthWeight
         self.currentWeight = currentWeight
+        self.weightUnit = weightUnit
         self.feedingType = feedingType
         self.formulaBrand = formulaBrand
         self.formulaStage = formulaStage

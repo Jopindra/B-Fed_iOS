@@ -24,7 +24,8 @@ final class SettingsViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.formulaStage, .stage1)
         XCTAssertEqual(viewModel.parentName, "Sarah")
         XCTAssertEqual(viewModel.parentEmail, "sarah@example.com")
-        XCTAssertEqual(viewModel.currentWeight, "4.20")
+        XCTAssertEqual(viewModel.weightKg, 4.2)
+        XCTAssertEqual(viewModel.weightUnit, "kg")
     }
     
     func testShowsFormulaFieldsForFormula() {

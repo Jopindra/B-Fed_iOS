@@ -77,6 +77,7 @@ class FeedStore {
         formulaBrand: String? = nil,
         formulaStage: FormulaStage? = nil,
         currentWeight: Double? = nil,
+        weightUnit: String? = nil,
         country: String? = nil,
         countryCode: String? = nil,
         dateOfBirth: Date? = nil,
@@ -90,6 +91,7 @@ class FeedStore {
         if let formulaBrand = formulaBrand { profile.formulaBrand = formulaBrand }
         if let formulaStage = formulaStage { profile.formulaStage = formulaStage }
         if let currentWeight = currentWeight { profile.currentWeight = currentWeight }
+        if let weightUnit = weightUnit { profile.weightUnit = weightUnit }
         if let country = country { profile.country = country }
         if let countryCode = countryCode {
             // If country changed, reset formula brand if not available in new country
