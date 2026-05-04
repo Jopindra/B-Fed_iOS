@@ -66,51 +66,44 @@ final class BabyProfileTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(profile.ageInMonths, 2)
     }
 
-    // MARK: - Formatted Age
+    // MARK: - Age Description
 
-    func testFormattedAgeDays() {
+    func testAgeDescriptionUnderOneWeek() {
         let dob = Calendar.current.date(byAdding: .day, value: -3, to: Date())!
         let profile = BabyProfile(dateOfBirth: dob)
-        XCTAssertEqual(profile.formattedAge, "3 days old")
+        XCTAssertEqual(profile.ageDescription, "0 weeks old")
     }
 
-    func testFormattedAgeOneDay() {
-        let dob = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
-        let profile = BabyProfile(dateOfBirth: dob)
-        XCTAssertEqual(profile.formattedAge, "1 day old")
-    }
-
-    func testFormattedAgeWeeks() {
-        let dob = Calendar.current.date(byAdding: .day, value: -14, to: Date())!
-        let profile = BabyProfile(dateOfBirth: dob)
-        XCTAssertEqual(profile.formattedAge, "2 weeks old")
-    }
-
-    func testFormattedAgeOneWeek() {
+    func testAgeDescriptionOneWeek() {
         let dob = Calendar.current.date(byAdding: .day, value: -7, to: Date())!
         let profile = BabyProfile(dateOfBirth: dob)
-        XCTAssertEqual(profile.formattedAge, "1 week old")
+        XCTAssertEqual(profile.ageDescription, "1 week old")
     }
 
-    func testFormattedAgeMonths() {
+    func testAgeDescriptionTwoWeeks() {
+        let dob = Calendar.current.date(byAdding: .day, value: -14, to: Date())!
+        let profile = BabyProfile(dateOfBirth: dob)
+        XCTAssertEqual(profile.ageDescription, "2 weeks old")
+    }
+
+    func testAgeDescriptionMonths() {
         let dob = Calendar.current.date(byAdding: .month, value: -2, to: Date())!
         let profile = BabyProfile(dateOfBirth: dob)
         let months = profile.ageInMonths
-        XCTAssertEqual(profile.formattedAge, "\(months) months old")
+        XCTAssertEqual(profile.ageDescription, "\(months) months old")
     }
     
-    func testFormattedAgeOneYear() {
+    func testAgeDescriptionOneYear() {
         let dob = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
         let profile = BabyProfile(dateOfBirth: dob)
-        XCTAssertEqual(profile.formattedAge, "1 year old")
+        XCTAssertEqual(profile.ageDescription, "12 months old")
     }
     
-    func testFormattedAgeYearsAndMonths() {
-        let dob = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+    func testAgeDescriptionOverTwoYears() {
+        let dob = Calendar.current.date(byAdding: .year, value: -2, to: Date())!
             .addingTimeInterval(-86400 * 30) // subtract ~1 month
         let profile = BabyProfile(dateOfBirth: dob)
-        XCTAssertTrue(profile.formattedAge.contains("1 year"))
-        XCTAssertTrue(profile.formattedAge.contains("1 month"))
+        XCTAssertTrue(profile.ageDescription.contains("2 years"))
     }
 
     // MARK: - Weight

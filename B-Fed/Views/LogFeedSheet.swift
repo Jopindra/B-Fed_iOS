@@ -264,10 +264,7 @@ struct LogFeedSheet: View {
             stopFeedTimer()
         }
         .onChange(of: timerActive) { _, isActive in
-            if isActive {
-                elapsedSeconds = 0
-                startFeedTimer()
-            } else {
+            if !isActive {
                 stopFeedTimer()
                 elapsedSeconds = 0
             }
@@ -612,7 +609,7 @@ struct LogFeedSheet: View {
     // MARK: - Timer Toggle Row
     private var timerToggleRow: some View {
         HStack {
-            Text("Start timer when I save")
+            Text("Track feed duration")
                 .font(AppFont.sans(13, weight: .regular))
                 .foregroundStyle(Color.inkPrimary)
             
@@ -636,34 +633,101 @@ struct LogFeedSheet: View {
     
     // MARK: - Feed Timer Display
     private var feedTimerDisplay: some View {
-        VStack(spacing: 6) {
-            Text(String(format: "%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60))
-                .font(AppFont.sans(32, weight: .semibold))
-                .foregroundStyle(Color(hex: "1C2421"))
-                .monospacedDigit()
-            
-            Text(isFeedTimerRunning ? "Feed in progress" : "Feed complete")
-                .font(AppFont.sans(12))
-                .foregroundStyle(Color(hex: "888780"))
-            
-            Button(action: {
+        VStack(spacing: 8) {
+            // Time + status row
+            HStack(spacing: 8) {
+                Text(String(format: "%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60))
+                    .font(AppFont.sans(32, weight: .semibold))
+                    .foregroundStyle(Color(hex: "1C2421"))
+                    .monospacedDigit()
+                
                 if isFeedTimerRunning {
-                    stopFeedTimer()
-                } else {
-                    resetFeedTimer()
+                    PulsingDot()
                 }
-            }) {
-                Text(isFeedTimerRunning ? "Stop" : "Reset")
-                    .font(AppFont.sans(13, weight: .medium))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
-                    .background(
-                        Capsule()
-                            .fill(Color(hex: "1C2421"))
-                    )
             }
-            .buttonStyle(PlainButtonStyle())
+            
+            // Status text
+            if !isFeedTimerRunning && elapsedSeconds > 0 {
+                Text("Feed complete · \(String(format: "%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60)) recorded")
+                    .font(AppFont.sans(12))
+                    .foregroundStyle(Color(hex: "888780"))
+            } else if isFeedTimerRunning {
+                Text("Feed in progress")
+                    .font(AppFont.sans(12))
+                    .foregroundStyle(Color(hex: "888780"))
+            } else {
+                Text("Ready when you are")
+                    .font(AppFont.sans(12))
+                    .foregroundStyle(Color(hex: "888780"))
+            }
+            
+            // Buttons
+            HStack(spacing: 12) {
+                if !isFeedTimerRunning && elapsedSeconds > 0 {
+                    // Stopped state: Reset + Resume
+                    Button(action: {
+                        elapsedSeconds = 0
+                    }) {
+                        Text("Reset")
+                            .font(AppFont.sans(13, weight: .medium))
+                            .foregroundStyle(Color(hex: "1C2421"))
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 8)
+                            .background(
+                                Capsule()
+                                    .stroke(Color(hex: "1C2421"), lineWidth: 1)
+                            )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    Button(action: {
+                        startFeedTimer()
+                    }) {
+                        Text("Resume")
+                            .font(AppFont.sans(13, weight: .medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 8)
+                            .background(
+                                Capsule()
+                                    .fill(Color(hex: "1C2421"))
+                            )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                } else if isFeedTimerRunning {
+                    // Running state: Stop
+                    Button(action: {
+                        stopFeedTimer()
+                    }) {
+                        Text("Stop")
+                            .font(AppFont.sans(13, weight: .medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 28)
+                            .padding(.vertical, 8)
+                            .background(
+                                Capsule()
+                                    .fill(Color(hex: "1C2421"))
+                            )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                } else {
+                    // Idle state: Start
+                    Button(action: {
+                        startFeedTimer()
+                    }) {
+                        Text("Start")
+                            .font(AppFont.sans(13, weight: .medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 28)
+                            .padding(.vertical, 8)
+                            .background(
+                                Capsule()
+                                    .fill(Color(hex: "5A8A5A"))
+                            )
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(14)
@@ -750,6 +814,10 @@ struct LogFeedSheet: View {
     private func saveFeed() {
         guard amount > 0 else { return }
 
+        if isFeedTimerRunning {
+            stopFeedTimer()
+        }
+
         let feedDuration: TimeInterval? = timerActive ? TimeInterval(elapsedSeconds) : nil
 
         _ = feedStore.createFeed(
@@ -790,6 +858,27 @@ struct LogFeedSheet: View {
         let request = UNNotificationRequest(identifier: "bottle-timer-notification", content: content, trigger: trigger)
 
         center.add(request)
+    }
+}
+
+// MARK: - Pulsing Dot
+private struct PulsingDot: View {
+    @State private var isPulsing = false
+    
+    var body: some View {
+        Circle()
+            .fill(Color(hex: "5A8A5A"))
+            .frame(width: 8, height: 8)
+            .scaleEffect(isPulsing ? 1.4 : 1.0)
+            .opacity(isPulsing ? 0.6 : 1.0)
+            .animation(
+                Animation.easeInOut(duration: 1.0)
+                    .repeatForever(autoreverses: true),
+                value: isPulsing
+            )
+            .onAppear {
+                isPulsing = true
+            }
     }
 }
 
