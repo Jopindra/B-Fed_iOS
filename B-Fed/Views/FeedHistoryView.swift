@@ -4,10 +4,7 @@ import SwiftData
 // MARK: - Feed History View
 struct FeedHistoryView: View {
     @Environment(FeedStore.self) private var feedStore
-    @Query(FetchDescriptor<Feed>(
-        sortBy: [SortDescriptor(\.startTime, order: .reverse)],
-        fetchLimit: 200
-    )) private var feeds: [Feed]
+    @Query(sort: \Feed.startTime, order: .reverse) private var feeds: [Feed]
     
     @State private var feedToEdit: Feed?
     @State private var showingDeleteConfirmation = false
@@ -75,28 +72,26 @@ struct FeedHistoryView: View {
     // MARK: — Blobs
     
     private var historyBlobs: some View {
-        GeometryReader { geometry in
-            ZStack {
-                Circle()
-                    .fill(Color.peachLemonBridge.opacity(0.38))
-                    .frame(width: 160, height: 160)
-                    .position(x: geometry.size.width + 50, y: -40)
-                
-                Circle()
-                    .fill(Color.accentLavender.opacity(0.32))
-                    .frame(width: 130, height: 130)
-                    .position(x: geometry.size.width + 50, y: 120)
-                
-                Circle()
-                    .fill(Color.almostAqua.opacity(0.35))
-                    .frame(width: 180, height: 180)
-                    .position(x: -50, y: geometry.size.height + 40)
-                
-                Circle()
-                    .fill(Color.peachDust.opacity(0.30))
-                    .frame(width: 110, height: 110)
-                    .position(x: geometry.size.width + 40, y: geometry.size.height - 80)
-            }
+        ZStack {
+            Circle()
+                .fill(Color(hex: "DDD8C0").opacity(0.38))
+                .frame(width: 160, height: 160)
+                .position(x: UIScreen.main.bounds.width + 50, y: -40)
+            
+            Circle()
+                .fill(Color.accentLavender.opacity(0.32))
+                .frame(width: 130, height: 130)
+                .position(x: UIScreen.main.bounds.width + 50, y: 120)
+            
+            Circle()
+                .fill(Color(hex: "B0C4B0").opacity(0.35))
+                .frame(width: 180, height: 180)
+                .position(x: -50, y: UIScreen.main.bounds.height + 40)
+            
+            Circle()
+                .fill(Color(hex: "D4A898").opacity(0.30))
+                .frame(width: 110, height: 110)
+                .position(x: UIScreen.main.bounds.width + 40, y: UIScreen.main.bounds.height - 80)
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
@@ -197,12 +192,12 @@ private struct DaySection: View {
                     
                     if index < group.feeds.count - 1 {
                         Divider()
-                            .background(Color.separator.opacity(0.3))
+                            .background(Color.black.opacity(0.05))
                             .padding(.horizontal, 16)
                     }
                 }
             }
-            .background(Color.backgroundCard)
+            .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -224,7 +219,7 @@ private struct FeedRow: View {
     }
     
     private var statusColor: Color {
-        isPartial ? Color.accentLavender : Color.accentPurple
+        isPartial ? Color.accentLavender : Color(hex: "7B6A9A")
     }
     
     private var timeString: String {
@@ -268,7 +263,7 @@ private struct FeedRow: View {
                         if isPartial, let consumed = feed.consumedMl {
                             Text("· \(consumed) ml consumed")
                                 .font(AppFont.sans(11, weight: .regular))
-                                .foregroundColor(Color.peachDustDark)
+                                .foregroundColor(Color(hex: "B07850"))
                         }
                     }
                     

@@ -9,6 +9,7 @@ import SwiftData
 class OnboardingViewModel {
     // MARK: Form State
     var parentName: String = ""
+    var parentEmail: String = ""
     var country: String = ""
     var countryCode: String = ""
     var babyName: String = ""
@@ -31,10 +32,14 @@ class OnboardingViewModel {
     }
     
     var totalSteps: Int {
-        showsFormulaSetup ? 9 : 6
+        showsFormulaSetup ? 10 : 7
     }
 
     // MARK: Computed Validation
+
+    var isEmailValid: Bool {
+        OnboardingValidation.isValidEmail(parentEmail)
+    }
 
     var hasFeedingSelection: Bool {
         !feedingType.isEmpty
@@ -49,11 +54,12 @@ class OnboardingViewModel {
     func isContinueEnabled(forStep step: Int) -> Bool {
         switch step {
         case 1: return !parentName.isEmpty
-        case 2: return !country.isEmpty
-        case 3: return !babyName.isEmpty
-        case 4: return true
-        case 5: return hasFeedingSelection
-        case 9:
+        case 2: return isEmailValid
+        case 3: return !country.isEmpty
+        case 4: return !babyName.isEmpty
+        case 5: return true
+        case 6: return hasFeedingSelection
+        case 7:
             let birthValid = birthWeight.isEmpty || OnboardingValidation.isValidWeight(birthWeight)
             let currentValid = currentWeight.isEmpty || OnboardingValidation.isValidWeight(currentWeight)
             return birthValid && currentValid
@@ -75,6 +81,7 @@ class OnboardingViewModel {
 
     func reset() {
         parentName = ""
+        parentEmail = ""
         country = ""
         countryCode = ""
         babyName = ""
@@ -121,6 +128,7 @@ class OnboardingViewModel {
 
         return BabyProfile(
             parentName: parentName,
+            parentEmail: parentEmail,
             parentDOB: parentDOB,
             country: country,
             countryCode: countryCode,
@@ -143,6 +151,7 @@ class OnboardingViewModel {
 
     func prefillWithSampleData() {
         parentName = "Sarah"
+        parentEmail = "sarah@example.com"
         country = "Australia"
         countryCode = "AU"
         babyName = "Lily"

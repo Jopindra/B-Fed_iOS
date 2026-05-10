@@ -213,7 +213,7 @@ struct FormulaService {
     static var formulasByBrand: [(brand: String, formulas: [Formula])] {
         let grouped = Dictionary(grouping: allFormulas) { $0.brand }
         return grouped.keys.sorted().map { brand in
-            (brand, (grouped[brand] ?? []).sorted { $0.stage < $1.stage })
+            (brand, grouped[brand]!.sorted { $0.stage < $1.stage })
         }
     }
     

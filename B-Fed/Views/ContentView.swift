@@ -3,12 +3,11 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(FeedStore.self) private var feedStore
-    @Environment(ProfileStore.self) private var profileStore
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab = 0
     @State private var showingLogFeedSheet = false
-
+    
     var body: some View {
         ZStack {
             // Main content
@@ -19,14 +18,14 @@ struct ContentView: View {
                 case 1:
                     FeedHistoryView()
                 case 2:
-                    StatisticsView()
+                    InsightsView()
                 case 3:
                     SettingsView()
                 default:
                     DashboardView(onSwitchToHistoryTab: { selectedTab = 1 })
                 }
             }
-
+            
             // Custom tab bar
             VStack(spacing: 0) {
                 Spacer()
@@ -36,11 +35,10 @@ struct ContentView: View {
         }
         .ignoresSafeArea(.keyboard)
         .sheet(isPresented: $showingLogFeedSheet) {
-            LogFeedSheet()
+            LogFeedView()
         }
         .onAppear {
             feedStore.setModelContext(modelContext)
-            profileStore.setModelContext(modelContext)
             feedStore.syncTimerState()
             if CommandLine.arguments.contains("--demo") {
                 populateDemoDataIfNeeded()
@@ -59,13 +57,6 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: .switchToSettingsTab)) { _ in
             selectedTab = 3
         }
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)) { _ in
-            Task {
-                for activity in Activity<FeedActivityAttributes>.activities {
-                    await activity.end(nil, dismissalPolicy: .immediate)
-                }
-            }
-        }
     }
     
     private func populateDemoDataIfNeeded() {
@@ -73,6 +64,7 @@ struct ContentView: View {
         
         let profile = BabyProfile(
             parentName: "Sarah",
+            parentEmail: "sarah@example.com",
             parentDOB: Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date(),
             country: "Australia",
             countryCode: "AU",
@@ -166,6 +158,5 @@ struct CustomTabBar: View {
 #Preview {
     ContentView()
         .environment(FeedStore())
-        .environment(ProfileStore())
         .modelContainer(for: Feed.self, inMemory: true)
 }
