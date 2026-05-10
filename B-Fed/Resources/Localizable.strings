@@ -1,0 +1,122 @@
+/* MARK: - Dashboard */
+"dashboard.goodMorning" = "Good morning";
+"dashboard.goodAfternoon" = "Good afternoon";
+"dashboard.goodEvening" = "Good evening";
+"dashboard.feedsToday" = "Feeds today";
+"dashboard.noFeedsYet" = "No feeds yet today. Tap below to log your first feed.";
+"dashboard.tapToLog" = "Tap below to log a feed";
+"dashboard.smartInsights" = "Smart Insights";
+"dashboard.todaysIntake" = "Today's Intake";
+"dashboard.last24Hours" = "Last 24 hours";
+"dashboard.quickLog" = "Quick Log";
+"dashboard.startTimer" = "Start Timer";
+"dashboard.timerRunning" = "Timer Running";
+"dashboard.stopTimer" = "Stop Timer";
+"dashboard.minutesShort" = "%d min";
+"dashboard.elapsedTime" = "Elapsed";
+"dashboard.yourChildAge" = "Your child's age";
+"dashboard.recommendedIntakeForAge" = "Recommended intake for age";
+"dashboard.yourChildWeight" = "Your child's weight";
+"dashboard.totalDailyIntakeRange" = "Total daily intake range";
+"dashboard.months" = "%d months";
+"dashboard.newborn" = "Newborn";
+"dashboard.youveFedXTimes" = "You've fed %@ %d times today. That's a healthy frequency for their age.";
+"dashboard.everyBabyDifferent" = "Remember: every baby is different, and %@ knows what they need. You're doing great.";
+
+/* MARK: - Log Feed Sheet */
+"logFeed.title" = "Log Feed";
+"logFeed.amount" = "Amount (ml)";
+"logFeed.feedingType" = "Feeding Type";
+"logFeed.bottle" = "Bottle";
+"logFeed.breast" = "Breast";
+"logFeed.both" = "Both";
+"logFeed.solids" = "Solids";
+"logFeed.notes" = "Notes";
+"logFeed.notesPlaceholder" = "Add any notes about this feed...";
+"logFeed.cancel" = "Cancel";
+"logFeed.save" = "Save";
+"logFeed.dateAndTime" = "Date & Time";
+"logFeed.timerActive" = "Timer active — %@";
+
+/* MARK: - Feed History */
+"history.title" = "Feed History";
+"history.today" = "Today";
+"history.yesterday" = "Yesterday";
+"history.older" = "Older";
+"history.noHistory" = "No feed history yet";
+"history.startLogging" = "Start logging feeds to see your history here.";
+"history.amountMl" = "%.0f ml";
+"history.delete" = "Delete";
+"history.edit" = "Edit";
+
+/* MARK: - Statistics */
+"statistics.title" = "Statistics";
+"statistics.weeklyOverview" = "Weekly Overview";
+"statistics.dailyAverage" = "Daily Average";
+"statistics.totalFeeds" = "Total Feeds";
+"statistics.averagePerFeed" = "Average per Feed";
+"statistics.longestGap" = "Longest Gap";
+"statistics.noData" = "No data yet";
+"statistics.logSomeFeeds" = "Log some feeds to see your statistics.";
+"statistics.ml" = "%.0f ml";
+"statistics.feeds" = "%d feeds";
+
+/* MARK: - Settings */
+"settings.title" = "Settings";
+"settings.yourProfile" = "Your Profile";
+"settings.babyName" = "Baby's Name";
+"settings.babyDOB" = "Baby's Date of Birth";
+"settings.babyWeight" = "Baby's Weight";
+"settings.feedingType" = "Feeding Type";
+"settings.country" = "Country";
+"settings.preferences" = "Preferences";
+"settings.notifications" = "Notifications";
+"settings.dataManagement" = "Data Management";
+"settings.exportData" = "Export Data";
+"settings.deleteAllData" = "Delete All Data";
+"settings.deleteConfirmationTitle" = "Delete All Data";
+"settings.deleteConfirmationMessage" = "Are you sure you want to delete all your data? This action cannot be undone.";
+"settings.cancel" = "Cancel";
+"settings.confirmDelete" = "Delete";
+"settings.dataExported" = "Data exported successfully";
+"settings.about" = "About";
+"settings.version" = "Version";
+"settings.privacyPolicy" = "Privacy Policy";
+
+/* MARK: - Onboarding */
+"onboarding.welcomeTitle" = "Welcome to B-Fed";
+"onboarding.welcomeSubtitle" = "Your personal baby feeding companion";
+"onboarding.getStarted" = "Get Started";
+"onboarding.babyNameTitle" = "What's your baby's name?";
+"onboarding.babyNamePlaceholder" = "Baby's name";
+"onboarding.babyDOBTitle" = "When was your baby born?";
+"onboarding.babyWeightTitle" = "What's your baby's current weight?";
+"onboarding.weightInGrams" = "Weight in grams";
+"onboarding.feedingTypeTitle" = "How are you feeding?";
+"onboarding.formula" = "Formula";
+"onboarding.breastfeeding" = "Breastfeeding";
+"onboarding.mixed" = "Mixed";
+"onboarding.parentNameTitle" = "What's your name?";
+"onboarding.parentNamePlaceholder" = "Your name";
+"onboarding.countryTitle" = "Which country are you in?";
+"onboarding.next" = "Next";
+"onboarding.back" = "Back";
+"onboarding.done" = "Done";
+"onboarding.skip" = "Skip";
+
+/* MARK: - Common */
+"common.save" = "Save";
+"common.cancel" = "Cancel";
+"common.edit" = "Edit";
+"common.delete" = "Delete";
+"common.done" = "Done";
+"common.close" = "Close";
+"common.continue" = "Continue";
+"common.error" = "Error";
+"common.ok" = "OK";
+"common.retry" = "Retry";
+
+/* MARK: - Medical Disclaimer */
+"disclaimer.title" = "Important Notice";
+"disclaimer.body" = "B-Fed is for informational purposes only and does not constitute medical advice. Always consult your pediatrician or qualified healthcare provider for personalized feeding guidance.";
+"disclaimer.accept" = "I Understand";

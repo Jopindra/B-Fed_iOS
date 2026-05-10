@@ -3,7 +3,20 @@ import Foundation
 // MARK: - Feeding Intelligence
 /// Gentle, supportive feeding guidance without pressure
 enum FeedingIntelligence {
-    
+
+    // MARK: - Daily Target
+
+    /// Returns a single daily target in ml based on age in days
+    static func dailyTargetMl(for ageInDays: Int) -> Int {
+        switch ageInDays {
+        case 0...30: return 500
+        case 31...60: return 700
+        case 61...120: return 800
+        case 121...180: return 900
+        default: return 1000
+        }
+    }
+
     // MARK: - Daily Intake Calculation
     
     /// Calculates daily intake range based on weight or age

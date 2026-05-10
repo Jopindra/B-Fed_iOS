@@ -9,7 +9,6 @@ class BabyProfile {
     
     // Parent information
     var parentName: String = ""
-    var parentEmail: String = ""
     var parentDOB: Date = Date()
     var country: String = ""
     var countryCode: String = ""
@@ -42,7 +41,6 @@ class BabyProfile {
     init(
         id: UUID = UUID(),
         parentName: String = "",
-        parentEmail: String = "",
         parentDOB: Date = Date(),
         country: String = "",
         countryCode: String = "",
@@ -62,7 +60,6 @@ class BabyProfile {
     ) {
         self.id = id
         self.parentName = parentName
-        self.parentEmail = parentEmail
         self.parentDOB = parentDOB
         self.country = country
         self.countryCode = countryCode

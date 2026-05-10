@@ -97,6 +97,38 @@ extension Color {
     static var warmLavender: Color { .orchidTint }
     static var textMuted: Color { .inkSecondary.opacity(0.6) }
 
+    // MARK: - Semantic Colors (Dark Mode Compatible)
+    static var background: Color {
+        Color(UIColor.systemBackground)
+    }
+
+    static var backgroundSecondary: Color {
+        Color(UIColor.secondarySystemBackground)
+    }
+
+    static var backgroundTertiary: Color {
+        Color(UIColor.tertiarySystemBackground)
+    }
+
+    static var labelPrimary: Color {
+        Color(UIColor.label)
+    }
+
+    static var labelSecondary: Color {
+        Color(UIColor.secondaryLabel)
+    }
+
+    static var labelTertiary: Color {
+        Color(UIColor.tertiaryLabel)
+    }
+
+    static var separator: Color {
+        Color(UIColor.separator)
+    }
+
+    static var accent: Color {
+        Color.accentGreen
+    }
 }
 
 // MARK: - Font Tokens

@@ -23,8 +23,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 struct B_FedApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var feedStore = FeedStore()
+    @State private var profileStore = ProfileStore()
     @State private var selectedFormulaStore = SelectedFormulaStore()
     @State private var showOnboarding: Bool
+    @AppStorage("hasAcceptedMedicalDisclaimer") private var hasAcceptedMedicalDisclaimer = false
     
     init() {
         let isDemoMode = CommandLine.arguments.contains("--demo") || UserDefaults.standard.bool(forKey: "isDemoMode")
@@ -34,23 +36,30 @@ struct B_FedApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if showOnboarding {
-                OnboardingView(onComplete: {
-                    UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-                    showOnboarding = false
-                })
-                .environment(feedStore)
-                .environment(selectedFormulaStore)
-                .ignoresSafeArea(.all)
-            } else {
-                ContentView()
+            Group {
+                if showOnboarding {
+                    OnboardingView(onComplete: {
+                        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                        showOnboarding = false
+                    })
                     .environment(feedStore)
+                    .environment(profileStore)
                     .environment(selectedFormulaStore)
-                    .onReceive(NotificationCenter.default.publisher(for: .returnToOnboarding)) { _ in
-                        showOnboarding = true
-                    }
+                    .ignoresSafeArea(.all)
+                } else {
+                    ContentView()
+                        .environment(feedStore)
+                        .environment(profileStore)
+                        .environment(selectedFormulaStore)
+                        .onReceive(NotificationCenter.default.publisher(for: .returnToOnboarding)) { _ in
+                            showOnboarding = true
+                        }
+                }
+            }
+            .sheet(isPresented: .constant(!hasAcceptedMedicalDisclaimer)) {
+                MedicalDisclaimerView()
             }
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(SharedModelContainer.shared)
     }
 }

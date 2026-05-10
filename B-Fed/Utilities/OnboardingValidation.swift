@@ -5,13 +5,6 @@ import Foundation
 /// Stateless and testable — no UI dependencies.
 enum OnboardingValidation {
 
-    /// Validates an email address using RFC 5322 simplified regex.
-    static func isValidEmail(_ email: String) -> Bool {
-        guard !email.isEmpty else { return false }
-        let regex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
-        return NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: email)
-    }
-
     /// Validates that a name field is non-empty after trimming.
     static func isValidName(_ name: String) -> Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -44,7 +37,6 @@ enum OnboardingValidation {
     /// Returns an array of error messages for invalid fields.
     static func validateOnboardingForm(
         parentName: String,
-        parentEmail: String,
         country: String,
         babyName: String,
         babyDOB: Date,
@@ -54,10 +46,6 @@ enum OnboardingValidation {
 
         if !isValidName(parentName) {
             errors.append("Please enter your name")
-        }
-
-        if !isValidEmail(parentEmail) {
-            errors.append("Please enter a valid email address")
         }
 
         if !isValidCountry(country) {
