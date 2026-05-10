@@ -70,12 +70,20 @@ struct DashboardView: View {
         }
     }
     
+    private var isFormulaMode: Bool {
+        feedStore.babyProfile?.feedingType == .formula
+    }
+    
     private var isBreastfeedingMode: Bool {
         feedStore.babyProfile?.feedingType == .breast
     }
     
     private var isMixedMode: Bool {
         feedStore.babyProfile?.feedingType == .mixed
+    }
+    
+    private var usesFeedCountRing: Bool {
+        isBreastfeedingMode || isMixedMode
     }
     
     private var recommendedDailyMl: Int? {
@@ -86,7 +94,7 @@ struct DashboardView: View {
     }
     
     private var recommendedFeedsPerDay: Int? {
-        if isBreastfeedingMode || isMixedMode {
+        if usesFeedCountRing {
             guard let profile = feedStore.babyProfile else { return nil }
             return BreastfeedingGuidance.recommendedFeedsPerDay(ageInDays: profile.ageInDays)
         }
@@ -95,7 +103,7 @@ struct DashboardView: View {
     }
     
     private var ringProgress: Double {
-        if isBreastfeedingMode {
+        if usesFeedCountRing {
             guard let target = recommendedFeedsPerDay, target > 0 else { return 0 }
             return min(Double(todayFeeds.count) / Double(target), 1.0)
         }
@@ -109,9 +117,45 @@ struct DashboardView: View {
             guard let avgSecs = BreastfeedingGuidance.averageDuration(for: todayFeeds) else { return "—" }
             return BreastfeedingGuidance.formatDuration(avgSecs)
         }
+        if isMixedMode {
+            return mixedModeRightStatDisplay
+        }
         let totalConsumed = todayFeeds.reduce(0) { $0 + Int($1.consumedMl ?? Int($1.amount)) }
         let avg = Double(totalConsumed) / Double(todayFeeds.count)
         return "\(Int(round(avg))) ml"
+    }
+    
+    private var mixedModeRightStatDisplay: String {
+        let breastFeeds = todayFeeds.filter { $0.sessionType == .breast || ($0.sessionType == nil && ($0.totalDurationSeconds != nil || $0.feedingSide != nil)) }
+        let bottleFeeds = todayFeeds.filter { $0.sessionType == .bottle || ($0.sessionType == nil && $0.amount > 0) }
+        if bottleFeeds.count > breastFeeds.count {
+            let totalConsumed = bottleFeeds.reduce(0) { $0 + Int($1.consumedMl ?? Int($1.amount)) }
+            let avg = Double(totalConsumed) / Double(bottleFeeds.count)
+            return "\(Int(round(avg))) ml"
+        } else if breastFeeds.count >= bottleFeeds.count {
+            guard let avgSecs = BreastfeedingGuidance.averageDuration(for: breastFeeds) else { return "—" }
+            return BreastfeedingGuidance.formatDuration(avgSecs)
+        }
+        return "—"
+    }
+    
+    private var mixedModeRightStatLabel: String {
+        let breastFeeds = todayFeeds.filter { $0.sessionType == .breast || ($0.sessionType == nil && ($0.totalDurationSeconds != nil || $0.feedingSide != nil)) }
+        let bottleFeeds = todayFeeds.filter { $0.sessionType == .bottle || ($0.sessionType == nil && $0.amount > 0) }
+        if bottleFeeds.count > breastFeeds.count {
+            return "Avg bottle"
+        } else if breastFeeds.count >= bottleFeeds.count {
+            return "Avg nursing"
+        }
+        return "Avg per feed"
+    }
+    
+    private var mixedModeSplitText: String? {
+        guard isMixedMode else { return nil }
+        let breastCount = todayFeeds.filter { $0.sessionType == .breast || ($0.sessionType == nil && ($0.totalDurationSeconds != nil || $0.feedingSide != nil)) }.count
+        let bottleCount = todayFeeds.filter { $0.sessionType == .bottle || ($0.sessionType == nil && $0.amount > 0) }.count
+        guard breastCount + bottleCount > 0 else { return nil }
+        return "\(breastCount) breast · \(bottleCount) bottle today"
     }
     
     private var isEmptyState: Bool {
@@ -122,8 +166,14 @@ struct DashboardView: View {
         todayFeeds.first?.feedingSide
     }
     
+    private var lastFeedWasBreast: Bool {
+        guard let last = todayFeeds.first else { return false }
+        if let type = last.sessionType { return type == .breast }
+        return last.totalDurationSeconds != nil || last.feedingSide != nil
+    }
+    
     private var nextSideText: String? {
-        guard let lastSide = lastFeedSide else { return nil }
+        guard lastFeedWasBreast, let lastSide = lastFeedSide else { return nil }
         if lastSide == .both {
             return "Alternate sides next time"
         }
@@ -147,10 +197,18 @@ struct DashboardView: View {
                             progressRing
                                 .padding(.top, 32)
                             
+                            if let split = mixedModeSplitText {
+                                Text(split)
+                                    .font(AppFont.sans(12))
+                                    .foregroundStyle(Color.textSecondary)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .padding(.top, 8)
+                            }
+                            
                             statCards
                                 .padding(.top, 32)
                             
-                            if isBreastfeedingMode, let nextSide = nextSideText {
+                            if (isBreastfeedingMode || isMixedMode), let nextSide = nextSideText {
                                 nextSideIndicator(text: nextSide)
                                     .padding(.top, 14)
                             }
@@ -322,7 +380,7 @@ struct DashboardView: View {
                 .rotationEffect(.degrees(-90))
             
             VStack(spacing: 2) {
-                if isBreastfeedingMode {
+                if usesFeedCountRing {
                     Text("\(todayFeeds.count)")
                         .font(AppFont.sans(28, weight: .semibold))
                         .foregroundColor(Color.textPrimary)
@@ -360,8 +418,8 @@ struct DashboardView: View {
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(isBreastfeedingMode ? "Daily feed count" : "Daily intake progress")
-        .accessibilityValue(isBreastfeedingMode
+        .accessibilityLabel(usesFeedCountRing ? "Daily feed count" : "Daily intake progress")
+        .accessibilityValue(usesFeedCountRing
             ? "\(todayFeeds.count) feeds \(recommendedFeedsPerDay.map { "of \($0) feeds" } ?? "logged")"
             : "\(totalMlToday) millilitres \(recommendedDailyMl.map { "of \($0) millilitres" } ?? "logged")"
         )
@@ -404,9 +462,9 @@ struct DashboardView: View {
             .accessibilityElement(children: .combine)
             .accessibilityLabel("Feeds today: \(todayFeeds.count) \(recommendedFeedsPerDay.map { "of \($0)" } ?? "logged")")
             
-            // Avg per feed / Avg duration
+            // Avg per feed / Avg duration / Adaptive for mixed
             VStack(alignment: .leading, spacing: 6) {
-                Text(isBreastfeedingMode ? "Avg duration" : "Avg per feed")
+                Text(isMixedMode ? mixedModeRightStatLabel : (isBreastfeedingMode ? "Avg duration" : "Avg per feed"))
                     .font(AppFont.sans(11, weight: .medium))
                     .foregroundColor(Color(hex: "7B6A9A"))
                     .tracking(0.04 * 11)
@@ -416,7 +474,7 @@ struct DashboardView: View {
                     .font(AppFont.sans(22, weight: .semibold))
                     .foregroundColor(Color.textPrimary)
                 
-                Text(isBreastfeedingMode ? "per feed" : "consumed avg")
+                Text(isMixedMode ? "today" : (isBreastfeedingMode ? "per feed" : "consumed avg"))
                     .font(AppFont.sans(11))
                     .foregroundColor(Color(hex: "A898C4"))
             }
@@ -429,7 +487,7 @@ struct DashboardView: View {
                     .stroke(Color(hex: "7B6A9A").opacity(0.15), lineWidth: 0.5)
             )
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(isBreastfeedingMode ? "Average duration" : "Average per feed"): \(avgPerFeedDisplay)")
+            .accessibilityLabel("\(isMixedMode ? mixedModeRightStatLabel : (isBreastfeedingMode ? "Average duration" : "Average per feed")): \(avgPerFeedDisplay)")
         }
     }
     
@@ -679,6 +737,10 @@ struct InsightsView: View {
     }
     
     private func isGoodFeed(_ feed: Feed) -> Bool {
+        // Breastfeeds are considered "good" by default
+        if feed.sessionType == .breast || (feed.sessionType == nil && (feed.totalDurationSeconds != nil || feed.feedingSide != nil)) {
+            return true
+        }
         let prepared = Int(feed.amount)
         let consumed = feed.consumedMl ?? prepared
         return Double(consumed) >= Double(prepared) * 0.75
@@ -690,12 +752,18 @@ struct InsightsView: View {
         let id = UUID()
         let letter: String
         let amount: Double
+        let nursingMinutes: Double
+        let bottleMl: Double
         let isToday: Bool
         let isFuture: Bool
     }
     
     private var isBreastfeedingMode: Bool {
         feedStore.babyProfile?.feedingType == .breast
+    }
+    
+    private var isMixedMode: Bool {
+        feedStore.babyProfile?.feedingType == .mixed
     }
     
     private var currentWeekData: [WeekDayData] {
@@ -710,13 +778,22 @@ struct InsightsView: View {
             let isToday = calendar.isDate(date, inSameDayAs: today)
             let isFuture = date > today
             let dayFeeds = allFeeds.filter { calendar.isDate($0.startTime, inSameDayAs: date) }
+            let bottleFeeds = dayFeeds.filter { $0.sessionType == .bottle || ($0.sessionType == nil && $0.amount > 0) }
+            let breastFeeds = dayFeeds.filter { $0.sessionType == .breast || ($0.sessionType == nil && ($0.totalDurationSeconds != nil || $0.feedingSide != nil)) }
             let total: Double
             if isBreastfeedingMode {
                 total = Double(BreastfeedingGuidance.totalNursingMinutes(for: dayFeeds))
             } else {
                 total = dayFeeds.reduce(0.0) { $0 + Double($1.consumedMl ?? Int($1.amount)) }
             }
-            return WeekDayData(letter: letters[offset], amount: total, isToday: isToday, isFuture: isFuture)
+            return WeekDayData(
+                letter: letters[offset],
+                amount: total,
+                nursingMinutes: Double(BreastfeedingGuidance.totalNursingMinutes(for: breastFeeds)),
+                bottleMl: bottleFeeds.reduce(0.0) { $0 + Double($1.consumedMl ?? Int($1.amount)) },
+                isToday: isToday,
+                isFuture: isFuture
+            )
         }
     }
     
@@ -820,8 +897,13 @@ struct InsightsView: View {
                             intakeTrendCard
                                 .padding(.top, 12)
                             
-                            if isBreastfeedingMode {
+                            if isBreastfeedingMode || isMixedMode {
                                 breastfeedingBalanceCard
+                                    .padding(.top, 12)
+                            }
+                            
+                            if isMixedMode, daysOfData >= 5 {
+                                mixedPatternCard
                                     .padding(.top, 12)
                             }
                             
@@ -1013,8 +1095,13 @@ struct InsightsView: View {
                 .lineSpacing(1.3 * 15 - 15)
                 .padding(.top, 8)
             
-            trendBarChart
-                .padding(.top, 14)
+            if isMixedMode {
+                mixedModeTrendCharts
+                    .padding(.top, 14)
+            } else {
+                trendBarChart
+                    .padding(.top, 14)
+            }
             
             Text(trendReassurance)
                 .font(AppFont.sans(12).italic())
@@ -1035,7 +1122,7 @@ struct InsightsView: View {
     
     private var weightContextLine: some View {
         Group {
-            if isBreastfeedingMode {
+            if isBreastfeedingMode || isMixedMode {
                 EmptyView()
             } else if let weightKg = feedStore.babyProfile?.weightInKg, weightKg > 0 {
                 let rec = Int(weightKg * 150)
@@ -1085,6 +1172,65 @@ struct InsightsView: View {
         .chartYScale(domain: 0...yMax)
     }
     
+    private var mixedModeTrendCharts: some View {
+        let data = currentWeekData
+        let maxNursing = data.map { $0.nursingMinutes }.max() ?? 1
+        let maxBottle = data.map { $0.bottleMl }.max() ?? 1
+        return VStack(spacing: 12) {
+            // Nursing minutes
+            HStack {
+                Text("Nursing")
+                    .font(AppFont.sans(10, weight: .medium))
+                    .foregroundStyle(Color(hex: "7B6A9A"))
+                Spacer()
+            }
+            Chart(data) { item in
+                BarMark(
+                    x: .value("Day", item.letter),
+                    y: .value("Minutes", item.nursingMinutes)
+                )
+                .foregroundStyle(item.isToday ? Color.accentLavender : (item.isFuture ? Color(hex: "F0EDF5") : Color(hex: "C8C0D4")))
+                .cornerRadius(2)
+            }
+            .frame(height: 44)
+            .chartYAxis(.hidden)
+            .chartXAxis(.hidden)
+            .chartLegend(.hidden)
+            .chartYScale(domain: 0...max(maxNursing * 1.2, 1))
+            
+            // Bottle ml
+            HStack {
+                Text("Bottle")
+                    .font(AppFont.sans(10, weight: .medium))
+                    .foregroundStyle(Color(hex: "B07850"))
+                Spacer()
+            }
+            Chart(data) { item in
+                BarMark(
+                    x: .value("Day", item.letter),
+                    y: .value("ml", item.bottleMl)
+                )
+                .foregroundStyle(item.isToday ? Color(hex: "D4A898") : (item.isFuture ? Color(hex: "FBF5F0") : Color(hex: "E8C4B0")))
+                .cornerRadius(2)
+            }
+            .frame(height: 44)
+            .chartYAxis(.hidden)
+            .chartXAxis {
+                AxisMarks { value in
+                    AxisValueLabel {
+                        if let day = value.as(String.self) {
+                            Text(day)
+                                .font(AppFont.sans(9))
+                                .foregroundStyle(Color.textTertiary)
+                        }
+                    }
+                }
+            }
+            .chartLegend(.hidden)
+            .chartYScale(domain: 0...max(maxBottle * 1.2, 1))
+        }
+    }
+    
     private var recommendedDailyForChart: Int {
         if isBreastfeedingMode {
             guard let profile = feedStore.babyProfile else { return 120 }
@@ -1112,7 +1258,8 @@ struct InsightsView: View {
     
     @ViewBuilder
     private var breastfeedingBalanceCard: some View {
-        if daysOfData >= 3, let headline = BreastfeedingGuidance.balanceInsight(for: allFeeds, babyName: babyName) {
+        let breastFeeds = allFeeds.filter { $0.sessionType == .breast || ($0.sessionType == nil && ($0.totalDurationSeconds != nil || $0.feedingSide != nil)) }
+        if daysOfData >= 3, !breastFeeds.isEmpty, let headline = BreastfeedingGuidance.balanceInsight(for: breastFeeds, babyName: babyName) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     Text("Balance")
@@ -1152,6 +1299,100 @@ struct InsightsView: View {
                     .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
             )
         }
+    }
+    
+    // MARK: — Mixed Pattern Card
+    
+    private var mixedPatternCard: some View {
+        let headline = mixedPatternHeadline
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("Pattern")
+                    .font(AppFont.sans(10, weight: .medium))
+                    .foregroundStyle(Color(hex: "7B6A9A"))
+                    .tracking(0.05 * 10)
+                    .textCase(.uppercase)
+                
+                Spacer()
+                
+                Circle()
+                    .fill(Color(hex: "F0EDF5"))
+                    .frame(width: 32, height: 32)
+                    .overlay(
+                        Image(systemName: "clock.arrow.circlepath")
+                            .font(AppFont.sans(14, weight: .medium))
+                            .foregroundStyle(Color(hex: "7B6A9A"))
+                    )
+            }
+            
+            Text(headline)
+                .font(AppFont.sans(15, weight: .medium))
+                .foregroundStyle(Color.textPrimary)
+                .lineSpacing(1.3 * 15 - 15)
+                .padding(.top, 8)
+            
+            Text("Combination feeding works differently for every family")
+                .font(AppFont.sans(12).italic())
+                .foregroundStyle(Color.textTertiary)
+                .padding(.top, 8)
+        }
+        .padding(18)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+        )
+    }
+    
+    private var mixedPatternHeadline: String {
+        let calendar = Calendar.current
+        let cutoff = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        let recentFeeds = allFeeds.filter { $0.startTime >= cutoff }
+        
+        var timeSlots: [String: (breast: Int, bottle: Int)] = [:]
+        for feed in recentFeeds {
+            let hour = calendar.component(.hour, from: feed.startTime)
+            let slot: String
+            switch hour {
+            case 5..<12: slot = "morning"
+            case 12..<17: slot = "afternoon"
+            case 17..<21: slot = "evening"
+            default: slot = "night"
+            }
+            let isBreast = feed.sessionType == .breast || (feed.sessionType == nil && (feed.totalDurationSeconds != nil || feed.feedingSide != nil))
+            let isBottle = feed.sessionType == .bottle || (feed.sessionType == nil && feed.amount > 0)
+            var current = timeSlots[slot] ?? (breast: 0, bottle: 0)
+            if isBreast { current.breast += 1 }
+            if isBottle { current.bottle += 1 }
+            timeSlots[slot] = current
+        }
+        
+        guard !timeSlots.isEmpty else { return "Feeding is fairly balanced across types" }
+        
+        var dominantSlot: String? = nil
+        var dominantType: String? = nil
+        for (slot, counts) in timeSlots {
+            let total = counts.breast + counts.bottle
+            guard total >= 2 else { continue }
+            let breastPct = Double(counts.breast) / Double(total)
+            let bottlePct = Double(counts.bottle) / Double(total)
+            if breastPct >= 0.7 {
+                dominantSlot = slot
+                dominantType = "breast"
+            } else if bottlePct >= 0.7 {
+                dominantSlot = slot
+                dominantType = "bottle"
+            }
+        }
+        
+        if let slot = dominantSlot, let type = dominantType {
+            return "Mornings tend to be \(type)"
+                .replacingOccurrences(of: "morning", with: slot)
+                .replacingOccurrences(of: "Mornings", with: slot.capitalized + "s")
+        }
+        
+        return "Feeding is fairly balanced across types"
     }
     
     // MARK: — Card 3: Growth stage nudge

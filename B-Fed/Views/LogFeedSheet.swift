@@ -17,8 +17,17 @@ struct LogFeedSheet: View {
     private var isFormulaMode: Bool { feedingType == .formula }
     private var isBreastMode: Bool { feedingType == .breast }
     private var isMixedMode: Bool { feedingType == .mixed }
-    private var showsFormulaSections: Bool { isFormulaMode || isMixedMode }
-    private var showsBreastSections: Bool { isBreastMode || isMixedMode }
+    private var showsSessionToggle: Bool { isMixedMode }
+    private var showsFormulaSections: Bool {
+        if isFormulaMode { return true }
+        if isMixedMode { return sessionType == .bottle }
+        return false
+    }
+    private var showsBreastSections: Bool {
+        if isBreastMode { return true }
+        if isMixedMode { return sessionType == .breast }
+        return false
+    }
     
     // MARK: - Formula State
     @State private var amount: Double = 120
@@ -40,6 +49,9 @@ struct LogFeedSheet: View {
     @State private var showingBottlePrepGuide: Bool = false
     @State private var originalFormula: Formula? = nil
     @State private var formulaChangedForThisFeed: Bool = false
+    
+    // MARK: - Mixed Mode State
+    @State private var sessionType: FeedSessionType? = nil
     
     // MARK: - Breastfeeding State
     @State private var selectedSide: FeedingSide? = nil
@@ -131,6 +143,16 @@ struct LogFeedSheet: View {
         return AppFormatters.time.string(from: feedTime)
     }
     
+    // MARK: - Derived (Mixed Mode)
+    private var defaultSessionType: FeedSessionType {
+        guard let last = allFeeds.first else { return .breast }
+        // Prefer explicit sessionType, fall back to inference
+        if let type = last.sessionType { return type }
+        if last.totalDurationSeconds != nil || last.feedingSide != nil { return .breast }
+        if last.amount > 0 { return .bottle }
+        return .breast
+    }
+    
     // MARK: - Derived (Breastfeeding)
     private var suggestedSide: FeedingSide {
         guard let lastSide = allFeeds.first?.feedingSide else { return .left }
@@ -152,9 +174,13 @@ struct LogFeedSheet: View {
             return amount > 0
         } else if isBreastMode {
             return selectedSide != nil
-        } else {
-            return selectedSide != nil || amount > 0
+        } else if isMixedMode {
+            guard let sessionType = sessionType else { return false }
+            if sessionType == .breast { return selectedSide != nil }
+            if sessionType == .bottle { return amount > 0 }
+            return false
         }
+        return false
     }
     
     // MARK: - Timer Helpers
@@ -285,6 +311,12 @@ struct LogFeedSheet: View {
                                 .padding(.horizontal, 20)
                                 .padding(.top, 20)
                             
+                            if showsSessionToggle {
+                                sessionTypeToggle
+                                    .padding(.horizontal, 20)
+                                    .padding(.top, 8)
+                            }
+                            
                             if showsFormulaSections {
                                 prepareBottleRow
                                     .padding(.horizontal, 20)
@@ -392,6 +424,9 @@ struct LogFeedSheet: View {
         .presentationCornerRadius(20)
         .presentationBackground(.white)
         .onAppear {
+            if isMixedMode {
+                sessionType = defaultSessionType
+            }
             if showsFormulaSections {
                 amount = defaultAmount
                 consumedMl = Int(amount)
@@ -417,6 +452,7 @@ struct LogFeedSheet: View {
         }
         .animation(.easeInOut(duration: 0.25), value: timerActive)
         .animation(.easeInOut(duration: 0.2), value: selectedSide)
+        .animation(.easeInOut(duration: 0.2), value: sessionType)
         .onChange(of: showingFormulaSelector) { _, isShowing in
             if !isShowing {
                 formulaChangedForThisFeed = formulaStore.selectedFormula?.id != originalFormula?.id
@@ -438,6 +474,32 @@ struct LogFeedSheet: View {
         }
         .sheet(isPresented: $showingBottlePrepGuide) {
             BottlePrepGuideView()
+        }
+    }
+    
+    // MARK: - Session Type Toggle
+    private var sessionTypeToggle: some View {
+        HStack(spacing: 10) {
+            ForEach(FeedSessionType.allCases, id: \.self) { type in
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        sessionType = type
+                    }
+                }) {
+                    Text(type.displayName)
+                        .font(AppFont.sans(14, weight: .medium))
+                        .foregroundStyle(sessionType == type ? Color.backgroundCard : Color.accentPurple)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
+                        .background(
+                            Capsule()
+                                .fill(sessionType == type ? Color.accentPurple : Color.surfacePurple)
+                        )
+                }
+                .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Log a \(type.displayName.lowercased())")
+                .accessibilityValue(sessionType == type ? "Selected" : "Not selected")
+            }
         }
     }
     
@@ -1126,6 +1188,16 @@ struct LogFeedSheet: View {
         
         let feedDuration: TimeInterval? = timerActive ? TimeInterval(elapsedSeconds) : nil
         
+        // Determine session type for the feed
+        let feedSessionType: FeedSessionType?
+        if isFormulaMode {
+            feedSessionType = .bottle
+        } else if isBreastMode {
+            feedSessionType = .breast
+        } else {
+            feedSessionType = sessionType
+        }
+        
         _ = feedStore.createFeed(
             amount: showsFormulaSections && (isFormulaMode || (isMixedMode && amount > 0)) ? amount : 0,
             startTime: feedTime,
@@ -1136,7 +1208,8 @@ struct LogFeedSheet: View {
             feedingSide: selectedSide,
             leftDurationSeconds: selectedSide == .left || selectedSide == .both ? leftElapsedSeconds : nil,
             rightDurationSeconds: selectedSide == .right || selectedSide == .both ? rightElapsedSeconds : nil,
-            totalDurationSeconds: showsBreastSections && selectedSide != nil ? totalBreastDurationSeconds : nil
+            totalDurationSeconds: showsBreastSections && selectedSide != nil ? totalBreastDurationSeconds : nil,
+            sessionType: feedSessionType
         )
         
         if timerActive {

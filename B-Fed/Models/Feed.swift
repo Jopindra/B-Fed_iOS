@@ -19,6 +19,9 @@ class Feed {
     var rightDurationSeconds: Int? = nil
     var totalDurationSeconds: Int? = nil
     
+    // Session type for mixed feeding tracking
+    var sessionTypeRaw: String? = nil
+    
     var feedingSide: FeedingSide? {
         get {
             guard let raw = feedingSideRaw else { return nil }
@@ -26,6 +29,16 @@ class Feed {
         }
         set {
             feedingSideRaw = newValue?.rawValue
+        }
+    }
+    
+    var sessionType: FeedSessionType? {
+        get {
+            guard let raw = sessionTypeRaw else { return nil }
+            return FeedSessionType(rawValue: raw)
+        }
+        set {
+            sessionTypeRaw = newValue?.rawValue
         }
     }
     
@@ -41,7 +54,8 @@ class Feed {
         feedingSide: FeedingSide? = nil,
         leftDurationSeconds: Int? = nil,
         rightDurationSeconds: Int? = nil,
-        totalDurationSeconds: Int? = nil
+        totalDurationSeconds: Int? = nil,
+        sessionType: FeedSessionType? = nil
     ) {
         self.id = id
         self.startTime = startTime
@@ -56,6 +70,7 @@ class Feed {
         self.leftDurationSeconds = leftDurationSeconds
         self.rightDurationSeconds = rightDurationSeconds
         self.totalDurationSeconds = totalDurationSeconds
+        self.sessionTypeRaw = sessionType?.rawValue
     }
     
     /// Returns the duration of the feed in minutes
@@ -85,6 +100,18 @@ class Feed {
     var formattedAmount: String {
         let unitString = unit == .milliliters ? "ml" : "oz"
         return String(format: "%.1f %@", amount, unitString)
+    }
+}
+
+enum FeedSessionType: String, Codable, CaseIterable {
+    case breast = "breast"
+    case bottle = "bottle"
+    
+    var displayName: String {
+        switch self {
+        case .breast: return "Breastfeed"
+        case .bottle: return "Bottle"
+        }
     }
 }
 

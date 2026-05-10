@@ -142,11 +142,11 @@ enum FeedingType: String, Codable, CaseIterable {
     var displayName: String {
         switch self {
         case .breast:
-            return "Breast milk"
+            return "Breastfeeding"
         case .formula:
             return "Formula"
         case .mixed:
-            return "Mixed feeding"
+            return "Combination feeding"
         }
     }
     

@@ -144,9 +144,9 @@ final class BabyProfileTests: XCTestCase {
     // MARK: - Feeding Type
 
     func testFeedingTypeDisplayNames() {
-        XCTAssertEqual(FeedingType.breast.displayName, "Breast milk")
+        XCTAssertEqual(FeedingType.breast.displayName, "Breastfeeding")
         XCTAssertEqual(FeedingType.formula.displayName, "Formula")
-        XCTAssertEqual(FeedingType.mixed.displayName, "Mixed feeding")
+        XCTAssertEqual(FeedingType.mixed.displayName, "Combination feeding")
     }
 
     func testFeedingTypeIcons() {

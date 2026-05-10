@@ -169,7 +169,8 @@ class FeedStore {
         feedingSide: FeedingSide? = nil,
         leftDurationSeconds: Int? = nil,
         rightDurationSeconds: Int? = nil,
-        totalDurationSeconds: Int? = nil
+        totalDurationSeconds: Int? = nil,
+        sessionType: FeedSessionType? = nil
     ) -> Feed {
         var endTime: Date? = nil
         if let duration = duration, duration > 0 {
@@ -192,7 +193,8 @@ class FeedStore {
             feedingSide: feedingSide,
             leftDurationSeconds: leftDurationSeconds,
             rightDurationSeconds: rightDurationSeconds,
-            totalDurationSeconds: totalDurationSeconds
+            totalDurationSeconds: totalDurationSeconds,
+            sessionType: sessionType
         )
         modelContext?.insert(feed)
         persist()
@@ -280,7 +282,8 @@ class FeedStore {
         feedingSide: FeedingSide? = nil,
         leftDurationSeconds: Int? = nil,
         rightDurationSeconds: Int? = nil,
-        totalDurationSeconds: Int? = nil
+        totalDurationSeconds: Int? = nil,
+        sessionType: FeedSessionType? = nil
     ) {
         if let amount = amount { feed.amount = amount }
         if let startTime = startTime { feed.startTime = startTime }
@@ -292,6 +295,7 @@ class FeedStore {
         if let leftDurationSeconds = leftDurationSeconds { feed.leftDurationSeconds = leftDurationSeconds }
         if let rightDurationSeconds = rightDurationSeconds { feed.rightDurationSeconds = rightDurationSeconds }
         if let totalDurationSeconds = totalDurationSeconds { feed.totalDurationSeconds = totalDurationSeconds }
+        if let sessionType = sessionType { feed.sessionType = sessionType }
         persist()
         syncWidgetData()
     }

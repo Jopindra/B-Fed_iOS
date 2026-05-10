@@ -22,6 +22,20 @@ struct FeedHistoryView: View {
         feedingType == .breast
     }
     
+    private var isMixedMode: Bool {
+        feedingType == .mixed
+    }
+    
+    private func isBreastFeed(_ feed: Feed) -> Bool {
+        if let type = feed.sessionType { return type == .breast }
+        return feed.totalDurationSeconds != nil || feed.feedingSide != nil
+    }
+    
+    private func isBottleFeed(_ feed: Feed) -> Bool {
+        if let type = feed.sessionType { return type == .bottle }
+        return feed.amount > 0
+    }
+    
     private var groupedDays: [DayGroup] {
         let calendar = Calendar.current
         let byDay = Dictionary(grouping: feeds) { calendar.startOfDay(for: $0.startTime) }
@@ -30,11 +44,15 @@ struct FeedHistoryView: View {
             let dayFeeds = byDay[date] ?? []
             let totalMl = dayFeeds.reduce(0) { $0 + Int($1.consumedMl ?? Int($1.amount)) }
             let totalDuration = dayFeeds.compactMap { $0.totalDurationSeconds }.reduce(0, +)
+            let breastCount = dayFeeds.filter(isBreastFeed).count
+            let bottleCount = dayFeeds.filter(isBottleFeed).count
             return DayGroup(
                 date: date,
                 feeds: dayFeeds.sorted { $0.startTime > $1.startTime },
                 totalMl: totalMl,
-                totalDurationSeconds: totalDuration
+                totalDurationSeconds: totalDuration,
+                breastCount: breastCount,
+                bottleCount: bottleCount
             )
         }
     }
@@ -147,7 +165,8 @@ struct FeedHistoryView: View {
                         feedToDelete = feed
                         showingDeleteConfirmation = true
                     },
-                    isBreastfeedingMode: isBreastfeedingMode
+                    isBreastfeedingMode: isBreastfeedingMode,
+                    isMixedMode: isMixedMode
                 )
             }
         }
@@ -161,6 +180,8 @@ private struct DayGroup: Identifiable {
     let feeds: [Feed]
     let totalMl: Int
     let totalDurationSeconds: Int
+    let breastCount: Int
+    let bottleCount: Int
 }
 
 // MARK: - Day Section
@@ -169,6 +190,7 @@ private struct DaySection: View {
     let onTapFeed: (Feed) -> Void
     let onDeleteFeed: (Feed) -> Void
     let isBreastfeedingMode: Bool
+    let isMixedMode: Bool
     
     private var dayLabel: String {
         let calendar = Calendar.current
@@ -197,6 +219,8 @@ private struct DaySection: View {
                     if isBreastfeedingMode {
                         let durationText = BreastfeedingGuidance.formatDurationVerbose(group.totalDurationSeconds)
                         Text("\(group.feeds.count) feed\(group.feeds.count == 1 ? "" : "s") · \(durationText)")
+                    } else if isMixedMode {
+                        Text("\(group.feeds.count) feeds · \(group.breastCount) breast, \(group.bottleCount) bottle")
                     } else {
                         Text("\(group.feeds.count) feed\(group.feeds.count == 1 ? "" : "s") · \(group.totalMl) ml")
                     }
@@ -211,7 +235,8 @@ private struct DaySection: View {
                 ForEach(Array(group.feeds.enumerated()), id: \.element.id) { index, feed in
                     FeedRow(
                         feed: feed,
-                        onTap: { onTapFeed(feed) }
+                        onTap: { onTapFeed(feed) },
+                        isMixedMode: isMixedMode
                     )
                     
                     if index < group.feeds.count - 1 {
@@ -235,6 +260,7 @@ private struct DaySection: View {
 private struct FeedRow: View {
     let feed: Feed
     let onTap: () -> Void
+    let isMixedMode: Bool
     
     @Environment(FeedStore.self) private var feedStore
     
@@ -246,6 +272,12 @@ private struct FeedRow: View {
         feedingType == .breast
     }
     
+    private var isBreastFeed: Bool {
+        if let type = feed.sessionType { return type == .breast }
+        if isBreastfeedingMode { return true }
+        return feed.totalDurationSeconds != nil || feed.feedingSide != nil
+    }
+    
     private var isPartial: Bool {
         let prepared = Int(feed.amount)
         let consumed = feed.consumedMl ?? prepared
@@ -253,10 +285,10 @@ private struct FeedRow: View {
     }
     
     private var statusColor: Color {
-        if isBreastfeedingMode {
-            return feed.feedingSide != nil ? Color(hex: "7B6A9A") : Color.accentLavender
+        if isBreastFeed {
+            return Color(hex: "7B6A9A")
         }
-        return isPartial ? Color.accentLavender : Color(hex: "7B6A9A")
+        return isPartial ? Color.accentLavender : Color(hex: "C8C0D4")
     }
     
     private var timeString: String {
@@ -290,13 +322,19 @@ private struct FeedRow: View {
     }
     
     private var primaryText: String {
-        if isBreastfeedingMode, let total = feed.totalDurationSeconds {
-            return "\(BreastfeedingGuidance.formatDuration(total)) total"
+        if isBreastFeed, let total = feed.totalDurationSeconds {
+            return "\(BreastfeedingGuidance.formatDuration(total)) · \(breastInfo)"
+        }
+        if isBreastFeed {
+            return breastInfo
         }
         return "\(Int(feed.amount)) ml"
     }
     
     private var secondaryText: String {
+        if isMixedMode {
+            return isBreastFeed ? "Breastfed · \(periodLabel)" : formulaInfo
+        }
         if isBreastfeedingMode {
             return breastInfo
         }
@@ -304,8 +342,8 @@ private struct FeedRow: View {
     }
     
     private var accessibilityLabel: String {
-        if isBreastfeedingMode, let side = feed.feedingSide {
-            return "\(primaryText) feed on \(side.displayName) at \(timeString)"
+        if isBreastFeed, let side = feed.feedingSide {
+            return "\(BreastfeedingGuidance.formatDuration(feed.totalDurationSeconds ?? 0)) feed on \(side.displayName) at \(timeString)"
         }
         return "\(Int(feed.amount)) millilitre feed at \(timeString), \(formulaInfo)"
     }
@@ -324,7 +362,7 @@ private struct FeedRow: View {
                             .font(AppFont.sans(14, weight: .medium))
                             .foregroundColor(Color.textPrimary)
                         
-                        if !isBreastfeedingMode, isPartial, let consumed = feed.consumedMl {
+                        if !isBreastFeed, isPartial, let consumed = feed.consumedMl {
                             Text("· \(consumed) ml consumed")
                                 .font(AppFont.sans(11, weight: .regular))
                                 .foregroundColor(Color(hex: "B07850"))
@@ -343,9 +381,11 @@ private struct FeedRow: View {
                         .font(AppFont.sans(13))
                         .foregroundColor(Color.textSecondary)
                     
-                    Text(periodLabel)
-                        .font(AppFont.sans(11))
-                        .foregroundColor(Color.textTertiary)
+                    if !isMixedMode {
+                        Text(periodLabel)
+                            .font(AppFont.sans(11))
+                            .foregroundColor(Color.textTertiary)
+                    }
                 }
             }
             .padding(.horizontal, 16)

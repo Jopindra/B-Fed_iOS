@@ -8,9 +8,9 @@ struct FeedingTypeScreen: View {
     let onContinue: () -> Void
 
     private let options: [(value: String, title: String, subtitle: String, icon: String, bgColor: Color, iconColor: Color)] = [
+        ("formula", "Formula", "Bottle feeding with formula or expressed milk", "cylinder.fill", .almostAquaLight, .almostAquaDark),
         ("breast", "Breastfeeding", "Nursing directly", "drop.fill", .peachDustLight, .peachDustDark),
-        ("formula", "Formula", "Bottle feeding", "cylinder.fill", .almostAquaLight, .almostAquaDark),
-        ("both", "Mixed feeding", "Both methods", "arrow.2.circlepath", .orchidTintLight, .orchidTintDark)
+        ("both", "Both", "Combination feeding", "arrow.2.circlepath", .orchidTintLight, .orchidTintDark)
     ]
 
     private var hasSelection: Bool {
