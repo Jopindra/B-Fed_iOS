@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- BF Monogram - Geometric Tech Logo -->
+  
+  <!-- Construction: F-form backbone with B-curve integration -->
+  <!-- Shared left stem creates unity -->
+  
+  <!-- Left stem -->
+  <rect x="58" y="40" width="22" height="120" fill="#5FA38E"/>
+  
+  <!-- Top arm -->
+  <rect x="58" y="40" width="85" height="22" fill="#5FA38E"/>
+  
+  <!-- Middle arm -->
+  <rect x="58" y="85" width="70" height="18" fill="#5FA38E"/>
+  
+  <!-- Lower bowl completing the B -->
+  <path d="M 80 103
+           L 80 125
+           C 80 148, 100 158, 125 158
+           C 148 158, 158 138, 158 120
+           C 158 102, 143 90, 120 90
+           L 80 103" 
+        fill="#5FA38E"/>
+</svg>

@@ -1,0 +1,194 @@
+import Foundation
+import SwiftData
+
+// MARK: - Baby Profile
+/// Stores baby information for intelligent feeding guidance
+@Model
+class BabyProfile {
+    var id: UUID = UUID()
+    
+    // Parent information
+    var parentName: String = ""
+    var parentEmail: String = ""
+    var parentDOB: Date = Date()
+    var country: String = ""
+    var countryCode: String = ""
+    
+    // Baby information
+    var babyName: String = "Baby"
+    var dateOfBirth: Date = Date()
+    var birthWeight: Double? = nil // in grams
+    var currentWeight: Double? = nil // in grams
+    var weightUnit: String = "kg"
+    var feedingType: FeedingType = FeedingType.formula
+    var formulaBrand: String? = nil
+    var formulaStage: FormulaStage? = nil
+    
+    // Formula Library + Smart Guide
+    var selectedBrandId: String? = nil
+    var selectedProductId: String? = nil
+    var usesFormulaGuide: Bool = false
+    var customFormulaBrand: String? = nil
+    var customFormulaProduct: String? = nil
+    
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
+    
+    /// Whether this profile has formula information worth displaying
+    var showsFormulaInfo: Bool {
+        feedingType == .formula || feedingType == .mixed
+    }
+    
+    init(
+        id: UUID = UUID(),
+        parentName: String = "",
+        parentEmail: String = "",
+        parentDOB: Date = Date(),
+        country: String = "",
+        countryCode: String = "",
+        babyName: String = "Baby",
+        dateOfBirth: Date = Date(),
+        birthWeight: Double? = nil,
+        currentWeight: Double? = nil,
+        weightUnit: String = "kg",
+        feedingType: FeedingType = .formula,
+        formulaBrand: String? = nil,
+        formulaStage: FormulaStage? = nil,
+        selectedBrandId: String? = nil,
+        selectedProductId: String? = nil,
+        usesFormulaGuide: Bool = false,
+        customFormulaBrand: String? = nil,
+        customFormulaProduct: String? = nil
+    ) {
+        self.id = id
+        self.parentName = parentName
+        self.parentEmail = parentEmail
+        self.parentDOB = parentDOB
+        self.country = country
+        self.countryCode = countryCode
+        self.babyName = babyName
+        self.dateOfBirth = dateOfBirth
+        self.birthWeight = birthWeight
+        self.currentWeight = currentWeight
+        self.weightUnit = weightUnit
+        self.feedingType = feedingType
+        self.formulaBrand = formulaBrand
+        self.formulaStage = formulaStage
+        self.selectedBrandId = selectedBrandId
+        self.selectedProductId = selectedProductId
+        self.usesFormulaGuide = usesFormulaGuide
+        self.customFormulaBrand = customFormulaBrand
+        self.customFormulaProduct = customFormulaProduct
+        self.createdAt = Date()
+        self.updatedAt = Date()
+    }
+    
+    /// Age in days (elapsed whole days, never negative)
+    var ageInDays: Int {
+        let calendar = Calendar.current
+        let startOfBirth = calendar.startOfDay(for: dateOfBirth)
+        let startOfToday = calendar.startOfDay(for: Date())
+        let days = calendar.dateComponents([.day], from: startOfBirth, to: startOfToday).day ?? 0
+        return max(0, days)
+    }
+    
+    /// Age in weeks (elapsed whole weeks, never negative)
+    var ageInWeeks: Int {
+        ageInDays / 7
+    }
+    
+    /// Age in months (elapsed whole months, never negative)
+    var ageInMonths: Int {
+        let calendar = Calendar.current
+        let startOfBirth = calendar.startOfDay(for: dateOfBirth)
+        let startOfToday = calendar.startOfDay(for: Date())
+        let months = calendar.dateComponents([.month], from: startOfBirth, to: startOfToday).month ?? 0
+        return max(0, months)
+    }
+    
+    /// Formatted age string for display
+    var ageDescription: String {
+        let days = ageInDays
+        let weeks = ageInWeeks
+        let months = ageInMonths
+
+        if days == 0 {
+            return "0 weeks old"
+        } else if days < 7 {
+            return "\(days) day\(days == 1 ? "" : "s") old"
+        } else if months < 1 {
+            return "\(weeks) week\(weeks == 1 ? "" : "s") old"
+        } else if months < 24 {
+            return "\(months) month\(months == 1 ? "" : "s") old"
+        } else {
+            let years = months / 12
+            return "\(years) year\(years == 1 ? "" : "s") old"
+        }
+    }
+    
+    /// Weight in kg for display (nil if zero or missing)
+    var weightInKg: Double? {
+        guard let weight = currentWeight ?? birthWeight, weight > 0 else { return nil }
+        return weight / 1000.0
+    }
+}
+
+// MARK: - Feeding Type
+enum FeedingType: String, Codable, CaseIterable {
+    case breast = "breast"
+    case formula = "formula"
+    case mixed = "mixed"
+    
+    var displayName: String {
+        switch self {
+        case .breast:
+            return "Breast milk"
+        case .formula:
+            return "Formula"
+        case .mixed:
+            return "Mixed feeding"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .breast:
+            return "heart.fill"
+        case .formula:
+            return "drop.fill"
+        case .mixed:
+            return "arrow.left.arrow.right"
+        }
+    }
+}
+
+// MARK: - Profile Status
+// MARK: - Formula Stage
+enum FormulaStage: String, Codable, CaseIterable {
+    case newborn = "newborn"
+    case stage1 = "stage1"
+    case stage2 = "stage2"
+    case stage3 = "stage3"
+    case toddler = "toddler"
+    
+    var displayName: String {
+        switch self {
+        case .newborn:
+            return "Newborn"
+        case .stage1:
+            return "Stage 1 (0–6 months)"
+        case .stage2:
+            return "Stage 2 (6–12 months)"
+        case .stage3:
+            return "Stage 3 (1–2 years)"
+        case .toddler:
+            return "Toddler (2+ years)"
+        }
+    }
+}
+
+enum ProfileSetupStatus {
+    case notStarted
+    case needsOnboarding
+    case complete
+}
