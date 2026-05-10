@@ -13,15 +13,35 @@ class Feed {
     var createdAt: Date = Date()
     var completed: Bool = true
     
+    // Breastfeeding fields
+    var feedingSideRaw: String? = nil
+    var leftDurationSeconds: Int? = nil
+    var rightDurationSeconds: Int? = nil
+    var totalDurationSeconds: Int? = nil
+    
+    var feedingSide: FeedingSide? {
+        get {
+            guard let raw = feedingSideRaw else { return nil }
+            return FeedingSide(rawValue: raw)
+        }
+        set {
+            feedingSideRaw = newValue?.rawValue
+        }
+    }
+    
     init(
         id: UUID = UUID(),
         startTime: Date = Date(),
         endTime: Date? = nil,
-        amount: Double,
+        amount: Double = 0,
         consumedMl: Int? = nil,
         unit: FeedUnit = .milliliters,
         notes: String = "",
-        completed: Bool = true
+        completed: Bool = true,
+        feedingSide: FeedingSide? = nil,
+        leftDurationSeconds: Int? = nil,
+        rightDurationSeconds: Int? = nil,
+        totalDurationSeconds: Int? = nil
     ) {
         self.id = id
         self.startTime = startTime
@@ -32,6 +52,10 @@ class Feed {
         self.notes = notes
         self.createdAt = Date()
         self.completed = completed
+        self.feedingSideRaw = feedingSide?.rawValue
+        self.leftDurationSeconds = leftDurationSeconds
+        self.rightDurationSeconds = rightDurationSeconds
+        self.totalDurationSeconds = totalDurationSeconds
     }
     
     /// Returns the duration of the feed in minutes
@@ -61,6 +85,28 @@ class Feed {
     var formattedAmount: String {
         let unitString = unit == .milliliters ? "ml" : "oz"
         return String(format: "%.1f %@", amount, unitString)
+    }
+}
+
+enum FeedingSide: String, Codable, CaseIterable {
+    case left = "left"
+    case right = "right"
+    case both = "both"
+    
+    var displayName: String {
+        switch self {
+        case .left: return "Left"
+        case .right: return "Right"
+        case .both: return "Both"
+        }
+    }
+    
+    var opposite: FeedingSide {
+        switch self {
+        case .left: return .right
+        case .right: return .left
+        case .both: return .left
+        }
     }
 }
 

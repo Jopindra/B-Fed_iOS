@@ -14,17 +14,27 @@ struct FeedHistoryView: View {
         feedStore.babyProfile?.babyName ?? "Baby"
     }
     
+    private var feedingType: FeedingType {
+        feedStore.babyProfile?.feedingType ?? .formula
+    }
+    
+    private var isBreastfeedingMode: Bool {
+        feedingType == .breast
+    }
+    
     private var groupedDays: [DayGroup] {
         let calendar = Calendar.current
         let byDay = Dictionary(grouping: feeds) { calendar.startOfDay(for: $0.startTime) }
         let sortedDays = byDay.keys.sorted { $0 > $1 }
         return sortedDays.map { date in
             let dayFeeds = byDay[date] ?? []
-            let total = dayFeeds.reduce(0) { $0 + Int($1.consumedMl ?? Int($1.amount)) }
+            let totalMl = dayFeeds.reduce(0) { $0 + Int($1.consumedMl ?? Int($1.amount)) }
+            let totalDuration = dayFeeds.compactMap { $0.totalDurationSeconds }.reduce(0, +)
             return DayGroup(
                 date: date,
                 feeds: dayFeeds.sorted { $0.startTime > $1.startTime },
-                totalMl: total
+                totalMl: totalMl,
+                totalDurationSeconds: totalDuration
             )
         }
     }
@@ -128,12 +138,17 @@ struct FeedHistoryView: View {
     private var dayList: some View {
         LazyVStack(spacing: 24) {
             ForEach(groupedDays) { group in
-                DaySection(group: group, onTapFeed: { feed in
-                    feedToEdit = feed
-                }, onDeleteFeed: { feed in
-                    feedToDelete = feed
-                    showingDeleteConfirmation = true
-                })
+                DaySection(
+                    group: group,
+                    onTapFeed: { feed in
+                        feedToEdit = feed
+                    },
+                    onDeleteFeed: { feed in
+                        feedToDelete = feed
+                        showingDeleteConfirmation = true
+                    },
+                    isBreastfeedingMode: isBreastfeedingMode
+                )
             }
         }
     }
@@ -145,6 +160,7 @@ private struct DayGroup: Identifiable {
     let date: Date
     let feeds: [Feed]
     let totalMl: Int
+    let totalDurationSeconds: Int
 }
 
 // MARK: - Day Section
@@ -152,6 +168,7 @@ private struct DaySection: View {
     let group: DayGroup
     let onTapFeed: (Feed) -> Void
     let onDeleteFeed: (Feed) -> Void
+    let isBreastfeedingMode: Bool
     
     private var dayLabel: String {
         let calendar = Calendar.current
@@ -176,9 +193,16 @@ private struct DaySection: View {
                 
                 Spacer()
                 
-                Text("\(group.feeds.count) feed\(group.feeds.count == 1 ? "" : "s") · \(group.totalMl) ml")
-                    .font(AppFont.sans(11))
-                    .foregroundColor(Color.textSecondary)
+                Group {
+                    if isBreastfeedingMode {
+                        let durationText = BreastfeedingGuidance.formatDurationVerbose(group.totalDurationSeconds)
+                        Text("\(group.feeds.count) feed\(group.feeds.count == 1 ? "" : "s") · \(durationText)")
+                    } else {
+                        Text("\(group.feeds.count) feed\(group.feeds.count == 1 ? "" : "s") · \(group.totalMl) ml")
+                    }
+                }
+                .font(AppFont.sans(11))
+                .foregroundColor(Color.textSecondary)
             }
             .padding(.bottom, 10)
             
@@ -212,6 +236,16 @@ private struct FeedRow: View {
     let feed: Feed
     let onTap: () -> Void
     
+    @Environment(FeedStore.self) private var feedStore
+    
+    private var feedingType: FeedingType {
+        feedStore.babyProfile?.feedingType ?? .formula
+    }
+    
+    private var isBreastfeedingMode: Bool {
+        feedingType == .breast
+    }
+    
     private var isPartial: Bool {
         let prepared = Int(feed.amount)
         let consumed = feed.consumedMl ?? prepared
@@ -219,7 +253,10 @@ private struct FeedRow: View {
     }
     
     private var statusColor: Color {
-        isPartial ? Color.accentLavender : Color(hex: "7B6A9A")
+        if isBreastfeedingMode {
+            return feed.feedingSide != nil ? Color(hex: "7B6A9A") : Color.accentLavender
+        }
+        return isPartial ? Color.accentLavender : Color(hex: "7B6A9A")
     }
     
     private var timeString: String {
@@ -242,39 +279,65 @@ private struct FeedRow: View {
         return "\(brand) · \(status)"
     }
     
-    @Environment(FeedStore.self) private var feedStore
+    private var breastInfo: String {
+        guard let side = feed.feedingSide else { return "" }
+        if side == .both,
+           let left = feed.leftDurationSeconds,
+           let right = feed.rightDurationSeconds {
+            return "Left \(BreastfeedingGuidance.formatDuration(left)) · Right \(BreastfeedingGuidance.formatDuration(right))"
+        }
+        return side.displayName
+    }
+    
+    private var primaryText: String {
+        if isBreastfeedingMode, let total = feed.totalDurationSeconds {
+            return "\(BreastfeedingGuidance.formatDuration(total)) total"
+        }
+        return "\(Int(feed.amount)) ml"
+    }
+    
+    private var secondaryText: String {
+        if isBreastfeedingMode {
+            return breastInfo
+        }
+        return formulaInfo
+    }
+    
+    private var accessibilityLabel: String {
+        if isBreastfeedingMode, let side = feed.feedingSide {
+            return "\(primaryText) feed on \(side.displayName) at \(timeString)"
+        }
+        return "\(Int(feed.amount)) millilitre feed at \(timeString), \(formulaInfo)"
+    }
     
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                // Status dot
                 Circle()
                     .fill(statusColor)
                     .frame(width: 8, height: 8)
                     .accessibilityHidden(true)
                 
-                // Details
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 4) {
-                        Text("\(Int(feed.amount)) ml")
+                        Text(primaryText)
                             .font(AppFont.sans(14, weight: .medium))
                             .foregroundColor(Color.textPrimary)
                         
-                        if isPartial, let consumed = feed.consumedMl {
+                        if !isBreastfeedingMode, isPartial, let consumed = feed.consumedMl {
                             Text("· \(consumed) ml consumed")
                                 .font(AppFont.sans(11, weight: .regular))
                                 .foregroundColor(Color(hex: "B07850"))
                         }
                     }
                     
-                    Text(formulaInfo)
+                    Text(secondaryText)
                         .font(AppFont.sans(12))
                         .foregroundColor(Color.textSecondary)
                 }
                 
                 Spacer()
                 
-                // Time
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(timeString)
                         .font(AppFont.sans(13))
@@ -290,7 +353,7 @@ private struct FeedRow: View {
         }
         .buttonStyle(PlainButtonStyle())
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(Int(feed.amount)) millilitre feed at \(timeString), \(formulaInfo)")
+        .accessibilityLabel(accessibilityLabel)
     }
 }
 
@@ -310,6 +373,15 @@ struct EditFeedSheet: View {
     @State private var showingDeleteConfirmation: Bool = false
     @State private var isSaving: Bool = false
     
+    private var feedingType: FeedingType {
+        feedStore.babyProfile?.feedingType ?? .formula
+    }
+    
+    private var isBreastMode: Bool { feedingType == .breast }
+    private var isMixedMode: Bool { feedingType == .mixed }
+    private var showsFormulaSections: Bool { !isBreastMode }
+    private var showsBreastSections: Bool { isBreastMode || isMixedMode }
+    
     private var timeString: String {
         return AppFormatters.time.string(from: feedTime)
     }
@@ -322,42 +394,56 @@ struct EditFeedSheet: View {
                 VStack(spacing: 0) {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 0) {
-                            // Handle
                             RoundedRectangle(cornerRadius: 2)
                                 .fill(Color.inkPrimary.opacity(AppMetrics.borderOpacity))
                                 .frame(width: 32, height: 4)
                                 .frame(maxWidth: .infinity)
                                 .padding(.top, 10)
                             
-                            // Title
                             Text("Edit feed")
                                 .font(AppFont.screenTitle)
                                 .foregroundStyle(Color.inkPrimary)
                                 .padding(.horizontal, 20)
                                 .padding(.top, 20)
                             
-                            // Formula section
-                            sectionLabel("FORMULA")
-                                .padding(.top, 8)
+                            if showsFormulaSections {
+                                sectionLabel("FORMULA")
+                                    .padding(.top, 8)
+                                
+                                formulaRow
+                                    .padding(.horizontal, 20)
+                                
+                                sectionLabel("AMOUNT")
+                                    .padding(.top, 12)
+                                
+                                amountStepperCard
+                                    .padding(.horizontal, 20)
+                                
+                                sectionLabel("CONSUMED")
+                                    .padding(.top, 12)
+                                
+                                consumedStepperCard
+                                    .padding(.horizontal, 20)
+                            }
                             
-                            formulaRow
-                                .padding(.horizontal, 20)
+                            if showsBreastSections {
+                                if let side = feed.feedingSide {
+                                    sectionLabel("SIDE")
+                                        .padding(.top, showsFormulaSections ? 12 : 8)
+                                    
+                                    sideInfoRow(side: side)
+                                        .padding(.horizontal, 20)
+                                }
+                                
+                                if let total = feed.totalDurationSeconds, total > 0 {
+                                    sectionLabel("DURATION")
+                                        .padding(.top, 12)
+                                    
+                                    durationInfoRow
+                                        .padding(.horizontal, 20)
+                                }
+                            }
                             
-                            // Amount section
-                            sectionLabel("AMOUNT")
-                                .padding(.top, 12)
-                            
-                            amountStepperCard
-                                .padding(.horizontal, 20)
-                            
-                            // Consumed section
-                            sectionLabel("CONSUMED")
-                                .padding(.top, 12)
-                            
-                            consumedStepperCard
-                                .padding(.horizontal, 20)
-                            
-                            // Time section
                             sectionLabel("TIME")
                                 .padding(.top, 12)
                             
@@ -435,6 +521,73 @@ struct EditFeedSheet: View {
         }
         .padding(.horizontal, 12)
         .frame(height: 56)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.backgroundBase)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(Color.inkPrimary.opacity(AppMetrics.borderOpacity), lineWidth: AppMetrics.borderWidth)
+                )
+        )
+    }
+    
+    private func sideInfoRow(side: FeedingSide) -> some View {
+        HStack(spacing: 12) {
+            Text(side.displayName)
+                .font(AppFont.sans(15, weight: .medium))
+                .foregroundStyle(Color.textPrimary)
+            
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .frame(height: 44)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.surfacePurple)
+        )
+    }
+    
+    private var durationInfoRow: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            if let total = feed.totalDurationSeconds {
+                HStack {
+                    Text("Total")
+                        .font(AppFont.sans(13))
+                        .foregroundStyle(Color.textSecondary)
+                    Spacer()
+                    Text(BreastfeedingGuidance.formatDuration(total))
+                        .font(AppFont.sans(15, weight: .medium))
+                        .foregroundStyle(Color.textPrimary)
+                        .monospacedDigit()
+                }
+            }
+            if let left = feed.leftDurationSeconds, left > 0 {
+                HStack {
+                    Text("Left")
+                        .font(AppFont.sans(13))
+                        .foregroundStyle(Color.textSecondary)
+                    Spacer()
+                    Text(BreastfeedingGuidance.formatDuration(left))
+                        .font(AppFont.sans(15, weight: .medium))
+                        .foregroundStyle(Color.textPrimary)
+                        .monospacedDigit()
+                }
+            }
+            if let right = feed.rightDurationSeconds, right > 0 {
+                HStack {
+                    Text("Right")
+                        .font(AppFont.sans(13))
+                        .foregroundStyle(Color.textSecondary)
+                    Spacer()
+                    Text(BreastfeedingGuidance.formatDuration(right))
+                        .font(AppFont.sans(15, weight: .medium))
+                        .foregroundStyle(Color.textPrimary)
+                        .monospacedDigit()
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(Color.backgroundBase)
@@ -579,7 +732,8 @@ struct EditFeedSheet: View {
     }
     
     private var saveButton: some View {
-        Button(action: saveChanges) {
+        let canSave = isBreastMode ? true : (amount > 0 && !isSaving)
+        return Button(action: saveChanges) {
             Text("Save changes")
                 .font(AppFont.button)
                 .foregroundStyle(Color.backgroundCard)
@@ -590,8 +744,8 @@ struct EditFeedSheet: View {
                         .fill(Color.inkPrimary)
                 )
         }
-        .disabled(amount <= 0 || isSaving)
-        .opacity(amount <= 0 ? 0.4 : 1.0)
+        .disabled(!canSave)
+        .opacity(canSave ? 1.0 : 0.4)
         .buttonStyle(PlainButtonStyle())
         .accessibilityLabel("Save changes")
         .padding(.horizontal, 20)
@@ -611,16 +765,17 @@ struct EditFeedSheet: View {
     }
     
     private func saveChanges() {
-        guard amount > 0, !isSaving else { return }
+        guard !isSaving else { return }
+        if !isBreastMode && amount <= 0 { return }
         isSaving = true
         
         feedStore.updateFeed(
             feed,
-            amount: amount,
+            amount: showsFormulaSections ? amount : nil,
             startTime: feedTime,
             endTime: feed.endTime,
             notes: feed.notes,
-            consumedMl: consumedMl
+            consumedMl: showsFormulaSections ? consumedMl : nil
         )
         dismiss()
     }

@@ -326,3 +326,109 @@ enum ReassuranceEngine {
         ].randomElement() ?? "Noted"
     }
 }
+
+
+// MARK: - Breastfeeding Guidance
+enum BreastfeedingGuidance {
+    
+    /// Recommended feeds per day based on baby age in days
+    static func recommendedFeedsPerDay(ageInDays: Int) -> Int {
+        switch ageInDays {
+        case 0...28:      return 10
+        case 29...90:     return 8
+        case 91...180:    return 7
+        default:          return 6
+        }
+    }
+    
+    /// Format seconds as MM:SS
+    static func formatDuration(_ seconds: Int) -> String {
+        let mins = seconds / 60
+        let secs = seconds % 60
+        return String(format: "%02d:%02d", mins, secs)
+    }
+    
+    /// Format seconds as "Xm Ys" or just "Xs"
+    static func formatDurationVerbose(_ seconds: Int) -> String {
+        let mins = seconds / 60
+        let secs = seconds % 60
+        if mins > 0 {
+            return "\(mins)m \(secs)s"
+        } else {
+            return "\(secs)s"
+        }
+    }
+    
+    /// Average duration across feeds in seconds
+    static func averageDuration(for feeds: [Feed]) -> Int? {
+        let durations = feeds.compactMap { $0.totalDurationSeconds }
+        guard !durations.isEmpty else { return nil }
+        let total = durations.reduce(0, +)
+        return total / durations.count
+    }
+    
+    /// Total nursing time per day in minutes
+    static func totalNursingMinutes(for feeds: [Feed]) -> Int {
+        let totalSeconds = feeds.compactMap { $0.totalDurationSeconds }.reduce(0, +)
+        return totalSeconds / 60
+    }
+    
+    // MARK: - Side Balance
+    
+    struct SideBalance {
+        let leftTotalSeconds: Int
+        let rightTotalSeconds: Int
+        let leftPercentage: Double
+        let rightPercentage: Double
+        let isBalanced: Bool
+        let dominantSide: FeedingSide?
+    }
+    
+    /// Calculate side balance from feeds over a time window
+    static func sideBalance(from feeds: [Feed], withinDays: Int = 7) -> SideBalance? {
+        let calendar = Calendar.current
+        let cutoff = calendar.date(byAdding: .day, value: -withinDays, to: Date()) ?? Date()
+        let recentFeeds = feeds.filter { $0.startTime >= cutoff }
+        
+        let leftTotal = recentFeeds.compactMap { $0.leftDurationSeconds }.reduce(0, +)
+        let rightTotal = recentFeeds.compactMap { $0.rightDurationSeconds }.reduce(0, +)
+        
+        guard leftTotal + rightTotal > 0 else { return nil }
+        
+        let total = leftTotal + rightTotal
+        let leftPct = Double(leftTotal) / Double(total)
+        let rightPct = Double(rightTotal) / Double(total)
+        let isBalanced = abs(leftPct - rightPct) <= 0.20
+        
+        let dominant: FeedingSide?
+        if leftPct > 0.60 {
+            dominant = .left
+        } else if rightPct > 0.60 {
+            dominant = .right
+        } else {
+            dominant = nil
+        }
+        
+        return SideBalance(
+            leftTotalSeconds: leftTotal,
+            rightTotalSeconds: rightTotal,
+            leftPercentage: leftPct,
+            rightPercentage: rightPct,
+            isBalanced: isBalanced,
+            dominantSide: dominant
+        )
+    }
+    
+    /// Generate balance insight headline
+    static func balanceInsight(for feeds: [Feed], babyName: String) -> String? {
+        guard feeds.count >= 5 else { return nil }
+        guard let balance = sideBalance(from: feeds, withinDays: 7) else { return nil }
+        
+        if balance.isBalanced {
+            return "Feeding is balanced across both sides"
+        } else if let dominant = balance.dominantSide {
+            return "\(babyName) has been feeding more on the \(dominant.displayName) recently"
+        }
+        return nil
+    }
+}

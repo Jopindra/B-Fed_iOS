@@ -68,6 +68,14 @@ struct DashboardView: View {
         }
     }
     
+    private var isBreastfeedingMode: Bool {
+        feedStore.babyProfile?.feedingType == .breast
+    }
+    
+    private var isMixedMode: Bool {
+        feedStore.babyProfile?.feedingType == .mixed
+    }
+    
     private var recommendedDailyMl: Int? {
         if let weightKg = feedStore.babyProfile?.weightInKg, weightKg > 0 {
             return Int(weightKg * 150)
@@ -76,17 +84,29 @@ struct DashboardView: View {
     }
     
     private var recommendedFeedsPerDay: Int? {
+        if isBreastfeedingMode || isMixedMode {
+            guard let profile = feedStore.babyProfile else { return nil }
+            return BreastfeedingGuidance.recommendedFeedsPerDay(ageInDays: profile.ageInDays)
+        }
         guard let g = guidance else { return nil }
         return Int(ceil(Double(g.feedsPerDayMin + g.feedsPerDayMax) / 2.0))
     }
     
     private var ringProgress: Double {
+        if isBreastfeedingMode {
+            guard let target = recommendedFeedsPerDay, target > 0 else { return 0 }
+            return min(Double(todayFeeds.count) / Double(target), 1.0)
+        }
         guard let target = recommendedDailyMl, target > 0 else { return 0 }
         return min(Double(totalMlToday) / Double(target), 1.0)
     }
     
     private var avgPerFeedDisplay: String {
         guard !todayFeeds.isEmpty else { return "—" }
+        if isBreastfeedingMode {
+            guard let avgSecs = BreastfeedingGuidance.averageDuration(for: todayFeeds) else { return "—" }
+            return BreastfeedingGuidance.formatDuration(avgSecs)
+        }
         let totalConsumed = todayFeeds.reduce(0) { $0 + Int($1.consumedMl ?? Int($1.amount)) }
         let avg = Double(totalConsumed) / Double(todayFeeds.count)
         return "\(Int(round(avg))) ml"
@@ -94,6 +114,18 @@ struct DashboardView: View {
     
     private var isEmptyState: Bool {
         todayFeeds.isEmpty
+    }
+    
+    private var lastFeedSide: FeedingSide? {
+        todayFeeds.first?.feedingSide
+    }
+    
+    private var nextSideText: String? {
+        guard let lastSide = lastFeedSide else { return nil }
+        if lastSide == .both {
+            return "Alternate sides next time"
+        }
+        return "Start on the \(lastSide.opposite.displayName) next time"
     }
     
     // MARK: — Body
@@ -115,6 +147,11 @@ struct DashboardView: View {
                             
                             statCards
                                 .padding(.top, 32)
+                            
+                            if isBreastfeedingMode, let nextSide = nextSideText {
+                                nextSideIndicator(text: nextSide)
+                                    .padding(.top, 14)
+                            }
                             
                             weekTracker
                                 .padding(.top, 14)
@@ -191,9 +228,16 @@ struct DashboardView: View {
                     .foregroundColor(Color.textPrimary)
                 
                 if let mins = lastFeedMinutesAgo {
-                    Text("\(babyName) · \(timeAgoString(minutes: mins))")
-                        .font(AppFont.sans(13))
-                        .foregroundColor(Color.textSecondary)
+                    let timeAgo = timeAgoString(minutes: mins)
+                    if isBreastfeedingMode, let side = lastFeedSide {
+                        Text("\(babyName) · \(timeAgo) · started on \(side.displayName)")
+                            .font(AppFont.sans(13))
+                            .foregroundColor(Color.textSecondary)
+                    } else {
+                        Text("\(babyName) · \(timeAgo)")
+                            .font(AppFont.sans(13))
+                            .foregroundColor(Color.textSecondary)
+                    }
                 }
             }
         }
@@ -226,18 +270,34 @@ struct DashboardView: View {
                 .rotationEffect(.degrees(-90))
             
             VStack(spacing: 2) {
-                Text("\(totalMlToday)")
-                    .font(AppFont.sans(28, weight: .semibold))
-                    .foregroundColor(Color.textPrimary)
-                
-                if let target = recommendedDailyMl {
-                    Text("of \(target) ml")
-                        .font(AppFont.sans(11))
-                        .foregroundColor(Color.textSecondary)
+                if isBreastfeedingMode {
+                    Text("\(todayFeeds.count)")
+                        .font(AppFont.sans(28, weight: .semibold))
+                        .foregroundColor(Color.textPrimary)
+                    
+                    if let target = recommendedFeedsPerDay {
+                        Text("of \(target) feeds")
+                            .font(AppFont.sans(11))
+                            .foregroundColor(Color.textSecondary)
+                    } else {
+                        Text("feeds")
+                            .font(AppFont.sans(11))
+                            .foregroundColor(Color.textSecondary)
+                    }
                 } else {
-                    Text("ml")
-                        .font(AppFont.sans(11))
-                        .foregroundColor(Color.textSecondary)
+                    Text("\(totalMlToday)")
+                        .font(AppFont.sans(28, weight: .semibold))
+                        .foregroundColor(Color.textPrimary)
+                    
+                    if let target = recommendedDailyMl {
+                        Text("of \(target) ml")
+                            .font(AppFont.sans(11))
+                            .foregroundColor(Color.textSecondary)
+                    } else {
+                        Text("ml")
+                            .font(AppFont.sans(11))
+                            .foregroundColor(Color.textSecondary)
+                    }
                 }
             }
             .background(
@@ -248,8 +308,11 @@ struct DashboardView: View {
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Daily intake progress")
-        .accessibilityValue("\(totalMlToday) millilitres \(recommendedDailyMl.map { "of \($0) millilitres" } ?? "logged")")
+        .accessibilityLabel(isBreastfeedingMode ? "Daily feed count" : "Daily intake progress")
+        .accessibilityValue(isBreastfeedingMode
+            ? "\(todayFeeds.count) feeds \(recommendedFeedsPerDay.map { "of \($0) feeds" } ?? "logged")"
+            : "\(totalMlToday) millilitres \(recommendedDailyMl.map { "of \($0) millilitres" } ?? "logged")"
+        )
     }
     
     // MARK: — Stat Cards
@@ -289,9 +352,9 @@ struct DashboardView: View {
             .accessibilityElement(children: .combine)
             .accessibilityLabel("Feeds today: \(todayFeeds.count) \(recommendedFeedsPerDay.map { "of \($0)" } ?? "logged")")
             
-            // Avg per feed
+            // Avg per feed / Avg duration
             VStack(alignment: .leading, spacing: 6) {
-                Text("Avg per feed")
+                Text(isBreastfeedingMode ? "Avg duration" : "Avg per feed")
                     .font(AppFont.sans(11, weight: .medium))
                     .foregroundColor(Color(hex: "7B6A9A"))
                     .tracking(0.04 * 11)
@@ -301,7 +364,7 @@ struct DashboardView: View {
                     .font(AppFont.sans(22, weight: .semibold))
                     .foregroundColor(Color.textPrimary)
                 
-                Text("consumed avg")
+                Text(isBreastfeedingMode ? "per feed" : "consumed avg")
                     .font(AppFont.sans(11))
                     .foregroundColor(Color(hex: "A898C4"))
             }
@@ -314,7 +377,29 @@ struct DashboardView: View {
                     .stroke(Color(hex: "7B6A9A").opacity(0.15), lineWidth: 0.5)
             )
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("Average per feed: \(avgPerFeedDisplay)")
+            .accessibilityLabel("\(isBreastfeedingMode ? "Average duration" : "Average per feed"): \(avgPerFeedDisplay)")
+        }
+    }
+    
+    // MARK: — Next Side Indicator
+    
+    private func nextSideIndicator(text: String) -> some View {
+        HStack {
+            Spacer()
+            Text(text)
+                .font(AppFont.sans(13, weight: .medium))
+                .foregroundStyle(Color(hex: "3D6B3D"))
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule()
+                        .fill(Color(hex: "EEF4EE"))
+                        .overlay(
+                            Capsule()
+                                .stroke(Color.accentGreen.opacity(0.15), lineWidth: 0.5)
+                        )
+                )
+            Spacer()
         }
     }
     
@@ -557,6 +642,10 @@ struct InsightsView: View {
         let isFuture: Bool
     }
     
+    private var isBreastfeedingMode: Bool {
+        feedStore.babyProfile?.feedingType == .breast
+    }
+    
     private var currentWeekData: [WeekDayData] {
         let calendar = Calendar.current
         let today = Date()
@@ -569,7 +658,12 @@ struct InsightsView: View {
             let isToday = calendar.isDate(date, inSameDayAs: today)
             let isFuture = date > today
             let dayFeeds = allFeeds.filter { calendar.isDate($0.startTime, inSameDayAs: date) }
-            let total = dayFeeds.reduce(0.0) { $0 + Double($1.consumedMl ?? Int($1.amount)) }
+            let total: Double
+            if isBreastfeedingMode {
+                total = Double(BreastfeedingGuidance.totalNursingMinutes(for: dayFeeds))
+            } else {
+                total = dayFeeds.reduce(0.0) { $0 + Double($1.consumedMl ?? Int($1.amount)) }
+            }
             return WeekDayData(letter: letters[offset], amount: total, isToday: isToday, isFuture: isFuture)
         }
     }
@@ -587,6 +681,9 @@ struct InsightsView: View {
         let lastMonday = calendar.date(byAdding: .day, value: -7, to: thisMonday)!
         let lastSunday = calendar.date(byAdding: .day, value: 7, to: lastMonday)!
         let weekFeeds = allFeeds.filter { $0.startTime >= lastMonday && $0.startTime < lastSunday }
+        if isBreastfeedingMode {
+            return Double(BreastfeedingGuidance.totalNursingMinutes(for: weekFeeds))
+        }
         return weekFeeds.reduce(0.0) { $0 + Double($1.consumedMl ?? Int($1.amount)) }
     }
     
@@ -597,9 +694,13 @@ struct InsightsView: View {
         if abs(diff) <= 0.10 {
             return "This week feels steady and consistent"
         } else if diff > 0 {
-            return "\(babyName) is drinking a little more this week"
+            return isBreastfeedingMode
+                ? "\(babyName) is nursing a little more this week"
+                : "\(babyName) is drinking a little more this week"
         } else {
-            return "This week is a little lighter than last week"
+            return isBreastfeedingMode
+                ? "This week is a little lighter than last week"
+                : "This week is a little lighter than last week"
         }
     }
     
@@ -609,7 +710,9 @@ struct InsightsView: View {
         if abs(diff) <= 0.10 {
             return "Similar to last week. Feeding feels steady."
         } else if diff > 0 {
-            return "A little more than usual — this can be normal."
+            return isBreastfeedingMode
+                ? "A little more nursing than usual — this can be normal."
+                : "A little more than usual — this can be normal."
         } else {
             return "A little lighter than usual — this can be normal."
         }
@@ -664,6 +767,11 @@ struct InsightsView: View {
                             
                             intakeTrendCard
                                 .padding(.top, 12)
+                            
+                            if isBreastfeedingMode {
+                                breastfeedingBalanceCard
+                                    .padding(.top, 12)
+                            }
                             
                             if showGrowthCard {
                                 growthStageCard
@@ -875,7 +983,9 @@ struct InsightsView: View {
     
     private var weightContextLine: some View {
         Group {
-            if let weightKg = feedStore.babyProfile?.weightInKg, weightKg > 0 {
+            if isBreastfeedingMode {
+                EmptyView()
+            } else if let weightKg = feedStore.babyProfile?.weightInKg, weightKg > 0 {
                 let rec = Int(weightKg * 150)
                 Text("Based on \(String(format: "%.1f", weightKg)) kg · \(rec) ml recommended daily")
                     .font(AppFont.sans(11))
@@ -901,7 +1011,7 @@ struct InsightsView: View {
         return Chart(data) { item in
             BarMark(
                 x: .value("Day", item.letter),
-                y: .value("Amount", item.amount)
+                y: .value(isBreastfeedingMode ? "Minutes" : "Amount", item.amount)
             )
             .foregroundStyle(item.isToday ? Color.accentGreen : (item.isFuture ? Color(hex: "EEF4EE") : Color(hex: "DCE9DC")))
             .cornerRadius(3)
@@ -924,6 +1034,11 @@ struct InsightsView: View {
     }
     
     private var recommendedDailyForChart: Int {
+        if isBreastfeedingMode {
+            guard let profile = feedStore.babyProfile else { return 120 }
+            let rec = BreastfeedingGuidance.recommendedFeedsPerDay(ageInDays: profile.ageInDays)
+            return rec * 20 // Approx 20 min per feed for chart scale
+        }
         if let weightKg = feedStore.babyProfile?.weightInKg, weightKg > 0 {
             return Int(weightKg * 150)
         }
@@ -938,6 +1053,52 @@ struct InsightsView: View {
         case 9..<12: return 800
         case 12..<24: return 500
         default: return 400
+        }
+    }
+    
+    // MARK: — Side Balance Card
+    
+    @ViewBuilder
+    private var breastfeedingBalanceCard: some View {
+        if daysOfData >= 3, let headline = BreastfeedingGuidance.balanceInsight(for: allFeeds, babyName: babyName) {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Text("Balance")
+                        .font(AppFont.sans(10, weight: .medium))
+                        .foregroundStyle(Color(hex: "7B6A9A"))
+                        .tracking(0.05 * 10)
+                        .textCase(.uppercase)
+                    
+                    Spacer()
+                    
+                    Circle()
+                        .fill(Color(hex: "F0EDF5"))
+                        .frame(width: 32, height: 32)
+                        .overlay(
+                            Image(systemName: "arrow.left.arrow.right")
+                                .font(AppFont.sans(14, weight: .medium))
+                                .foregroundStyle(Color(hex: "7B6A9A"))
+                        )
+                }
+                
+                Text(headline)
+                    .font(AppFont.sans(15, weight: .medium))
+                    .foregroundStyle(Color.textPrimary)
+                    .lineSpacing(1.3 * 15 - 15)
+                    .padding(.top, 8)
+                
+                Text("Alternating sides helps maintain your supply")
+                    .font(AppFont.sans(12).italic())
+                    .foregroundStyle(Color.textTertiary)
+                    .padding(.top, 8)
+            }
+            .padding(18)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+            )
         }
     }
     

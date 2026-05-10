@@ -159,7 +159,18 @@ class FeedStore {
 
     // MARK: - CRUD Operations
 
-    func createFeed(amount: Double, startTime: Date = Date(), notes: String = "", completed: Bool = true, duration: TimeInterval? = nil, consumedMl: Int? = nil) -> Feed {
+    func createFeed(
+        amount: Double = 0,
+        startTime: Date = Date(),
+        notes: String = "",
+        completed: Bool = true,
+        duration: TimeInterval? = nil,
+        consumedMl: Int? = nil,
+        feedingSide: FeedingSide? = nil,
+        leftDurationSeconds: Int? = nil,
+        rightDurationSeconds: Int? = nil,
+        totalDurationSeconds: Int? = nil
+    ) -> Feed {
         var endTime: Date? = nil
         if let duration = duration, duration > 0 {
             endTime = startTime.addingTimeInterval(duration)
@@ -174,10 +185,14 @@ class FeedStore {
             startTime: startTime,
             endTime: endTime,
             amount: amount,
-            consumedMl: consumedMl ?? Int(amount),
+            consumedMl: consumedMl ?? (amount > 0 ? Int(amount) : nil),
             unit: .milliliters,
             notes: notes,
-            completed: completed
+            completed: completed,
+            feedingSide: feedingSide,
+            leftDurationSeconds: leftDurationSeconds,
+            rightDurationSeconds: rightDurationSeconds,
+            totalDurationSeconds: totalDurationSeconds
         )
         modelContext?.insert(feed)
         persist()
@@ -254,17 +269,29 @@ class FeedStore {
         syncWidgetData()
     }
 
-    func updateFeed(_ feed: Feed, amount: Double, startTime: Date, endTime: Date?, notes: String, completed: Bool? = nil, consumedMl: Int? = nil) {
-        feed.amount = amount
-        feed.startTime = startTime
-        feed.endTime = endTime
-        feed.notes = notes
-        if let completed = completed {
-            feed.completed = completed
-        }
-        if let consumedMl = consumedMl {
-            feed.consumedMl = consumedMl
-        }
+    func updateFeed(
+        _ feed: Feed,
+        amount: Double? = nil,
+        startTime: Date? = nil,
+        endTime: Date? = nil,
+        notes: String? = nil,
+        completed: Bool? = nil,
+        consumedMl: Int? = nil,
+        feedingSide: FeedingSide? = nil,
+        leftDurationSeconds: Int? = nil,
+        rightDurationSeconds: Int? = nil,
+        totalDurationSeconds: Int? = nil
+    ) {
+        if let amount = amount { feed.amount = amount }
+        if let startTime = startTime { feed.startTime = startTime }
+        if let endTime = endTime { feed.endTime = endTime }
+        if let notes = notes { feed.notes = notes }
+        if let completed = completed { feed.completed = completed }
+        if let consumedMl = consumedMl { feed.consumedMl = consumedMl }
+        if let feedingSide = feedingSide { feed.feedingSide = feedingSide }
+        if let leftDurationSeconds = leftDurationSeconds { feed.leftDurationSeconds = leftDurationSeconds }
+        if let rightDurationSeconds = rightDurationSeconds { feed.rightDurationSeconds = rightDurationSeconds }
+        if let totalDurationSeconds = totalDurationSeconds { feed.totalDurationSeconds = totalDurationSeconds }
         persist()
         syncWidgetData()
     }

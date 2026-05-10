@@ -10,6 +10,17 @@ struct LogFeedSheet: View {
     
     @Query(sort: \Feed.startTime, order: .reverse) private var allFeeds: [Feed]
     
+    // MARK: - Mode
+    private var feedingType: FeedingType {
+        feedStore.babyProfile?.feedingType ?? .formula
+    }
+    private var isFormulaMode: Bool { feedingType == .formula }
+    private var isBreastMode: Bool { feedingType == .breast }
+    private var isMixedMode: Bool { feedingType == .mixed }
+    private var showsFormulaSections: Bool { isFormulaMode || isMixedMode }
+    private var showsBreastSections: Bool { isBreastMode || isMixedMode }
+    
+    // MARK: - Formula State
     @State private var amount: Double = 120
     @State private var consumedMl: Int? = nil
     @State private var timerActive: Bool = false
@@ -30,7 +41,19 @@ struct LogFeedSheet: View {
     @State private var originalFormula: Formula? = nil
     @State private var formulaChangedForThisFeed: Bool = false
     
-    // MARK: - Derived
+    // MARK: - Breastfeeding State
+    @State private var selectedSide: FeedingSide? = nil
+    @State private var leftElapsedSeconds: Int = 0
+    @State private var rightElapsedSeconds: Int = 0
+    @State private var leftAccumulatedSeconds: Int = 0
+    @State private var rightAccumulatedSeconds: Int = 0
+    @State private var leftTimerStartDate: Date? = nil
+    @State private var rightTimerStartDate: Date? = nil
+    @State private var isLeftTimerRunning: Bool = false
+    @State private var isRightTimerRunning: Bool = false
+    @State private var breastTimer: Timer? = nil
+    
+    // MARK: - Derived (Formula)
     private var formulaDisplayName: String {
         if let selected = formulaStore.selectedFormula {
             return selected.isCustom ? selected.name : selected.displayName
@@ -97,9 +120,7 @@ struct LogFeedSheet: View {
     private var defaultAmount: Double {
         let pills = quickAmountValues
         let midpoint = Double(pills[2])
-        
         guard !todayFeeds.isEmpty else { return midpoint }
-        
         let avg = todayFeeds.reduce(0.0) { $0 + $1.amount } / Double(todayFeeds.count)
         let rounded = round(avg / 10.0) * 10.0
         let closest = pills.map { Double($0) }.min { abs($0 - rounded) < abs($1 - rounded) } ?? midpoint
@@ -110,6 +131,33 @@ struct LogFeedSheet: View {
         return AppFormatters.time.string(from: feedTime)
     }
     
+    // MARK: - Derived (Breastfeeding)
+    private var suggestedSide: FeedingSide {
+        guard let lastSide = allFeeds.first?.feedingSide else { return .left }
+        return lastSide.opposite
+    }
+    
+    private var lastFeedSideHint: String? {
+        guard let lastSide = allFeeds.first?.feedingSide else { return nil }
+        return "Last time: \(lastSide.displayName)"
+    }
+    
+    private var totalBreastDurationSeconds: Int {
+        leftElapsedSeconds + rightElapsedSeconds
+    }
+    
+    private var canSave: Bool {
+        if isSaving { return false }
+        if isFormulaMode {
+            return amount > 0
+        } else if isBreastMode {
+            return selectedSide != nil
+        } else {
+            return selectedSide != nil || amount > 0
+        }
+    }
+    
+    // MARK: - Timer Helpers
     private func startTimeTimer() {
         timeUpdateTimer?.invalidate()
         timeUpdateTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { _ in
@@ -126,6 +174,7 @@ struct LogFeedSheet: View {
         timeUpdateTimer = nil
     }
     
+    // Formula timer
     private func startFeedTimer() {
         feedTimer?.invalidate()
         feedTimerStartDate = Date()
@@ -153,6 +202,72 @@ struct LogFeedSheet: View {
         startFeedTimer()
     }
     
+    // Breastfeeding timers
+    private func startBreastTimer() {
+        breastTimer?.invalidate()
+        breastTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            Task { @MainActor in
+                if isLeftTimerRunning, let startDate = leftTimerStartDate {
+                    leftElapsedSeconds = leftAccumulatedSeconds + Int(Date().timeIntervalSince(startDate))
+                }
+                if isRightTimerRunning, let startDate = rightTimerStartDate {
+                    rightElapsedSeconds = rightAccumulatedSeconds + Int(Date().timeIntervalSince(startDate))
+                }
+            }
+        }
+    }
+    
+    private func stopBreastTimer() {
+        breastTimer?.invalidate()
+        breastTimer = nil
+    }
+    
+    private func startLeftTimer() {
+        if isRightTimerRunning { pauseRightTimer() }
+        leftTimerStartDate = Date()
+        isLeftTimerRunning = true
+        startBreastTimer()
+    }
+    
+    private func pauseLeftTimer() {
+        if let startDate = leftTimerStartDate {
+            leftAccumulatedSeconds += Int(Date().timeIntervalSince(startDate))
+        }
+        isLeftTimerRunning = false
+        leftTimerStartDate = nil
+        leftElapsedSeconds = leftAccumulatedSeconds
+        if !isRightTimerRunning { stopBreastTimer() }
+    }
+    
+    private func startRightTimer() {
+        if isLeftTimerRunning { pauseLeftTimer() }
+        rightTimerStartDate = Date()
+        isRightTimerRunning = true
+        startBreastTimer()
+    }
+    
+    private func pauseRightTimer() {
+        if let startDate = rightTimerStartDate {
+            rightAccumulatedSeconds += Int(Date().timeIntervalSince(startDate))
+        }
+        isRightTimerRunning = false
+        rightTimerStartDate = nil
+        rightElapsedSeconds = rightAccumulatedSeconds
+        if !isLeftTimerRunning { stopBreastTimer() }
+    }
+    
+    private func resetBreastTimers() {
+        stopBreastTimer()
+        leftElapsedSeconds = 0
+        rightElapsedSeconds = 0
+        leftAccumulatedSeconds = 0
+        rightAccumulatedSeconds = 0
+        leftTimerStartDate = nil
+        rightTimerStartDate = nil
+        isLeftTimerRunning = false
+        isRightTimerRunning = false
+    }
+    
     // MARK: - Body
     var body: some View {
         NavigationStack {
@@ -162,83 +277,102 @@ struct LogFeedSheet: View {
                 VStack(spacing: 0) {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 0) {
-                            // Top handle
                             sheetHandle
                             
-                            // Title
                             Text("Log a feed")
                                 .font(AppFont.screenTitle)
                                 .foregroundStyle(Color.inkPrimary)
                                 .padding(.horizontal, 20)
                                 .padding(.top, 20)
                             
-                            // Prepare bottle guide
-                            prepareBottleRow
-                                .padding(.horizontal, 20)
-                                .padding(.top, 8)
-                            
-                            // Formula section
-                            sectionLabel("FORMULA")
-                                .padding(.top, 12)
-                            
-                            formulaRow
-                                .padding(.horizontal, 20)
-                            
-                            if formulaChangedForThisFeed {
-                                Button(action: resetFormula) {
-                                    Text("Reset to \(originalFormula?.brand ?? originalFormula?.name ?? "original")")
-                                        .font(AppFont.sans(11))
-                                        .foregroundStyle(Color.accentGreen)
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                .padding(.horizontal, 20)
-                                .padding(.top, 6)
-                            }
-                            
-                            // Amount section
-                            sectionLabel("AMOUNT")
-                                .padding(.top, 12)
-                            
-                            amountInputCard
-                                .padding(.horizontal, 20)
-                            
-                            // Quick amount pills
-                            quickAmountPills
-                                .padding(.horizontal, 20)
-                                .padding(.top, 8)
-                            
-                            // Consumed section
-                            sectionLabel("CONSUMED")
-                                .padding(.top, 12)
-                            
-                            Text("How much did \(feedStore.babyProfile?.babyName ?? "your baby") actually drink?")
-                                .font(AppFont.sans(12))
-                                .foregroundStyle(Color.textSecondary)
-                                .padding(.horizontal, 20)
-                                .padding(.bottom, 4)
-                            
-                            consumedInputCard
-                                .padding(.horizontal, 20)
-                            
-                            consumedQuickPills
-                                .padding(.horizontal, 20)
-                                .padding(.top, 8)
-                            
-                            // Timer toggle
-                            sectionLabel("FEED TIMER")
-                                .padding(.top, 12)
-                            
-                            timerToggleRow
-                                .padding(.horizontal, 20)
-                            
-                            if timerActive {
-                                feedTimerDisplay
+                            if showsFormulaSections {
+                                prepareBottleRow
                                     .padding(.horizontal, 20)
                                     .padding(.top, 8)
-                                    .transition(UIAccessibility.isReduceMotionEnabled ? .identity : .opacity)
+                                
+                                sectionLabel("FORMULA")
+                                    .padding(.top, 12)
+                                
+                                formulaRow
+                                    .padding(.horizontal, 20)
+                                
+                                if formulaChangedForThisFeed {
+                                    Button(action: resetFormula) {
+                                        Text("Reset to \(originalFormula?.brand ?? originalFormula?.name ?? "original")")
+                                            .font(AppFont.sans(11))
+                                            .foregroundStyle(Color.accentGreen)
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    .padding(.horizontal, 20)
+                                    .padding(.top, 6)
+                                }
+                                
+                                sectionLabel("AMOUNT")
+                                    .padding(.top, 12)
+                                
+                                amountInputCard
+                                    .padding(.horizontal, 20)
+                                
+                                quickAmountPills
+                                    .padding(.horizontal, 20)
+                                    .padding(.top, 8)
+                                
+                                sectionLabel("CONSUMED")
+                                    .padding(.top, 12)
+                                
+                                Text("How much did \(feedStore.babyProfile?.babyName ?? "your baby") actually drink?")
+                                    .font(AppFont.sans(12))
+                                    .foregroundStyle(Color.textSecondary)
+                                    .padding(.horizontal, 20)
+                                    .padding(.bottom, 4)
+                                
+                                consumedInputCard
+                                    .padding(.horizontal, 20)
+                                
+                                consumedQuickPills
+                                    .padding(.horizontal, 20)
+                                    .padding(.top, 8)
                             }
                             
-                            // Time field
+                            if showsBreastSections {
+                                sectionLabel("SIDE")
+                                    .padding(.top, showsFormulaSections ? 12 : 12)
+                                
+                                sideSelector
+                                    .padding(.horizontal, 20)
+                                
+                                if let hint = lastFeedSideHint {
+                                    Text(hint)
+                                        .font(AppFont.sans(12))
+                                        .foregroundStyle(Color.textSecondary)
+                                        .italic()
+                                        .padding(.horizontal, 20)
+                                        .padding(.top, 6)
+                                        .transition(.opacity)
+                                }
+                                
+                                sectionLabel("DURATION")
+                                    .padding(.top, 12)
+                                
+                                breastfeedingTimerSection
+                                    .padding(.horizontal, 20)
+                            }
+                            
+                            if isFormulaMode {
+                                sectionLabel("FEED TIMER")
+                                    .padding(.top, 12)
+                                
+                                timerToggleRow
+                                    .padding(.horizontal, 20)
+                                
+                                if timerActive {
+                                    feedTimerDisplay
+                                        .padding(.horizontal, 20)
+                                        .padding(.top, 8)
+                                        .transition(UIAccessibility.isReduceMotionEnabled ? .identity : .opacity)
+                                }
+                            }
+                            
                             sectionLabel("TIME")
                                 .padding(.top, 8)
                             
@@ -258,9 +392,14 @@ struct LogFeedSheet: View {
         .presentationCornerRadius(20)
         .presentationBackground(.white)
         .onAppear {
-            amount = defaultAmount
-            consumedMl = Int(amount)
-            originalFormula = formulaStore.selectedFormula ?? currentFormula
+            if showsFormulaSections {
+                amount = defaultAmount
+                consumedMl = Int(amount)
+                originalFormula = formulaStore.selectedFormula ?? currentFormula
+            }
+            if showsBreastSections {
+                selectedSide = suggestedSide
+            }
             feedTime = Date()
             isTimeManuallySet = false
             startTimeTimer()
@@ -268,6 +407,7 @@ struct LogFeedSheet: View {
         .onDisappear {
             stopTimeTimer()
             stopFeedTimer()
+            stopBreastTimer()
         }
         .onChange(of: timerActive) { _, isActive in
             if !isActive {
@@ -276,6 +416,7 @@ struct LogFeedSheet: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: timerActive)
+        .animation(.easeInOut(duration: 0.2), value: selectedSide)
         .onChange(of: showingFormulaSelector) { _, isShowing in
             if !isShowing {
                 formulaChangedForThisFeed = formulaStore.selectedFormula?.id != originalFormula?.id
@@ -416,7 +557,6 @@ struct LogFeedSheet: View {
     // MARK: - Amount Input Card
     private var amountInputCard: some View {
         HStack {
-            // Minus button
             amountButton("−") {
                 amount = max(0, amount - 10)
             } onLongPress: {
@@ -425,7 +565,6 @@ struct LogFeedSheet: View {
             
             Spacer()
             
-            // Amount display
             VStack(spacing: 2) {
                 Text("\(Int(amount))")
                     .font(AppFont.serif(32))
@@ -439,7 +578,6 @@ struct LogFeedSheet: View {
             
             Spacer()
             
-            // Plus button
             amountButton("+") {
                 amount = min(300, amount + 10)
             } onLongPress: {
@@ -471,7 +609,6 @@ struct LogFeedSheet: View {
                 .background(
                     Circle()
                         .fill(Color.backgroundCard)
-                        
                 )
         }
         .buttonStyle(PlainButtonStyle())
@@ -619,6 +756,148 @@ struct LogFeedSheet: View {
     private func isConsumedPillActive(_ value: Int) -> Bool {
         consumedMl == value
     }
+
+    // MARK: - Side Selector
+    private var sideSelector: some View {
+        HStack(spacing: 10) {
+            ForEach(FeedingSide.allCases, id: \.self) { side in
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        if selectedSide == side {
+                            selectedSide = nil
+                        } else {
+                            selectedSide = side
+                        }
+                    }
+                }) {
+                    Text(side.displayName)
+                        .font(AppFont.sans(14, weight: .medium))
+                        .foregroundStyle(selectedSide == side ? Color.backgroundCard : Color.accentPurple)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
+                        .background(
+                            Capsule()
+                                .fill(selectedSide == side ? Color.accentPurple : Color.surfacePurple)
+                        )
+                }
+                .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Select \(side.displayName) side")
+                .accessibilityValue(selectedSide == side ? "Selected" : "Not selected")
+            }
+        }
+    }
+    
+    // MARK: - Breastfeeding Timer Section
+    private var breastfeedingTimerSection: some View {
+        VStack(spacing: 12) {
+            if selectedSide == .both {
+                HStack(spacing: 16) {
+                    breastTimerCard(
+                        label: "Left",
+                        elapsed: leftElapsedSeconds,
+                        isRunning: isLeftTimerRunning,
+                        onStart: startLeftTimer,
+                        onStop: pauseLeftTimer
+                    )
+                    breastTimerCard(
+                        label: "Right",
+                        elapsed: rightElapsedSeconds,
+                        isRunning: isRightTimerRunning,
+                        onStart: startRightTimer,
+                        onStop: pauseRightTimer
+                    )
+                }
+            } else if let side = selectedSide {
+                let elapsed = side == .left ? leftElapsedSeconds : rightElapsedSeconds
+                let isRunning = side == .left ? isLeftTimerRunning : isRightTimerRunning
+                let onStart: () -> Void = side == .left ? startLeftTimer : startRightTimer
+                let onStop: () -> Void = side == .left ? pauseLeftTimer : pauseRightTimer
+                
+                breastTimerCard(
+                    label: side.displayName,
+                    elapsed: elapsed,
+                    isRunning: isRunning,
+                    onStart: onStart,
+                    onStop: onStop
+                )
+            } else {
+                Text("Select a side to start timing")
+                    .font(AppFont.sans(13))
+                    .foregroundStyle(Color.textSecondary)
+                    .frame(maxWidth: .infinity, minHeight: 80)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Color.surfaceGray)
+                    )
+            }
+            
+            if selectedSide != nil {
+                HStack(spacing: 6) {
+                    if isLeftTimerRunning || isRightTimerRunning {
+                        PulsingDot()
+                        Text("Feed in progress")
+                            .font(AppFont.sans(12))
+                            .foregroundStyle(Color.textSecondary)
+                    } else if totalBreastDurationSeconds > 0 {
+                        Text("Recorded · \(BreastfeedingGuidance.formatDuration(totalBreastDurationSeconds)) total")
+                            .font(AppFont.sans(12))
+                            .foregroundStyle(Color.accentGreen)
+                    } else {
+                        Text("Ready")
+                            .font(AppFont.sans(12))
+                            .foregroundStyle(Color.textSecondary)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func breastTimerCard(
+        label: String,
+        elapsed: Int,
+        isRunning: Bool,
+        onStart: @escaping () -> Void,
+        onStop: @escaping () -> Void
+    ) -> some View {
+        VStack(spacing: 10) {
+            Text(label)
+                .font(AppFont.sans(11, weight: .medium))
+                .foregroundStyle(Color.textSecondary)
+                .textCase(.uppercase)
+                .tracking(0.3)
+            
+            HStack(spacing: 8) {
+                Text(BreastfeedingGuidance.formatDuration(elapsed))
+                    .font(AppFont.sans(28, weight: .semibold))
+                    .foregroundStyle(Color.textPrimary)
+                    .monospacedDigit()
+                
+                if isRunning {
+                    PulsingDot()
+                }
+            }
+            
+            Button(action: isRunning ? onStop : onStart) {
+                Text(isRunning ? "Stop" : "Start")
+                    .font(AppFont.sans(13, weight: .medium))
+                    .foregroundStyle(isRunning ? .white : Color.backgroundCard)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 6)
+                    .background(
+                        Capsule()
+                            .fill(isRunning ? Color.textPrimary : Color.accentGreen)
+                    )
+            }
+            .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel(isRunning ? "Stop \(label) timer" : "Start \(label) timer")
+        }
+        .frame(maxWidth: .infinity)
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.surfaceGray)
+        )
+    }
     
     // MARK: - Timer Toggle Row
     private var timerToggleRow: some View {
@@ -649,7 +928,6 @@ struct LogFeedSheet: View {
     // MARK: - Feed Timer Display
     private var feedTimerDisplay: some View {
         VStack(spacing: 8) {
-            // Time + status row
             HStack(spacing: 8) {
                 Text(String(format: "%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60))
                     .font(AppFont.sans(32, weight: .semibold))
@@ -661,7 +939,6 @@ struct LogFeedSheet: View {
                 }
             }
             
-            // Status text
             if !isFeedTimerRunning && elapsedSeconds > 0 {
                 Text("Feed complete · \(String(format: "%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60)) recorded")
                     .font(AppFont.sans(12))
@@ -676,10 +953,8 @@ struct LogFeedSheet: View {
                     .foregroundStyle(Color.textSecondary)
             }
             
-            // Buttons
             HStack(spacing: 12) {
                 if !isFeedTimerRunning && elapsedSeconds > 0 {
-                    // Stopped state: Reset + Resume
                     Button(action: {
                         elapsedSeconds = 0
                     }) {
@@ -712,7 +987,6 @@ struct LogFeedSheet: View {
                     .accessibilityLabel("Resume feed timer")
                     .buttonStyle(PlainButtonStyle())
                 } else if isFeedTimerRunning {
-                    // Running state: Stop
                     Button(action: {
                         stopFeedTimer()
                     }) {
@@ -729,7 +1003,6 @@ struct LogFeedSheet: View {
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel("Stop feed timer")
                 } else {
-                    // Idle state: Start
                     Button(action: {
                         startFeedTimer()
                     }) {
@@ -827,8 +1100,8 @@ struct LogFeedSheet: View {
                             .fill(Color.inkPrimary)
                     )
             }
-            .disabled(amount <= 0 || isSaving)
-            .opacity(amount <= 0 ? 0.4 : 1.0)
+            .disabled(!canSave)
+            .opacity(canSave ? 1.0 : 0.4)
             .accessibilityLabel("Save feed")
             .buttonStyle(PlainButtonStyle())
             .padding(.horizontal, 20)
@@ -838,50 +1111,57 @@ struct LogFeedSheet: View {
     
     // MARK: - Save Action
     private func saveFeed() {
-        guard amount > 0, !isSaving else { return }
+        guard canSave else { return }
         isSaving = true
-
+        
         if isFeedTimerRunning {
             stopFeedTimer()
         }
-
+        if isLeftTimerRunning {
+            pauseLeftTimer()
+        }
+        if isRightTimerRunning {
+            pauseRightTimer()
+        }
+        
         let feedDuration: TimeInterval? = timerActive ? TimeInterval(elapsedSeconds) : nil
-
+        
         _ = feedStore.createFeed(
-            amount: amount,
+            amount: showsFormulaSections && (isFormulaMode || (isMixedMode && amount > 0)) ? amount : 0,
             startTime: feedTime,
             notes: "",
             completed: true,
             duration: feedDuration,
-            consumedMl: consumedMl
+            consumedMl: showsFormulaSections ? consumedMl : nil,
+            feedingSide: selectedSide,
+            leftDurationSeconds: selectedSide == .left || selectedSide == .both ? leftElapsedSeconds : nil,
+            rightDurationSeconds: selectedSide == .right || selectedSide == .both ? rightElapsedSeconds : nil,
+            totalDurationSeconds: showsBreastSections && selectedSide != nil ? totalBreastDurationSeconds : nil
         )
-
+        
         if timerActive {
             feedStore.startFeedTimer()
             scheduleBottleNotification()
         }
-
+        
         dismiss()
     }
-
+    
     private func scheduleBottleNotification() {
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
-
-        // Remove any pending bottle timer notification before scheduling a new one
+        
         center.removePendingNotificationRequests(withIdentifiers: ["bottle-timer-notification"])
-
+        
         let content = UNMutableNotificationContent()
         content.title = "Bottle check"
-        let timeString = {
-            return AppFormatters.time.string(from: feedTime).lowercased()
-        }()
+        let timeString = AppFormatters.time.string(from: feedTime).lowercased()
         content.body = "The bottle made at \(timeString) should be used or discarded"
         content.sound = .default
-
+        
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2 * 3600, repeats: false)
         let request = UNNotificationRequest(identifier: "bottle-timer-notification", content: content, trigger: trigger)
-
+        
         center.add(request)
     }
 }
@@ -999,27 +1279,17 @@ struct LogFeedFormulaPickerSheet: View {
                     ContentUnavailableView(
                         "No Formula Set",
                         systemImage: "drop",
-                        description: Text("Set a formula in Settings to see it here.")
+                        description: Text("Select a formula in Settings first")
                     )
-                    .padding(.top, 40)
                 }
-                
-                Spacer()
             }
             .navigationTitle("Formula")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
                 }
             }
         }
     }
-}
-
-#Preview {
-    LogFeedSheet()
-        .environment(FeedStore())
-        .environment(SelectedFormulaStore())
-        .modelContainer(for: Feed.self, inMemory: true)
 }
