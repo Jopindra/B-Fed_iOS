@@ -59,6 +59,13 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: .switchToSettingsTab)) { _ in
             selectedTab = 3
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)) { _ in
+            Task {
+                for activity in Activity<FeedActivityAttributes>.activities {
+                    await activity.end(nil, dismissalPolicy: .immediate)
+                }
+            }
+        }
     }
     
     private func populateDemoDataIfNeeded() {

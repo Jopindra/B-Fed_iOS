@@ -20,12 +20,13 @@ struct SettingsView: View {
     @Query(sort: \Feed.startTime, order: .reverse) private var feeds: [Feed]
     
     var body: some View {
-        ZStack {
-            Color.surfaceCream.ignoresSafeArea()
-            
-            settingsBlobs
-            
-            ScrollView(showsIndicators: false) {
+        GeometryReader { geometry in
+            ZStack {
+                Color.surfaceCream.ignoresSafeArea()
+                
+                settingsBlobs(in: geometry)
+                
+                ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
                     header
                         .padding(.top, 20)
@@ -135,21 +136,22 @@ struct SettingsView: View {
         } message: {
             Text("This will permanently delete all feeds and cannot be undone.")
         }
+        }
     }
-    
+
     // MARK: — Blobs
     
-    private var settingsBlobs: some View {
+    private func settingsBlobs(in geometry: GeometryProxy) -> some View {
         ZStack {
             Circle()
                 .fill(Color(hex: "DDD8C0").opacity(0.30))
                 .frame(width: 140, height: 140)
-                .position(x: UIScreen.main.bounds.width + 50, y: -40)
+                .position(x: geometry.size.width + 50, y: -40)
             
             Circle()
                 .fill(Color.accentLavender.opacity(0.25))
                 .frame(width: 120, height: 120)
-                .position(x: -40, y: UIScreen.main.bounds.height + 40)
+                .position(x: -40, y: geometry.size.height + 40)
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)

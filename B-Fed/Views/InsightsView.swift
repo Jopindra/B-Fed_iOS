@@ -197,7 +197,7 @@ struct InsightsView: View {
             ZStack {
                 Color.surfaceCream.ignoresSafeArea()
 
-                insightsBlobs
+                insightsBlobs(in: geometry)
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
@@ -230,12 +230,12 @@ struct InsightsView: View {
 
     // MARK: — Blobs
 
-    private var insightsBlobs: some View {
+    private func insightsBlobs(in geometry: GeometryProxy) -> some View {
         ZStack {
             Circle()
                 .fill(Color(hex: "D4A898").opacity(0.35))
                 .frame(width: 200, height: 200)
-                .position(x: UIScreen.main.bounds.width + 60, y: UIScreen.main.bounds.height + 60)
+                .position(x: geometry.size.width + 60, y: geometry.size.height + 60)
 
             Circle()
                 .fill(Color.accentLavender.opacity(0.38))
@@ -245,7 +245,7 @@ struct InsightsView: View {
             Circle()
                 .fill(Color(hex: "DDD8C0").opacity(0.40))
                 .frame(width: 110, height: 110)
-                .position(x: UIScreen.main.bounds.width + 30, y: -30)
+                .position(x: geometry.size.width + 30, y: -30)
 
             Circle()
                 .fill(Color(hex: "B0C4B0").opacity(0.32))
@@ -320,7 +320,7 @@ struct InsightsView: View {
                 .padding(.top, 8)
         }
         .padding(18)
-        .background(Color.white)
+        .background(Color.backgroundCard)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -411,7 +411,7 @@ struct InsightsView: View {
                 .padding(.top, 6)
         }
         .padding(18)
-        .background(Color.white)
+        .background(Color.backgroundCard)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
