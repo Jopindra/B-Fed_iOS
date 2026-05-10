@@ -7,6 +7,8 @@ struct DashboardView: View {
     @Environment(SelectedFormulaStore.self) private var formulaStore
     @State private var showingLogFeed = false
     @State private var selectedPeriod: TimePeriod = .today
+    @State private var greetingText: String = ""
+    @State private var nightGreetingCache: String? = nil
     var onSwitchToHistoryTab: () -> Void = {}
     
     @Query(sort: \Feed.startTime, order: .reverse) private var allFeeds: [Feed]
@@ -175,6 +177,12 @@ struct DashboardView: View {
         .sheet(isPresented: $showingLogFeed) {
             LogFeedSheet()
         }
+        .onAppear {
+            updateGreeting()
+        }
+        .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
+            updateGreeting()
+        }
     }
     
     // MARK: — Blobs
@@ -215,7 +223,7 @@ struct DashboardView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 4) {
             if isEmptyState {
-                Text("Good morning, \(parentName).")
+                Text(greetingText)
                     .font(AppFont.sans(20, weight: .semibold))
                     .foregroundColor(Color.textPrimary)
                 
@@ -242,6 +250,50 @@ struct DashboardView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    // MARK: — Greeting
+    
+    private func updateGreeting() {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let newGreeting: String
+        switch hour {
+        case 6..<12:
+            newGreeting = "Good morning, \(parentName)."
+            nightGreetingCache = nil
+        case 12..<18:
+            newGreeting = "Good afternoon, \(parentName)."
+            nightGreetingCache = nil
+        case 18..<24:
+            newGreeting = "Good evening, \(parentName)."
+            nightGreetingCache = nil
+        case 0..<6:
+            if let cached = nightGreetingCache {
+                newGreeting = cached
+            } else {
+                let pick = nightGreeting()
+                nightGreetingCache = pick
+                newGreeting = pick
+            }
+        default:
+            newGreeting = "Good evening, \(parentName)."
+            nightGreetingCache = nil
+        }
+        greetingText = newGreeting
+    }
+    
+    private func nightGreeting() -> String {
+        let greetings = [
+            "You're doing great",
+            "Night feeds won't last forever",
+            "You've got this",
+            "One feed at a time",
+            "The quiet hours",
+            "Still here with you",
+            "This moment matters",
+            "Not long now"
+        ]
+        return greetings.randomElement() ?? "You've got this"
     }
     
     private func timeAgoString(minutes: Int) -> String {
