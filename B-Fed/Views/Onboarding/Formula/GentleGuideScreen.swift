@@ -88,7 +88,7 @@ struct GentleGuideScreen: View {
     // MARK: - Body
     var body: some View {
         ZStack {
-            Color(hex: "F7F9F7").ignoresSafeArea()
+            Color.backgroundBase.ignoresSafeArea()
 
             blobs
 
@@ -124,51 +124,53 @@ struct GentleGuideScreen: View {
 
     // MARK: - Blobs
     private var blobs: some View {
-        ZStack {
-            // Blob 1 — Lavender, top right
-            Circle()
-                .fill(Color(hex: "C8C0D4").opacity(0.45))
-                .frame(width: 180, height: 180)
-                .position(x: UIScreen.main.bounds.width + 30, y: 30)
+        GeometryReader { geometry in
+            ZStack {
+                // Blob 1 — Lavender, top right
+                Circle()
+                    .fill(Color.accentLavender.opacity(0.45))
+                    .frame(width: 180, height: 180)
+                    .position(x: geometry.size.width + 30, y: 30)
 
-            // Blob 2 — Cream, top left
-            Circle()
-                .fill(Color(hex: "DDD8C0").opacity(0.35))
-                .frame(width: 150, height: 150)
-                .position(x: -25, y: 25)
+                // Blob 2 — Cream, top left
+                Circle()
+                    .fill(Color.peachLemonBridge.opacity(0.35))
+                    .frame(width: 150, height: 150)
+                    .position(x: -25, y: 25)
 
-            // Blob 3 — Terracotta, mid left
-            Circle()
-                .fill(Color(hex: "D4A898").opacity(0.32))
-                .frame(width: 140, height: 140)
-                .position(x: -10, y: 350)
+                // Blob 3 — Terracotta, mid left
+                Circle()
+                    .fill(Color.peachDust.opacity(0.32))
+                    .frame(width: 140, height: 140)
+                    .position(x: -10, y: 350)
 
-            // Blob 4 — Sage, mid right
-            Circle()
-                .fill(Color(hex: "B0C4B0").opacity(0.32))
-                .frame(width: 120, height: 120)
-                .position(x: UIScreen.main.bounds.width + 10, y: 400)
+                // Blob 4 — Sage, mid right
+                Circle()
+                    .fill(Color.almostAqua.opacity(0.32))
+                    .frame(width: 120, height: 120)
+                    .position(x: geometry.size.width + 10, y: 400)
+            }
+            .allowsHitTesting(false)
+            .ignoresSafeArea()
         }
-        .allowsHitTesting(false)
-        .ignoresSafeArea()
     }
 
     // MARK: - Animated Icon
     private var animatedIcon: some View {
         ZStack {
             Circle()
-                .fill(Color(hex: "DCE9DC"))
+                .fill(Color.surfaceGreen)
                 .frame(width: 80, height: 80)
 
             Circle()
                 .trim(from: 0, to: drawCircle ? 1 : 0)
-                .stroke(Color(hex: "5A8A5A"), lineWidth: 1.5)
+                .stroke(Color.accentGreen, lineWidth: 1.5)
                 .frame(width: 80, height: 80)
                 .rotationEffect(.degrees(-90))
 
             Text("✓")
                 .font(AppFont.sans(22, weight: .medium))
-                .foregroundColor(Color(hex: "5A8A5A"))
+                .foregroundColor(Color.accentGreen)
                 .opacity(showCheckmark ? 1 : 0)
         }
     }
@@ -178,12 +180,12 @@ struct GentleGuideScreen: View {
         VStack(spacing: 6) {
             Text("\(babyName) is in good hands.")
                 .font(AppFont.sans(28, weight: .semibold))
-                .foregroundColor(Color(hex: "1C2421"))
+                .foregroundColor(Color.textPrimary)
                 .multilineTextAlignment(.center)
 
             Text("Here's a gentle guide to get started")
                 .font(AppFont.sans(14, weight: .regular))
-                .foregroundColor(Color(hex: "888780"))
+                .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
         }
         .offset(y: showHeadline ? 0 : 16)
@@ -195,19 +197,19 @@ struct GentleGuideScreen: View {
         VStack(spacing: 8) {
             Text("\(viewModel.displayBrandName) · \(stageShortName)")
                 .font(AppFont.sans(13, weight: .medium))
-                .foregroundColor(Color(hex: "3D6B3D"))
+                .foregroundColor(Color.accentGreen)
                 .padding(.vertical, 10)
                 .padding(.horizontal, 16)
-                .background(Color(hex: "EEF4EE"))
+                .background(Color.surfaceGreen)
                 .clipShape(Capsule())
                 .overlay(
                     Capsule()
-                        .stroke(Color(hex: "5A8A5A").opacity(0.2), lineWidth: 0.5)
+                        .stroke(Color.accentGreen.opacity(0.2), lineWidth: 0.5)
                 )
             
             Text("You can change this in Settings")
                 .font(AppFont.sans(12, weight: .regular))
-                .foregroundColor(Color(hex: "888780"))
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -224,7 +226,7 @@ struct GentleGuideScreen: View {
                 .opacity(showReassurance ? 1 : 0)
         }
         .padding(16)
-        .background(Color(hex: "F5F0EA"))
+        .background(Color.surfaceCream)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
     }
 
@@ -236,17 +238,17 @@ struct GentleGuideScreen: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Daily guide")
                         .font(AppFont.sans(11, weight: .medium))
-                        .foregroundColor(Color(hex: "5A8A5A"))
+                        .foregroundColor(Color.accentGreen)
                         .tracking(0.05 * 11)
                         .textCase(.uppercase)
 
                     Text("\(guidance.dailyMin)–\(guidance.dailyMax) ml")
                         .font(AppFont.sans(18, weight: .semibold))
-                        .foregroundColor(Color(hex: "1C2421"))
+                        .foregroundColor(Color.textPrimary)
 
                     Text("\(guidance.feedsPerDayMin)–\(guidance.feedsPerDayMax) feeds")
                         .font(AppFont.sans(12))
-                        .foregroundColor(Color(hex: "888780"))
+                        .foregroundColor(Color.textSecondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -254,27 +256,27 @@ struct GentleGuideScreen: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Per feed")
                         .font(AppFont.sans(11, weight: .medium))
-                        .foregroundColor(Color(hex: "5A8A5A"))
+                        .foregroundColor(Color.accentGreen)
                         .tracking(0.05 * 11)
                         .textCase(.uppercase)
 
                     Text("\(guidance.feedMin)–\(guidance.feedMax) ml")
                         .font(AppFont.sans(18, weight: .semibold))
-                        .foregroundColor(Color(hex: "1C2421"))
+                        .foregroundColor(Color.textPrimary)
 
                     Text("typical")
                         .font(AppFont.sans(12))
-                        .foregroundColor(Color(hex: "888780"))
+                        .foregroundColor(Color.textSecondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .padding(20)
-        .background(Color(hex: "FDFAF7"))
+        .background(Color.backgroundCard)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color(hex: "5A8A5A").opacity(0.15), lineWidth: 0.5)
+                .stroke(Color.accentGreen.opacity(0.15), lineWidth: 0.5)
         )
     }
 
@@ -282,7 +284,7 @@ struct GentleGuideScreen: View {
     private var reassuranceLine: some View {
         Text("These are starting points — every baby is different")
             .font(AppFont.sans(12).italic())
-            .foregroundColor(Color(hex: "B4B2A9"))
+            .foregroundColor(Color.textTertiary)
             .multilineTextAlignment(.center)
             .lineSpacing(1.6 * 12 - 12)
             .frame(maxWidth: .infinity, alignment: .center)
@@ -293,10 +295,10 @@ struct GentleGuideScreen: View {
         Button(action: onContinue) {
             Text("Begin")
                 .font(AppFont.sans(16, weight: .medium))
-                .foregroundColor(.white)
+                .foregroundColor(Color.backgroundCard)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(Color(hex: "1C2421"))
+                .background(Color.textPrimary)
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .buttonStyle(.plain)

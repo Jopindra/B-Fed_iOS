@@ -62,7 +62,7 @@ struct WeekTrackerView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text("This week")
                 .font(AppFont.sans(9, weight: .medium))
-                .foregroundStyle(Color(hex: "888780"))
+                .foregroundStyle(Color.textSecondary)
                 .tracking(0.05 * 9)
                 .textCase(.uppercase)
                 .padding(.bottom, 10)
@@ -78,7 +78,7 @@ struct WeekTrackerView: View {
         }
         .padding(.vertical, 14)
         .padding(.horizontal, 12)
-        .background(Color.white)
+        .background(Color.backgroundCard)
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -149,25 +149,25 @@ private struct DayDot: View {
     
     private var dotFill: Color {
         if day.isToday && day.hasFeeds {
-            return Color(hex: "5A8A5A")
+            return Color.accentGreen
         } else if day.isToday && !day.hasFeeds {
-            return Color(hex: "EEF4EE")
+            return Color.surfaceGreen
         } else if day.isFuture {
-            return Color(hex: "F0EDF5")
+            return Color.surfacePurple
         } else if day.hasFeeds {
-            return Color(hex: "7B6A9A")
+            return Color.accentPurple
         } else {
-            return Color(hex: "F5F5F5")
+            return Color.surfaceGray
         }
     }
     
     private var dotStroke: Color {
         if day.isToday && !day.hasFeeds {
-            return Color(hex: "5A8A5A")
+            return Color.accentGreen
         } else if day.isFuture {
-            return Color(hex: "C8C0D4")
+            return Color.accentLavender
         } else if !day.hasFeeds && !day.isFuture {
-            return Color(hex: "E0E0E0")
+            return Color.disabledGray
         } else {
             return Color.clear
         }
@@ -187,11 +187,11 @@ private struct DayDot: View {
     
     private var dayLetterColor: Color {
         if day.isToday {
-            return Color(hex: "5A8A5A")
+            return Color.accentGreen
         } else if day.hasFeeds && !day.isFuture {
-            return Color(hex: "7B6A9A")
+            return Color.accentPurple
         } else {
-            return Color(hex: "B4B2A9")
+            return Color.textTertiary
         }
     }
     

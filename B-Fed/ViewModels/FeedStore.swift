@@ -11,22 +11,25 @@ class FeedStore {
     private let timerService: FeedTimerService
 
     var activeFeed: Feed?
-    var babyProfile: BabyProfile?
     var timerElapsed: TimeInterval = 0
     var isTimerRunning: Bool = false
     private var observationTimer: Timer?
 
+    /// Backward-compatible access to baby profile (views should migrate to ProfileStore)
+    var babyProfile: BabyProfile? {
+        guard let context = modelContext else { return nil }
+        let descriptor = FetchDescriptor<BabyProfile>(
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        do {
+            return try context.fetch(descriptor).first
+        } catch {
+            logger.log(error, context: "FeedStore.babyProfile")
+            return nil
+        }
+    }
+
     var currentTime: Date { clock.currentTime }
-
-    // MARK: - Intelligence
-
-    var dailyGuide: DailyGuide {
-        FeedingIntelligence.dailyIntakeGuide(for: babyProfile)
-    }
-
-    var perFeedGuide: PerFeedGuide {
-        FeedingIntelligence.perFeedGuide(for: babyProfile)
-    }
 
     // MARK: - Initialization
 
@@ -44,117 +47,14 @@ class FeedStore {
 
     func setModelContext(_ context: ModelContext) {
         self.modelContext = context
-        loadBabyProfile()
     }
 
-    // MARK: - Baby Profile
-
-    private func loadBabyProfile() {
-        guard let context = modelContext else { return }
-
-        let descriptor = FetchDescriptor<BabyProfile>(
-            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
-        )
-
-        do {
-            let profiles = try context.fetch(descriptor)
-            babyProfile = profiles.first
-        } catch {
-            logger.log(error, context: "LoadProfile")
-        }
-    }
+    // MARK: - Baby Profile (convenience for onboarding)
 
     func saveBabyProfile(_ profile: BabyProfile) {
         modelContext?.insert(profile)
         persist()
-        babyProfile = profile
         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-    }
-    
-    func updateBabyProfile(
-        babyName: String? = nil,
-        feedingType: FeedingType? = nil,
-        formulaBrand: String? = nil,
-        formulaStage: FormulaStage? = nil,
-        currentWeight: Double? = nil,
-        weightUnit: String? = nil,
-        country: String? = nil,
-        countryCode: String? = nil,
-        dateOfBirth: Date? = nil,
-        parentName: String? = nil,
-        parentEmail: String? = nil
-    ) {
-        guard let profile = babyProfile else { return }
-        
-        if let babyName = babyName { profile.babyName = babyName }
-        if let feedingType = feedingType { profile.feedingType = feedingType }
-        if let formulaBrand = formulaBrand { profile.formulaBrand = formulaBrand }
-        if let formulaStage = formulaStage { profile.formulaStage = formulaStage }
-        if let currentWeight = currentWeight { profile.currentWeight = currentWeight }
-        if let weightUnit = weightUnit { profile.weightUnit = weightUnit }
-        if let country = country { profile.country = country }
-        if let countryCode = countryCode {
-            // If country changed, reset formula brand if not available in new country
-            if profile.countryCode != countryCode,
-               let currentBrand = profile.formulaBrand {
-                let brandsInNewCountry = FormulaGuidanceService.brands(forCountryCode: countryCode)
-                let isBrandValid = brandsInNewCountry.contains { $0.name == currentBrand }
-                if !isBrandValid {
-                    profile.formulaBrand = nil
-                    profile.formulaStage = nil
-                    profile.selectedBrandId = nil
-                    profile.selectedProductId = nil
-                }
-            }
-            profile.countryCode = countryCode
-        }
-        if let dateOfBirth = dateOfBirth { profile.dateOfBirth = dateOfBirth }
-        if let parentName = parentName { profile.parentName = parentName }
-        if let parentEmail = parentEmail { profile.parentEmail = parentEmail }
-        
-        profile.updatedAt = Date()
-        persist()
-    }
-    
-    func deleteAllData() {
-        guard let context = modelContext else { return }
-        
-        // Use a background context to avoid blocking the main thread
-        Task {
-            let feedDescriptor = FetchDescriptor<Feed>()
-            let profileDescriptor = FetchDescriptor<BabyProfile>()
-            
-            do {
-                let feeds = try context.fetch(feedDescriptor)
-                feeds.forEach { context.delete($0) }
-                
-                let profiles = try context.fetch(profileDescriptor)
-                profiles.forEach { context.delete($0) }
-                
-                try context.save()
-                
-                await MainActor.run {
-                    self.babyProfile = nil
-                    self.activeFeed = nil
-                    self.timerService.reset()
-                    self.isTimerRunning = false
-                    self.timerElapsed = 0
-                    self.observationTimer?.invalidate()
-                    self.observationTimer = nil
-                    UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
-                    DismissedTipStore.reset()
-                    NotificationCenter.default.post(name: .returnToOnboarding, object: nil)
-                }
-            } catch {
-                await MainActor.run {
-                    self.logger.log(error, context: "DeleteAllData")
-                }
-            }
-        }
-    }
-
-    var hasCompletedOnboarding: Bool {
-        babyProfile != nil
     }
 
     // MARK: - CRUD Operations
@@ -184,7 +84,7 @@ class FeedStore {
         syncWidgetData()
         return feed
     }
-    
+
     func startFeedTimer() {
         timerService.start()
         isTimerRunning = true
@@ -216,12 +116,12 @@ class FeedStore {
             startObservationTimer()
         }
     }
-    
+
     func pauseTimerObservation() {
         observationTimer?.invalidate()
         observationTimer = nil
     }
-    
+
     func resumeTimerObservation() {
         if timerService.isRunning {
             startObservationTimer()
@@ -267,6 +167,93 @@ class FeedStore {
         }
         persist()
         syncWidgetData()
+    }
+
+    // MARK: - Profile Operations (kept for SettingsViewModel / Onboarding compatibility)
+
+    func updateBabyProfile(
+        babyName: String? = nil,
+        feedingType: FeedingType? = nil,
+        formulaBrand: String? = nil,
+        formulaStage: FormulaStage? = nil,
+        currentWeight: Double? = nil,
+        weightUnit: String? = nil,
+        country: String? = nil,
+        countryCode: String? = nil,
+        dateOfBirth: Date? = nil,
+        parentName: String? = nil
+    ) {
+        guard let context = modelContext else { return }
+        let descriptor = FetchDescriptor<BabyProfile>(
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        do {
+            let profiles = try context.fetch(descriptor)
+            if let profile = profiles.first {
+                if let babyName = babyName { profile.babyName = babyName }
+                if let feedingType = feedingType { profile.feedingType = feedingType }
+                if let formulaBrand = formulaBrand { profile.formulaBrand = formulaBrand }
+                if let formulaStage = formulaStage { profile.formulaStage = formulaStage }
+                if let currentWeight = currentWeight { profile.currentWeight = currentWeight }
+                if let weightUnit = weightUnit { profile.weightUnit = weightUnit }
+                if let country = country { profile.country = country }
+                if let countryCode = countryCode {
+                    if profile.countryCode != countryCode,
+                       let currentBrand = profile.formulaBrand {
+                        let brandsInNewCountry = FormulaGuidanceService.brands(forCountryCode: countryCode)
+                        let isBrandValid = brandsInNewCountry.contains { $0.name == currentBrand }
+                        if !isBrandValid {
+                            profile.formulaBrand = nil
+                            profile.formulaStage = nil
+                            profile.selectedBrandId = nil
+                            profile.selectedProductId = nil
+                        }
+                    }
+                    profile.countryCode = countryCode
+                }
+                if let dateOfBirth = dateOfBirth { profile.dateOfBirth = dateOfBirth }
+                if let parentName = parentName { profile.parentName = parentName }
+                profile.updatedAt = Date()
+                try context.save()
+            }
+        } catch {
+            logger.log(error, context: "FeedStore.updateBabyProfile")
+        }
+    }
+
+    func deleteAllData() {
+        guard let context = modelContext else { return }
+
+        Task {
+            let feedDescriptor = FetchDescriptor<Feed>()
+            let profileDescriptor = FetchDescriptor<BabyProfile>()
+
+            do {
+                let feeds = try context.fetch(feedDescriptor)
+                feeds.forEach { context.delete($0) }
+
+                let profiles = try context.fetch(profileDescriptor)
+                profiles.forEach { context.delete($0) }
+
+                try context.save()
+
+                await MainActor.run {
+                    self.activeFeed = nil
+                    self.timerService.reset()
+                    self.isTimerRunning = false
+                    self.timerElapsed = 0
+                    self.observationTimer?.invalidate()
+                    self.observationTimer = nil
+                    UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
+                    DismissedTipStore.reset()
+                    NotificationCenter.default.post(name: .returnToOnboarding, object: nil)
+                }
+            } catch {
+                await MainActor.run {
+                    self.logger.log(error, context: "DeleteAllData")
+                }
+            }
+        }
     }
 
     // MARK: - Fetch Operations
@@ -347,45 +334,6 @@ class FeedStore {
         )
     }
 
-    // MARK: - Intelligence Methods
-
-    func getBottleFillLevel(for date: Date = Date()) -> CGFloat {
-        let stats = getStatistics(for: date)
-        return FeedingIntelligence.bottleFillLevel(
-            current: stats.totalAmount,
-            profile: babyProfile
-        )
-    }
-
-    func getIntakeDisplay(for date: Date = Date()) -> String {
-        let stats = getStatistics(for: date)
-        return FeedingIntelligence.intakeDisplay(
-            current: stats.totalAmount,
-            profile: babyProfile
-        )
-    }
-
-    func getSupportingMessage(for date: Date = Date()) -> String {
-        let stats = getStatistics(for: date)
-        return FeedingIntelligence.supportingMessage(
-            current: stats.totalAmount,
-            profile: babyProfile
-        )
-    }
-
-    func getContextualGuidance(for date: Date = Date()) -> String? {
-        let stats = getStatistics(for: date)
-        return FeedingIntelligence.contextualGuidance(
-            current: stats.totalAmount,
-            profile: babyProfile
-        )
-    }
-
-    func getInsights() -> [String] {
-        let feeds = fetchAllFeeds()
-        return FeedingIntelligence.insights(from: feeds, profile: babyProfile)
-    }
-
     // MARK: - Widget Sync
 
     private func syncWidgetData() {
@@ -394,7 +342,7 @@ class FeedStore {
         WidgetDataStore.update(
             feedCount: stats.totalFeeds,
             totalAmount: stats.totalAmount,
-            babyName: babyProfile?.babyName ?? "Baby"
+            babyName: "Baby"
         )
     }
 

@@ -268,6 +268,8 @@ struct LogFeedSheet: View {
         .onDisappear {
             stopTimeTimer()
             stopFeedTimer()
+            feedTimer?.invalidate()
+            feedTimer = nil
         }
         .onChange(of: timerActive) { _, isActive in
             if !isActive {
@@ -866,17 +868,17 @@ struct LogFeedSheet: View {
 
     private func scheduleBottleNotification() {
         let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
+        // Note: Notification permission is requested during onboarding, not here
 
         // Remove any pending bottle timer notification before scheduling a new one
         center.removePendingNotificationRequests(withIdentifiers: ["bottle-timer-notification"])
 
         let content = UNMutableNotificationContent()
-        content.title = "Bottle check"
+        content.title = NSLocalizedString("Bottle check", comment: "Notification title")
         let timeString = {
             return AppFormatters.time.string(from: feedTime).lowercased()
         }()
-        content.body = "The bottle made at \(timeString) should be used or discarded"
+        content.body = String(format: NSLocalizedString("The bottle made at %@ should be used or discarded", comment: "Notification body"), timeString)
         content.sound = .default
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2 * 3600, repeats: false)

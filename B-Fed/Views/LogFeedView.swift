@@ -1,5 +1,6 @@
 import SwiftUI
 
+@available(*, deprecated, message: "Use LogFeedSheet instead")
 struct LogFeedView: View {
     @Environment(FeedStore.self) private var feedStore
     @Environment(\.dismiss) private var dismiss
