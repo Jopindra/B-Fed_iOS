@@ -59,7 +59,10 @@ class OnboardingViewModel {
         case 4: return !babyName.isEmpty
         case 5: return true
         case 6: return hasFeedingSelection
-        case 7: return true
+        case 7:
+            let birthValid = birthWeight.isEmpty || OnboardingValidation.isValidWeight(birthWeight)
+            let currentValid = currentWeight.isEmpty || OnboardingValidation.isValidWeight(currentWeight)
+            return birthValid && currentValid
         default: return true
         }
     }
@@ -105,12 +108,14 @@ class OnboardingViewModel {
         default: mappedFeedingType = .formula
         }
 
-        let birthWeightGrams = Double(birthWeight).map {
-            isKg ? $0 * 1000 : $0 * 453.592
+        let birthWeightGrams: Double? = Double(birthWeight).flatMap { value in
+            guard value > 0 else { return nil }
+            return isKg ? value * 1000 : value * 453.592
         }
 
-        let currentWeightGrams = Double(currentWeight).map {
-            isKg ? $0 * 1000 : $0 * 453.592
+        let currentWeightGrams: Double? = Double(currentWeight).flatMap { value in
+            guard value > 0 else { return nil }
+            return isKg ? value * 1000 : value * 453.592
         }
 
         let parentDOB = Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date()

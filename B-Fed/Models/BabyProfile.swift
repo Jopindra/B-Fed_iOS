@@ -83,29 +83,40 @@ class BabyProfile {
         self.updatedAt = Date()
     }
     
-    /// Age in days
+    /// Age in days (elapsed whole days, never negative)
     var ageInDays: Int {
-        Calendar.current.dateComponents([.day], from: dateOfBirth, to: Date()).day ?? 0
+        let calendar = Calendar.current
+        let startOfBirth = calendar.startOfDay(for: dateOfBirth)
+        let startOfToday = calendar.startOfDay(for: Date())
+        let days = calendar.dateComponents([.day], from: startOfBirth, to: startOfToday).day ?? 0
+        return max(0, days)
     }
     
-    /// Age in weeks
+    /// Age in weeks (elapsed whole weeks, never negative)
     var ageInWeeks: Int {
-        Calendar.current.dateComponents([.weekOfYear], from: dateOfBirth, to: Date()).weekOfYear ?? 0
+        ageInDays / 7
     }
     
-    /// Age in months
+    /// Age in months (elapsed whole months, never negative)
     var ageInMonths: Int {
-        Calendar.current.dateComponents([.month], from: dateOfBirth, to: Date()).month ?? 0
+        let calendar = Calendar.current
+        let startOfBirth = calendar.startOfDay(for: dateOfBirth)
+        let startOfToday = calendar.startOfDay(for: Date())
+        let months = calendar.dateComponents([.month], from: startOfBirth, to: startOfToday).month ?? 0
+        return max(0, months)
     }
     
     /// Formatted age string for display
     var ageDescription: String {
-        let now = Date()
-        let components = Calendar.current.dateComponents([.year, .month, .weekOfYear], from: dateOfBirth, to: now)
-        let months = (components.year ?? 0) * 12 + (components.month ?? 0)
-        let weeks = components.weekOfYear ?? 0
+        let days = ageInDays
+        let weeks = ageInWeeks
+        let months = ageInMonths
 
-        if months < 1 {
+        if days == 0 {
+            return "0 weeks old"
+        } else if days < 7 {
+            return "\(days) day\(days == 1 ? "" : "s") old"
+        } else if months < 1 {
             return "\(weeks) week\(weeks == 1 ? "" : "s") old"
         } else if months < 24 {
             return "\(months) month\(months == 1 ? "" : "s") old"
@@ -115,9 +126,9 @@ class BabyProfile {
         }
     }
     
-    /// Weight in kg for display
+    /// Weight in kg for display (nil if zero or missing)
     var weightInKg: Double? {
-        guard let weight = currentWeight ?? birthWeight else { return nil }
+        guard let weight = currentWeight ?? birthWeight, weight > 0 else { return nil }
         return weight / 1000.0
     }
 }

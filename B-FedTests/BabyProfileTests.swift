@@ -71,6 +71,24 @@ final class BabyProfileTests: XCTestCase {
     func testAgeDescriptionUnderOneWeek() {
         let dob = Calendar.current.date(byAdding: .day, value: -3, to: Date())!
         let profile = BabyProfile(dateOfBirth: dob)
+        XCTAssertEqual(profile.ageDescription, "3 days old")
+    }
+    
+    func testAgeDescriptionBabyBornToday() {
+        let profile = BabyProfile(dateOfBirth: Date())
+        XCTAssertEqual(profile.ageDescription, "0 weeks old")
+        XCTAssertEqual(profile.ageInDays, 0)
+        XCTAssertEqual(profile.ageInWeeks, 0)
+        XCTAssertGreaterThanOrEqual(profile.ageInMonths, 0)
+    }
+    
+    func testAgeDescriptionNeverNegative() {
+        // Future date should never produce negative age
+        let futureDOB = Calendar.current.date(byAdding: .day, value: 5, to: Date())!
+        let profile = BabyProfile(dateOfBirth: futureDOB)
+        XCTAssertEqual(profile.ageInDays, 0)
+        XCTAssertEqual(profile.ageInWeeks, 0)
+        XCTAssertEqual(profile.ageInMonths, 0)
         XCTAssertEqual(profile.ageDescription, "0 weeks old")
     }
 

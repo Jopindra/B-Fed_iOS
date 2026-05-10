@@ -304,6 +304,15 @@ struct GentleGuideScreen: View {
 
     // MARK: - Animation Sequence
     private func startAnimations() {
+        if UIAccessibility.isReduceMotionEnabled {
+            drawCircle = true
+            showCheckmark = true
+            showHeadline = true
+            showCard = true
+            showReassurance = true
+            showButton = true
+            return
+        }
         withAnimation(.easeOut(duration: 1.0).delay(0.1)) {
             drawCircle = true
         }

@@ -8,21 +8,9 @@ protocol Clock {
 }
 
 // MARK: - Live Clock
-/// Publishes time updates every second for live UI刷新.
-@Observable
+/// Returns the current system time on demand. No background timer.
 final class LiveClock: Clock {
-    private(set) var currentTime = Date()
-    private var timer: Timer?
-
-    init(updateInterval: TimeInterval = 1.0) {
-        timer = Timer.scheduledTimer(withTimeInterval: updateInterval, repeats: true) { [weak self] _ in
-            self?.currentTime = Date()
-        }
-    }
-
-    deinit {
-        timer?.invalidate()
-    }
+    var currentTime: Date { Date() }
 }
 
 // MARK: - Static Clock

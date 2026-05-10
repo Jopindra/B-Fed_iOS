@@ -29,8 +29,6 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>DMSans-Light.ttf</string>
@@ -57,5 +55,9 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>UNUserNotificationCenterAlertDelegate</key>
+	<false/>
+	<key>UNUserNotificationCenterUsageDescription</key>
+	<string>B-Fed sends gentle reminders about bottle safety timers.</string>
 </dict>
 </plist>

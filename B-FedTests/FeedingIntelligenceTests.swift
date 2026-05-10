@@ -122,7 +122,7 @@ final class FeedingIntelligenceTests: XCTestCase {
     func testSupportingMessageOnTrack() {
         let profile = BabyProfile(currentWeight: 4000)
         let message = FeedingIntelligence.supportingMessage(current: 650, profile: profile)
-        let onTrackMessages = ["You're right on track", "Doing great today", "Perfect progress"]
+        let onTrackMessages = ["You're right on track", "Today is going smoothly", "Today is unfolding gently"]
         XCTAssertTrue(onTrackMessages.contains(message))
     }
 

@@ -265,11 +265,7 @@ struct FeedBubbleArcView: View {
     }
     
     private func timeString(for date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mma"
-        formatter.amSymbol = "am"
-        formatter.pmSymbol = "pm"
-        return formatter.string(from: date).lowercased()
+        return AppFormatters.compactTime.string(from: date).lowercased()
     }
 }
 

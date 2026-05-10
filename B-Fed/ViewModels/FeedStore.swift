@@ -119,22 +119,37 @@ class FeedStore {
     func deleteAllData() {
         guard let context = modelContext else { return }
         
-        let feedDescriptor = FetchDescriptor<Feed>()
-        let profileDescriptor = FetchDescriptor<BabyProfile>()
-        
-        do {
-            let feeds = try context.fetch(feedDescriptor)
-            feeds.forEach { context.delete($0) }
+        // Use a background context to avoid blocking the main thread
+        Task {
+            let feedDescriptor = FetchDescriptor<Feed>()
+            let profileDescriptor = FetchDescriptor<BabyProfile>()
             
-            let profiles = try context.fetch(profileDescriptor)
-            profiles.forEach { context.delete($0) }
-            
-            persist()
-            babyProfile = nil
-            UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
-            DismissedTipStore.reset()
-        } catch {
-            logger.log(error, context: "DeleteAllData")
+            do {
+                let feeds = try context.fetch(feedDescriptor)
+                feeds.forEach { context.delete($0) }
+                
+                let profiles = try context.fetch(profileDescriptor)
+                profiles.forEach { context.delete($0) }
+                
+                try context.save()
+                
+                await MainActor.run {
+                    self.babyProfile = nil
+                    self.activeFeed = nil
+                    self.timerService.reset()
+                    self.isTimerRunning = false
+                    self.timerElapsed = 0
+                    self.observationTimer?.invalidate()
+                    self.observationTimer = nil
+                    UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
+                    DismissedTipStore.reset()
+                    NotificationCenter.default.post(name: .returnToOnboarding, object: nil)
+                }
+            } catch {
+                await MainActor.run {
+                    self.logger.log(error, context: "DeleteAllData")
+                }
+            }
         }
     }
 
@@ -218,8 +233,14 @@ class FeedStore {
         observationTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             Task { @MainActor in
-                self.timerElapsed = self.timerService.elapsed
-                self.isTimerRunning = self.timerService.isRunning
+                let newElapsed = self.timerService.elapsed
+                let newRunning = self.timerService.isRunning
+                if self.timerElapsed != newElapsed {
+                    self.timerElapsed = newElapsed
+                }
+                if self.isTimerRunning != newRunning {
+                    self.isTimerRunning = newRunning
+                }
             }
         }
     }

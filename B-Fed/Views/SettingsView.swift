@@ -20,7 +20,7 @@ struct SettingsView: View {
     
     var body: some View {
         ZStack {
-            Color(hex: "F7F6F2").ignoresSafeArea()
+            Color.surfaceCream.ignoresSafeArea()
             
             settingsBlobs
             
@@ -146,11 +146,12 @@ struct SettingsView: View {
                 .position(x: UIScreen.main.bounds.width + 50, y: -40)
             
             Circle()
-                .fill(Color(hex: "C8C0D4").opacity(0.25))
+                .fill(Color.accentLavender.opacity(0.25))
                 .frame(width: 120, height: 120)
                 .position(x: -40, y: UIScreen.main.bounds.height + 40)
         }
         .allowsHitTesting(false)
+        .accessibilityHidden(true)
         .ignoresSafeArea()
     }
     
@@ -160,11 +161,11 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Settings")
                 .font(AppFont.sans(22, weight: .semibold))
-                .foregroundColor(Color(hex: "1C2421"))
+                .foregroundColor(Color.textPrimary)
             
             Text("Manage your profile")
                 .font(AppFont.sans(13))
-                .foregroundColor(Color(hex: "888780"))
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -195,7 +196,7 @@ struct SettingsView: View {
                 tappableRow(
                     label: "Weight",
                     value: viewModel.weightDisplayString,
-                    valueColor: viewModel.weightKg == nil ? Color(hex: "C8C0D4") : Color(hex: "1C2421")
+                    valueColor: viewModel.weightKg == nil ? Color.accentLavender : Color.textPrimary
                 ) {
                     showingWeightEdit = true
                 }
@@ -225,7 +226,7 @@ struct SettingsView: View {
                 tappableRow(
                     label: "Country",
                     value: viewModel.country.isEmpty ? "Select" : viewModel.country,
-                    valueColor: viewModel.country.isEmpty ? Color(hex: "C8C0D4") : Color(hex: "1C2421")
+                    valueColor: viewModel.country.isEmpty ? Color.accentLavender : Color.textPrimary
                 ) {
                     showingCountryPicker = true
                 }
@@ -236,7 +237,7 @@ struct SettingsView: View {
                     tappableRow(
                         label: "Formula brand",
                         value: viewModel.formulaBrand.isEmpty ? "Select" : viewModel.formulaBrand,
-                        valueColor: viewModel.formulaBrand.isEmpty ? Color(hex: "C8C0D4") : Color(hex: "1C2421")
+                        valueColor: viewModel.formulaBrand.isEmpty ? Color.accentLavender : Color.textPrimary
                     ) {
                         showingFormulaPicker = true
                     }
@@ -277,18 +278,19 @@ struct SettingsView: View {
                     HStack {
                         Text("Reset all data")
                             .font(AppFont.sans(14))
-                            .foregroundColor(Color(hex: "E24B4A"))
+                            .foregroundColor(Color.errorRed)
                         
                         Spacer()
                         
                         Image(systemName: "chevron.right")
                             .font(AppFont.sans(12, weight: .medium))
-                            .foregroundColor(Color(hex: "E24B4A"))
+                            .foregroundColor(Color.errorRed)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 13)
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Reset all data")
             }
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
@@ -311,17 +313,19 @@ struct SettingsView: View {
                 HStack {
                     Text("Bottle prep guide")
                         .font(AppFont.sans(14))
-                        .foregroundColor(Color(hex: "1C2421"))
+                        .foregroundColor(Color.textPrimary)
                     
                     Spacer()
                     
                     Image(systemName: "chevron.right")
                         .font(AppFont.sans(12, weight: .medium))
-                        .foregroundColor(Color(hex: "B4B2A9"))
+                        .foregroundColor(Color.textTertiary)
+                        .accessibilityHidden(true)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 13)
             }
+            .accessibilityLabel("Bottle prep guide")
             .buttonStyle(PlainButtonStyle())
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
@@ -338,15 +342,15 @@ struct SettingsView: View {
         VStack(spacing: 16) {
             Image(systemName: "person.crop.circle.badge.plus")
                 .font(.system(size: 48))
-                .foregroundColor(Color(hex: "C8C0D4"))
+                .foregroundColor(Color.accentLavender)
             
             Text("Add your baby's details")
                 .font(AppFont.sans(17, weight: .medium))
-                .foregroundColor(Color(hex: "1C2421"))
+                .foregroundColor(Color.textPrimary)
             
             Text("Set up your baby's profile to get personalised feeding guidance and track their progress.")
                 .font(AppFont.sans(13))
-                .foregroundColor(Color(hex: "888780"))
+                .foregroundColor(Color.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)
         }
@@ -373,16 +377,17 @@ struct SettingsView: View {
                     .padding(.vertical, 14)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(Color(hex: "1C2421"))
+                            .fill(Color.textPrimary)
                     )
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Save changes")
             .opacity(viewModel.hasChanges ? 1.0 : 0.4)
             .disabled(!viewModel.hasChanges)
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
         }
-        .background(Color(hex: "F7F6F2"))
+        .background(Color.surfaceCream)
     }
     
     private var savedToast: some View {
@@ -394,7 +399,7 @@ struct SettingsView: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color(hex: "5A8A5A"))
+                        .fill(Color.accentGreen)
                 )
             Spacer()
         }
@@ -407,7 +412,7 @@ struct SettingsView: View {
     private func sectionLabel(_ text: String) -> some View {
         Text(text)
             .font(AppFont.sans(10, weight: .semibold))
-            .foregroundColor(Color(hex: "888780"))
+            .foregroundColor(Color.textSecondary)
             .tracking(0.06 * 10)
             .textCase(.uppercase)
             .padding(.bottom, 8)
@@ -422,7 +427,7 @@ struct SettingsView: View {
     private func tappableRow(
         label: String,
         value: String?,
-        valueColor: Color = Color(hex: "1C2421"),
+        valueColor: Color = Color.textPrimary,
         showsChevron: Bool = true,
         action: @escaping () -> Void
     ) -> some View {
@@ -430,7 +435,7 @@ struct SettingsView: View {
             HStack {
                 Text(label)
                     .font(AppFont.sans(14))
-                    .foregroundColor(Color(hex: "888780"))
+                    .foregroundColor(Color.textSecondary)
                 
                 Spacer()
                 
@@ -443,26 +448,28 @@ struct SettingsView: View {
                 if showsChevron {
                     Image(systemName: "chevron.right")
                         .font(AppFont.sans(12, weight: .medium))
-                        .foregroundColor(Color(hex: "B4B2A9"))
+                        .foregroundColor(Color.textTertiary)
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 13)
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label)\(value != nil ? ", \(value!)" : "")")
     }
     
     private func readOnlyRow(label: String, value: String) -> some View {
         HStack {
             Text(label)
                 .font(AppFont.sans(14))
-                .foregroundColor(Color(hex: "B4B2A9"))
+                .foregroundColor(Color.textTertiary)
             
             Spacer()
             
             Text(value)
                 .font(AppFont.sans(13))
-                .foregroundColor(Color(hex: "B4B2A9"))
+                .foregroundColor(Color.textTertiary)
                 .italic()
         }
         .padding(.horizontal, 16)
@@ -471,9 +478,7 @@ struct SettingsView: View {
     }
     
     private func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter.string(from: date)
+        AppFormatters.mediumDate.string(from: date)
     }
     
     private func saveChanges() {
@@ -482,12 +487,21 @@ struct SettingsView: View {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
         
-        withAnimation(.easeInOut(duration: 0.25)) {
+        if UIAccessibility.isReduceMotionEnabled {
             showingSavedConfirmation = true
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            withAnimation(.easeInOut(duration: 0.25)) {
+            UIAccessibility.post(notification: .announcement, argument: "Settings saved")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 showingSavedConfirmation = false
+            }
+        } else {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                showingSavedConfirmation = true
+            }
+            UIAccessibility.post(notification: .announcement, argument: "Settings saved")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    showingSavedConfirmation = false
+                }
             }
         }
     }
@@ -522,12 +536,14 @@ final class SettingsViewModel {
     }
     
     var ageDescription: String {
-        let now = Date()
-        let components = Calendar.current.dateComponents([.year, .month, .weekOfYear], from: dateOfBirth, to: now)
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day], from: dateOfBirth, to: Date())
         let months = (components.year ?? 0) * 12 + (components.month ?? 0)
-        let weeks = components.weekOfYear ?? 0
-        
+        let days = components.day ?? 0
+
         if months < 1 {
+            let weeks = days / 7
+            if weeks < 1 { return "Newborn" }
             return "\(weeks) week\(weeks == 1 ? "" : "s") old"
         } else if months < 24 {
             return "\(months) month\(months == 1 ? "" : "s") old"
@@ -672,7 +688,7 @@ struct TextEditSheet: View {
                 if let error = errorMessage {
                     Text(error)
                         .font(AppFont.sans(12))
-                        .foregroundColor(Color(hex: "E24B4A"))
+                        .foregroundColor(Color.errorRed)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 20)
                         .padding(.top, 8)
@@ -680,7 +696,7 @@ struct TextEditSheet: View {
                 
                 Spacer()
             }
-            .background(Color(hex: "F7F6F2"))
+            .background(Color.surfaceCream)
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -723,7 +739,7 @@ struct DatePickerSheet: View {
                 
                 Spacer()
             }
-            .background(Color(hex: "F7F6F2"))
+            .background(Color.surfaceCream)
             .navigationTitle("Date of birth")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -945,7 +961,7 @@ struct WeightEditSheet: View {
                 .pickerStyle(.segmented)
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
-                .tint(Color(hex: "5A8A5A"))
+                .tint(Color.accentGreen)
                 .onChange(of: selectedUnit) { _, newUnit in
                     convertValues(to: newUnit)
                 }
@@ -959,7 +975,7 @@ struct WeightEditSheet: View {
                 if let error = errorMessage {
                     Text(error)
                         .font(AppFont.sans(12))
-                        .foregroundColor(Color(hex: "E24B4A"))
+                        .foregroundColor(Color.errorRed)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 20)
                         .padding(.top, 8)
@@ -967,7 +983,7 @@ struct WeightEditSheet: View {
                 
                 Spacer()
             }
-            .background(Color(hex: "F7F6F2"))
+            .background(Color.surfaceCream)
             .navigationTitle("Weight")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -994,7 +1010,7 @@ struct WeightEditSheet: View {
             
             Text("kg")
                 .font(AppFont.sans(15))
-                .foregroundStyle(Color(hex: "888780"))
+                .foregroundStyle(Color.textSecondary)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 14)
@@ -1020,7 +1036,7 @@ struct WeightEditSheet: View {
                 
                 Text("lb")
                     .font(AppFont.sans(15))
-                    .foregroundStyle(Color(hex: "888780"))
+                    .foregroundStyle(Color.textSecondary)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 14)
@@ -1046,7 +1062,7 @@ struct WeightEditSheet: View {
                 
                 Text("oz")
                     .font(AppFont.sans(15))
-                    .foregroundStyle(Color(hex: "888780"))
+                    .foregroundStyle(Color.textSecondary)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 14)

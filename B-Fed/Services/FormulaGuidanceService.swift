@@ -16,10 +16,6 @@ struct FormulaGuidanceResult {
 
 // MARK: - Formula Guidance Service
 /// Rules-based feeding guidance. No machine learning.
-///
-/// TODO: Add country-specific guideline overrides.
-/// TODO: Add remote config for ml/kg values.
-/// TODO: Move to backend/API for guideline updates.
 enum FormulaGuidanceService {
     
     static let standardDisclaimer = "Formula amounts vary between babies. Use this as a guide only. Always follow the instructions on your formula tin and speak with your doctor, midwife or child health nurse if you have concerns."
@@ -76,7 +72,7 @@ enum FormulaGuidanceService {
         }
         
         // Weight-based calculation (preferred)
-        if let weightGrams = profile.currentWeight ?? profile.birthWeight {
+        if let weightGrams = profile.currentWeight ?? profile.birthWeight, weightGrams > 0 {
             let weightKg = Double(weightGrams) / 1000.0
             let mlPerKgMin = guideline?.mlPerKgPerDayMin ?? 120
             let mlPerKgMax = guideline?.mlPerKgPerDayMax ?? 150

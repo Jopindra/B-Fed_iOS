@@ -47,10 +47,7 @@ struct MonthView: View {
     }
     
     private var monthTitle: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.current
-        formatter.dateFormat = "MMMM"
-        return formatter.string(from: currentMonth)
+        return AppFormatters.monthName.string(from: currentMonth)
     }
     
     // MARK: - Completion Calendar

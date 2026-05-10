@@ -71,6 +71,20 @@ extension Color {
     static let orchidTintLight = Color(hex: "E4DFE9")
     static let orchidTintDark  = Color(hex: "8A7E96")
 
+    // MARK: Common semantic colours (used across the app)
+    static let textPrimary    = Color(hex: "1C2421")
+    static let textSecondary  = Color(hex: "888780")
+    static let textTertiary   = Color(hex: "B4B2A9")
+    static let accentGreen    = Color(hex: "5A8A5A")
+    static let accentPurple   = Color(hex: "7B6A9A")
+    static let accentLavender = Color(hex: "C8C0D4")
+    static let surfaceCream   = Color(hex: "F7F6F2")
+    static let surfaceGreen   = Color(hex: "EEF4EE")
+    static let surfacePurple  = Color(hex: "F0EDF5")
+    static let surfaceGray    = Color(hex: "F5F5F5")
+    static let errorRed       = Color(hex: "E24B4A")
+    static let disabledGray   = Color(hex: "E0E0E0")
+
     // MARK: Dark mode variants (legacy — prefer semantic tokens above)
     static let dmBackgroundBase = Color(hex: "1C1A1A")
     static let dmBackgroundCard = Color(hex: "2A2727")
@@ -81,8 +95,6 @@ extension Color {
     static var brandPrimary: Color { .almostAquaDark }
     static var warmCoral: Color { .peachDust }
     static var warmLavender: Color { .orchidTint }
-    static var textPrimary: Color { .inkPrimary }
-    static var textSecondary: Color { .inkSecondary }
     static var textMuted: Color { .inkSecondary.opacity(0.6) }
 
 }
@@ -175,4 +187,46 @@ enum AppMetrics {
     static let blobOpacityStrong: CGFloat = 0.80
     static let blobOpacityMedium: CGFloat = 0.70
     static let blobOpacitySubtle: CGFloat = 0.65
+}
+
+// MARK: - Shared Date Formatters
+enum AppFormatters {
+    static let time: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "h:mm a"
+        return f
+    }()
+    
+    static let dayLabel: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "EEE d MMM"
+        return f
+    }()
+    
+    static let mediumDate: DateFormatter = {
+        let f = DateFormatter()
+        f.dateStyle = .medium
+        return f
+    }()
+    
+    static let monthYear: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMMM yyyy"
+        return f
+    }()
+    
+    static let compactTime: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "h:mma"
+        f.amSymbol = "am"
+        f.pmSymbol = "pm"
+        return f
+    }()
+    
+    static let monthName: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale.current
+        f.dateFormat = "MMMM"
+        return f
+    }()
 }

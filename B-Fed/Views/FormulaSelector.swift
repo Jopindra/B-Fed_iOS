@@ -68,6 +68,7 @@ struct FormulaSelector: View {
                                 .font(AppFont.sans(14))
                                 .foregroundStyle(Color.inkSecondary)
                         }
+                        .accessibilityLabel("Clear search")
                     }
                 }
                 .padding(.horizontal, 12)
@@ -210,6 +211,7 @@ struct FormulaSelector: View {
                                             .font(AppFont.sans(12, weight: .semibold))
                                             .foregroundStyle(Color.orchidTintDark)
                                     )
+                                    .accessibilityHidden(true)
 
                                 Text("Add your own")
                                     .font(AppFont.sans(14, weight: .medium))
@@ -219,6 +221,7 @@ struct FormulaSelector: View {
                             }
                             .padding(.vertical, 4)
                         }
+                        .accessibilityLabel("Add your own formula")
                         .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 8, trailing: 20))
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
@@ -278,6 +281,7 @@ struct FormulaRow: View {
                         .font(AppFont.sans(12, weight: .semibold))
                         .foregroundStyle(Color.almostAquaDark)
                 )
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(formula.displayName)
@@ -306,9 +310,12 @@ struct FormulaRow: View {
                 Image(systemName: "checkmark.circle.fill")
                     .font(AppFont.sans(20, weight: .regular))
                     .foregroundStyle(Color.inkPrimary)
+                    .accessibilityLabel("Selected")
             }
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(formula.displayName), \(formula.stage)\(isRecommended ? ", recommended" : "")\(isSelected ? ", selected" : "")")
     }
 }
 

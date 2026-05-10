@@ -118,10 +118,26 @@ private struct DayDot: View {
                         .frame(width: 6, height: 6)
                 }
             }
+            .accessibilityHidden(true)
             
             Text(day.dayLetter)
                 .font(AppFont.sans(9, weight: dayLetterWeight))
                 .foregroundStyle(dayLetterColor)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(dayAccessibilityLabel)
+    }
+    
+    private var dayAccessibilityLabel: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, MMMM d"
+        let dateString = formatter.string(from: day.date)
+        if day.isFuture {
+            return "\(dateString), no data yet"
+        } else if day.hasFeeds {
+            return "\(dateString), feeds logged"
+        } else {
+            return "\(dateString), no feeds logged"
         }
     }
     

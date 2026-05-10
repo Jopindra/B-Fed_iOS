@@ -73,11 +73,13 @@ struct LogFeedView: View {
                     } label: {
                         HStack {
                             Image(systemName: feedStore.isTimerRunning ? "stopwatch.fill" : "stopwatch")
+                                .accessibilityHidden(true)
                             Text(timerButtonTitle)
                         }
                         .font(AppFont.body)
                         .foregroundStyle(Color.almostAquaDark)
                     }
+                    .accessibilityLabel(timerButtonTitle)
                     
                     if showingTimer {
                         FeedTimerView()
@@ -89,6 +91,7 @@ struct LogFeedView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .primaryButton()
+                    .accessibilityLabel("Save feed")
                     .padding(.bottom, AppSpacing.sm)
                 }
                 .padding(.horizontal, AppSpacing.lg)
@@ -234,7 +237,9 @@ struct AmountScrubber: View {
         
         // Visual feedback
         // Gentle scale feedback during drag
-        scale = 1.02
+        if !UIAccessibility.isReduceMotionEnabled {
+            scale = 1.02
+        }
     }
     
     private func handleDragEnd(_: DragGesture.Value) {

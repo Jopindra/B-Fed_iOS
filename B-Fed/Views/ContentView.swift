@@ -135,6 +135,9 @@ struct CustomTabBar: View {
                         .padding(.top, 8)
                         .padding(.bottom, 4)
                     }
+                    .accessibilityLabel(tabs[index].label)
+                    .accessibilityValue(selectedTab == index ? "Selected" : "Not selected")
+                    .accessibilityAddTraits(selectedTab == index ? .isSelected : [])
                 }
             }
             .frame(height: 56)

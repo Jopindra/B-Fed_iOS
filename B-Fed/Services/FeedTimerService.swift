@@ -21,13 +21,15 @@ final class LiveFeedTimerService: FeedTimerService {
     private var accumulated: TimeInterval = 0
     private var timer: Timer?
     private let clock: Clock
+    private let defaults: UserDefaults
     
     private let persistedStartTimeKey = "feedTimer.startTime"
     private let persistedAccumulatedKey = "feedTimer.accumulated"
     private let persistedIsRunningKey = "feedTimer.isRunning"
     
-    init(clock: Clock = LiveClock()) {
+    init(clock: Clock = LiveClock(), defaults: UserDefaults = .standard) {
         self.clock = clock
+        self.defaults = defaults
         restoreState()
     }
     
@@ -71,27 +73,29 @@ final class LiveFeedTimerService: FeedTimerService {
     }
     
     private func persistState() {
-        UserDefaults.standard.set(startTime?.timeIntervalSince1970, forKey: persistedStartTimeKey)
-        UserDefaults.standard.set(accumulated, forKey: persistedAccumulatedKey)
-        UserDefaults.standard.set(isRunning, forKey: persistedIsRunningKey)
+        defaults.set(startTime?.timeIntervalSince1970, forKey: persistedStartTimeKey)
+        defaults.set(accumulated, forKey: persistedAccumulatedKey)
+        defaults.set(isRunning, forKey: persistedIsRunningKey)
     }
     
     private func clearPersistedState() {
-        UserDefaults.standard.removeObject(forKey: persistedStartTimeKey)
-        UserDefaults.standard.removeObject(forKey: persistedAccumulatedKey)
-        UserDefaults.standard.removeObject(forKey: persistedIsRunningKey)
+        defaults.removeObject(forKey: persistedStartTimeKey)
+        defaults.removeObject(forKey: persistedAccumulatedKey)
+        defaults.removeObject(forKey: persistedIsRunningKey)
     }
     
     private func restoreState() {
-        guard UserDefaults.standard.bool(forKey: persistedIsRunningKey),
-              let startTimestamp = UserDefaults.standard.object(forKey: persistedStartTimeKey) as? TimeInterval else {
+        guard defaults.bool(forKey: persistedIsRunningKey),
+              let startTimestamp = defaults.object(forKey: persistedStartTimeKey) as? TimeInterval else {
             return
         }
         let savedStartTime = Date(timeIntervalSince1970: startTimestamp)
-        let savedAccumulated = UserDefaults.standard.double(forKey: persistedAccumulatedKey)
+        let savedAccumulated = defaults.double(forKey: persistedAccumulatedKey)
         
         // Only restore if the timer was started recently (within last 24 hours)
-        guard clock.currentTime.timeIntervalSince(savedStartTime) < 86400 else {
+        // and the start time is not in the future (clock change)
+        let timeSinceStart = clock.currentTime.timeIntervalSince(savedStartTime)
+        guard timeSinceStart >= 0, timeSinceStart < 86400 else {
             clearPersistedState()
             return
         }
@@ -99,14 +103,16 @@ final class LiveFeedTimerService: FeedTimerService {
         startTime = savedStartTime
         accumulated = savedAccumulated
         isRunning = true
+        tick() // Compute elapsed immediately so UI shows current value
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             self?.tick()
         }
     }
     
-    private func tick() {
+    func tick() {
         guard let startTime = startTime else { return }
-        elapsed = accumulated + clock.currentTime.timeIntervalSince(startTime)
+        let delta = clock.currentTime.timeIntervalSince(startTime)
+        elapsed = max(0, accumulated + delta)
     }
 }
 

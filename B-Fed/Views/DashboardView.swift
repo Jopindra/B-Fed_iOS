@@ -101,7 +101,7 @@ struct DashboardView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color(hex: "F7F6F2").ignoresSafeArea()
+                Color.surfaceCream.ignoresSafeArea()
                 
                 blobs(in: geometry)
                 
@@ -146,7 +146,7 @@ struct DashboardView: View {
         ZStack {
             // Blob 1 — Lavender, top right
             Circle()
-                .fill(Color(hex: "C8C0D4").opacity(0.45))
+                .fill(Color.accentLavender.opacity(0.45))
                 .frame(width: 180, height: 180)
                 .position(x: geometry.size.width + 30, y: 30)
             
@@ -169,6 +169,7 @@ struct DashboardView: View {
                 .position(x: geometry.size.width + 10, y: 320)
         }
         .allowsHitTesting(false)
+        .accessibilityHidden(true)
         .ignoresSafeArea()
     }
     
@@ -179,20 +180,20 @@ struct DashboardView: View {
             if isEmptyState {
                 Text("Good morning, \(parentName).")
                     .font(AppFont.sans(20, weight: .semibold))
-                    .foregroundColor(Color(hex: "1C2421"))
+                    .foregroundColor(Color.textPrimary)
                 
                 Text("\(babyName) hasn't fed yet today")
                     .font(AppFont.sans(13))
-                    .foregroundColor(Color(hex: "888780"))
+                    .foregroundColor(Color.textSecondary)
             } else {
                 Text("Just finished.")
                     .font(AppFont.sans(20, weight: .semibold))
-                    .foregroundColor(Color(hex: "1C2421"))
+                    .foregroundColor(Color.textPrimary)
                 
                 if let mins = lastFeedMinutesAgo {
                     Text("\(babyName) · \(timeAgoString(minutes: mins))")
                         .font(AppFont.sans(13))
-                        .foregroundColor(Color(hex: "888780"))
+                        .foregroundColor(Color.textSecondary)
                 }
             }
         }
@@ -215,7 +216,7 @@ struct DashboardView: View {
     private var progressRing: some View {
         ZStack {
             Circle()
-                .stroke(Color(hex: "C8C0D4"), lineWidth: 8)
+                .stroke(Color.accentLavender, lineWidth: 8)
                 .frame(width: 140, height: 140)
             
             Circle()
@@ -227,11 +228,17 @@ struct DashboardView: View {
             VStack(spacing: 2) {
                 Text("\(totalMlToday)")
                     .font(AppFont.sans(28, weight: .semibold))
-                    .foregroundColor(Color(hex: "1C2421"))
+                    .foregroundColor(Color.textPrimary)
                 
-                Text("of \(recommendedDailyMl.map { "\($0)" } ?? "—") ml")
-                    .font(AppFont.sans(11))
-                    .foregroundColor(Color(hex: "888780"))
+                if let target = recommendedDailyMl {
+                    Text("of \(target) ml")
+                        .font(AppFont.sans(11))
+                        .foregroundColor(Color.textSecondary)
+                } else {
+                    Text("ml")
+                        .font(AppFont.sans(11))
+                        .foregroundColor(Color.textSecondary)
+                }
             }
             .background(
                 Circle()
@@ -240,6 +247,9 @@ struct DashboardView: View {
             )
         }
         .frame(maxWidth: .infinity, alignment: .center)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Daily intake progress")
+        .accessibilityValue("\(totalMlToday) millilitres \(recommendedDailyMl.map { "of \($0) millilitres" } ?? "logged")")
     }
     
     // MARK: — Stat Cards
@@ -250,13 +260,19 @@ struct DashboardView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Feeds today")
                     .font(AppFont.sans(11, weight: .medium))
-                    .foregroundColor(Color(hex: "5A8A5A"))
+                    .foregroundColor(Color.accentGreen)
                     .tracking(0.04 * 11)
                     .textCase(.uppercase)
                 
-                Text("\(todayFeeds.count) of \(recommendedFeedsPerDay.map { "\($0)" } ?? "—")")
-                    .font(AppFont.sans(22, weight: .semibold))
-                    .foregroundColor(Color(hex: "1C2421"))
+                if let target = recommendedFeedsPerDay {
+                    Text("\(todayFeeds.count) of \(target)")
+                        .font(AppFont.sans(22, weight: .semibold))
+                        .foregroundColor(Color.textPrimary)
+                } else {
+                    Text("\(todayFeeds.count)")
+                        .font(AppFont.sans(22, weight: .semibold))
+                        .foregroundColor(Color.textPrimary)
+                }
                 
                 Text("today")
                     .font(AppFont.sans(11))
@@ -268,8 +284,10 @@ struct DashboardView: View {
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(Color(hex: "5A8A5A").opacity(0.15), lineWidth: 0.5)
+                    .stroke(Color.accentGreen.opacity(0.15), lineWidth: 0.5)
             )
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Feeds today: \(todayFeeds.count) \(recommendedFeedsPerDay.map { "of \($0)" } ?? "logged")")
             
             // Avg per feed
             VStack(alignment: .leading, spacing: 6) {
@@ -281,7 +299,7 @@ struct DashboardView: View {
                 
                 Text(avgPerFeedDisplay)
                     .font(AppFont.sans(22, weight: .semibold))
-                    .foregroundColor(Color(hex: "1C2421"))
+                    .foregroundColor(Color.textPrimary)
                 
                 Text("consumed avg")
                     .font(AppFont.sans(11))
@@ -295,6 +313,8 @@ struct DashboardView: View {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .stroke(Color(hex: "7B6A9A").opacity(0.15), lineWidth: 0.5)
             )
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Average per feed: \(avgPerFeedDisplay)")
         }
     }
     
@@ -312,7 +332,7 @@ struct DashboardView: View {
     private var reassuranceLine: some View {
         Text(reassuranceText)
             .font(AppFont.sans(12).italic())
-            .foregroundColor(Color(hex: "B4B2A9"))
+            .foregroundColor(Color.textTertiary)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -336,15 +356,17 @@ struct DashboardView: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
-                .background(Color(hex: "1C2421"))
+                .background(Color.textPrimary)
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Log a feed")
     }
 }
 
 extension Notification.Name {
     static let switchToSettingsTab = Notification.Name("switchToSettingsTab")
+    static let returnToOnboarding = Notification.Name("returnToOnboarding")
 }
 
 // MARK: - Dashboard Guidance
@@ -447,19 +469,7 @@ struct InsightsView: View {
     }
     
     private var ageDescription: String {
-        guard let dob = feedStore.babyProfile?.dateOfBirth else { return "" }
-        let now = Date()
-        let components = Calendar.current.dateComponents([.year, .month, .weekOfYear], from: dob, to: now)
-        let months = (components.year ?? 0) * 12 + (components.month ?? 0)
-        let weeks = components.weekOfYear ?? 0
-        if months < 1 {
-            return "\(weeks) week\(weeks == 1 ? "" : "s") old"
-        } else if months < 24 {
-            return "\(months) month\(months == 1 ? "" : "s") old"
-        } else {
-            let years = months / 12
-            return "\(years) year\(years == 1 ? "" : "s") old"
-        }
+        feedStore.babyProfile?.ageDescription ?? ""
     }
     
     private var hasAnyFeeds: Bool {
@@ -637,42 +647,39 @@ struct InsightsView: View {
     // MARK: — Body
     
     var body: some View {
-        ZStack {
-            Color(hex: "F7F6F2").ignoresSafeArea()
-            
-            insightsBlobs
-            
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    header
-                        .padding(.top, geometrySafeTop + 20)
-                    
-                    if hasAnyFeeds {
-                        feedingRhythmCard
-                            .padding(.top, 24)
+        GeometryReader { geometry in
+            ZStack {
+                Color.surfaceCream.ignoresSafeArea()
+                
+                insightsBlobs
+                
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        header
+                            .padding(.top, geometry.safeAreaInsets.top + 20)
                         
-                        intakeTrendCard
-                            .padding(.top, 12)
-                        
-                        if showGrowthCard {
-                            growthStageCard
+                        if hasAnyFeeds {
+                            feedingRhythmCard
+                                .padding(.top, 24)
+                            
+                            intakeTrendCard
                                 .padding(.top, 12)
+                            
+                            if showGrowthCard {
+                                growthStageCard
+                                    .padding(.top, 12)
+                            }
+                        } else {
+                            emptyState
+                                .padding(.top, 40)
                         }
-                    } else {
-                        emptyState
-                            .padding(.top, 40)
+                        
+                        Spacer(minLength: 32)
                     }
-                    
-                    Spacer(minLength: 32)
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
             }
         }
-    }
-    
-    private var geometrySafeTop: CGFloat {
-        // Use a reasonable default; actual safe area handled by device
-        0
     }
     
     // MARK: — Blobs
@@ -685,7 +692,7 @@ struct InsightsView: View {
                 .position(x: UIScreen.main.bounds.width + 60, y: UIScreen.main.bounds.height + 60)
             
             Circle()
-                .fill(Color(hex: "C8C0D4").opacity(0.38))
+                .fill(Color.accentLavender.opacity(0.38))
                 .frame(width: 170, height: 170)
                 .position(x: -70, y: 160)
             
@@ -700,6 +707,7 @@ struct InsightsView: View {
                 .position(x: -40, y: -40)
         }
         .allowsHitTesting(false)
+        .accessibilityHidden(true)
         .ignoresSafeArea()
     }
     
@@ -709,11 +717,11 @@ struct InsightsView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Insights")
                 .font(AppFont.sans(22, weight: .semibold))
-                .foregroundColor(Color(hex: "1C2421"))
+                .foregroundColor(Color.textPrimary)
             
             Text("\(babyName) · \(ageDescription)")
                 .font(AppFont.sans(13))
-                .foregroundColor(Color(hex: "888780"))
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -723,7 +731,7 @@ struct InsightsView: View {
     private var emptyState: some View {
         Text("Insights will appear as you log feeds.")
             .font(AppFont.sans(13))
-            .foregroundColor(Color(hex: "888780"))
+            .foregroundColor(Color.textSecondary)
             .italic()
             .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -753,7 +761,7 @@ struct InsightsView: View {
             
             Text(rhythmHeadline)
                 .font(AppFont.sans(15, weight: .medium))
-                .foregroundStyle(Color(hex: "1C2421"))
+                .foregroundStyle(Color.textPrimary)
                 .lineSpacing(1.3 * 15 - 15)
                 .padding(.top, 8)
             
@@ -762,7 +770,7 @@ struct InsightsView: View {
             
             Text(rhythmReassurance)
                 .font(AppFont.sans(12).italic())
-                .foregroundStyle(Color(hex: "B4B2A9"))
+                .foregroundStyle(Color.textTertiary)
                 .padding(.top, 8)
         }
         .padding(18)
@@ -776,17 +784,19 @@ struct InsightsView: View {
     
     private var rhythmDotStrip: some View {
         VStack(spacing: 6) {
-            ZStack(alignment: .leading) {
-                Rectangle()
-                    .fill(Color(hex: "E8E6E1"))
-                    .frame(height: 1)
-                
-                ForEach(rhythmFeeds, id: \.id) { feed in
-                    let fraction = hourFraction(from: feed.startTime)
-                    Circle()
-                        .fill(isGoodFeed(feed) ? Color(hex: "7B6A9A") : Color(hex: "C8C0D4"))
-                        .frame(width: 8, height: 8)
-                        .position(x: fraction * UIScreen.main.bounds.width * 0.85, y: 0.5)
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .fill(Color(hex: "E8E6E1"))
+                        .frame(height: 1)
+                    
+                    ForEach(rhythmFeeds, id: \.id) { feed in
+                        let fraction = hourFraction(from: feed.startTime)
+                        Circle()
+                            .fill(isGoodFeed(feed) ? Color(hex: "7B6A9A") : Color.accentLavender)
+                            .frame(width: 8, height: 8)
+                            .position(x: fraction * geo.size.width, y: geo.size.height / 2)
+                    }
                 }
             }
             .frame(height: 8)
@@ -794,21 +804,21 @@ struct InsightsView: View {
             HStack {
                 Text("6am")
                     .font(AppFont.sans(9))
-                    .foregroundStyle(Color(hex: "B4B2A9"))
+                    .foregroundStyle(Color.textTertiary)
                 Spacer()
                 Text("12pm")
                     .font(AppFont.sans(9))
-                    .foregroundStyle(Color(hex: "B4B2A9"))
+                    .foregroundStyle(Color.textTertiary)
                 Spacer()
                 Text("10pm")
                     .font(AppFont.sans(9))
-                    .foregroundStyle(Color(hex: "B4B2A9"))
+                    .foregroundStyle(Color.textTertiary)
             }
             
             if todayFeeds.isEmpty && !yesterdayFeeds.isEmpty {
                 Text("Yesterday")
                     .font(AppFont.sans(9))
-                    .foregroundStyle(Color(hex: "B4B2A9"))
+                    .foregroundStyle(Color.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
@@ -821,7 +831,7 @@ struct InsightsView: View {
             HStack {
                 Text("Intake trend")
                     .font(AppFont.sans(10, weight: .medium))
-                    .foregroundStyle(Color(hex: "5A8A5A"))
+                    .foregroundStyle(Color.accentGreen)
                     .tracking(0.05 * 10)
                     .textCase(.uppercase)
                 
@@ -833,13 +843,13 @@ struct InsightsView: View {
                     .overlay(
                         Image(systemName: "chart.line.uptrend.xyaxis")
                             .font(AppFont.sans(14, weight: .medium))
-                            .foregroundStyle(Color(hex: "5A8A5A"))
+                            .foregroundStyle(Color.accentGreen)
                     )
             }
             
             Text(trendHeadline)
                 .font(AppFont.sans(15, weight: .medium))
-                .foregroundStyle(Color(hex: "1C2421"))
+                .foregroundStyle(Color.textPrimary)
                 .lineSpacing(1.3 * 15 - 15)
                 .padding(.top, 8)
             
@@ -848,7 +858,7 @@ struct InsightsView: View {
             
             Text(trendReassurance)
                 .font(AppFont.sans(12).italic())
-                .foregroundStyle(Color(hex: "B4B2A9"))
+                .foregroundStyle(Color.textTertiary)
                 .padding(.top, 8)
             
             weightContextLine
@@ -869,7 +879,7 @@ struct InsightsView: View {
                 let rec = Int(weightKg * 150)
                 Text("Based on \(String(format: "%.1f", weightKg)) kg · \(rec) ml recommended daily")
                     .font(AppFont.sans(11))
-                    .foregroundStyle(Color(hex: "B4B2A9"))
+                    .foregroundStyle(Color.textTertiary)
             } else {
                 Button(action: {
                     NotificationCenter.default.post(name: .switchToSettingsTab, object: nil)
@@ -879,6 +889,7 @@ struct InsightsView: View {
                         .foregroundStyle(Color(hex: "B07850"))
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Add weight in Settings for personalised daily guide")
             }
         }
     }
@@ -892,7 +903,7 @@ struct InsightsView: View {
                 x: .value("Day", item.letter),
                 y: .value("Amount", item.amount)
             )
-            .foregroundStyle(item.isToday ? Color(hex: "5A8A5A") : (item.isFuture ? Color(hex: "EEF4EE") : Color(hex: "DCE9DC")))
+            .foregroundStyle(item.isToday ? Color.accentGreen : (item.isFuture ? Color(hex: "EEF4EE") : Color(hex: "DCE9DC")))
             .cornerRadius(3)
         }
         .frame(height: 60)
@@ -903,7 +914,7 @@ struct InsightsView: View {
                     if let day = value.as(String.self) {
                         Text(day)
                             .font(AppFont.sans(9))
-                            .foregroundStyle(Color(hex: "B4B2A9"))
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
             }
@@ -955,7 +966,7 @@ struct InsightsView: View {
             
             Text("\(growthSpurtLabel) growth spurt is coming up")
                 .font(AppFont.sans(15, weight: .medium))
-                .foregroundStyle(Color(hex: "1C2421"))
+                .foregroundStyle(Color.textPrimary)
                 .lineSpacing(1.3 * 15 - 15)
                 .padding(.top, 8)
             

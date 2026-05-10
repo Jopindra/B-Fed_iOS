@@ -22,6 +22,8 @@ struct LogFeedSheet: View {
     @State private var feedTimerStartDate: Date? = nil
     @State private var isFeedTimerRunning: Bool = false
     @State private var showingTimePicker: Bool = false
+    @State private var timePickerBaseDate: Date = Date()
+    @State private var isSaving: Bool = false
     @State private var showingFormulaSelector: Bool = false
     @State private var showingFormulaDetail: Bool = false
     @State private var showingBottlePrepGuide: Bool = false
@@ -105,9 +107,7 @@ struct LogFeedSheet: View {
     }
     
     private var timeString: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        return formatter.string(from: feedTime)
+        return AppFormatters.time.string(from: feedTime)
     }
     
     private func startTimeTimer() {
@@ -188,7 +188,7 @@ struct LogFeedSheet: View {
                                 Button(action: resetFormula) {
                                     Text("Reset to \(originalFormula?.brand ?? originalFormula?.name ?? "original")")
                                         .font(AppFont.sans(11))
-                                        .foregroundStyle(Color(hex: "5A8A5A"))
+                                        .foregroundStyle(Color.accentGreen)
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 .padding(.horizontal, 20)
@@ -213,7 +213,7 @@ struct LogFeedSheet: View {
                             
                             Text("How much did \(feedStore.babyProfile?.babyName ?? "your baby") actually drink?")
                                 .font(AppFont.sans(12))
-                                .foregroundStyle(Color(hex: "888780"))
+                                .foregroundStyle(Color.textSecondary)
                                 .padding(.horizontal, 20)
                                 .padding(.bottom, 4)
                             
@@ -235,7 +235,7 @@ struct LogFeedSheet: View {
                                 feedTimerDisplay
                                     .padding(.horizontal, 20)
                                     .padding(.top, 8)
-                                    .transition(.opacity)
+                                    .transition(UIAccessibility.isReduceMotionEnabled ? .identity : .opacity)
                             }
                             
                             // Time field
@@ -285,7 +285,7 @@ struct LogFeedSheet: View {
             }
         }
         .sheet(isPresented: $showingTimePicker) {
-            TimePickerSheet(selectedTime: $feedTime)
+            TimePickerSheet(selectedTime: $feedTime, baseDate: timePickerBaseDate)
         }
         .sheet(isPresented: $showingFormulaSelector) {
             FormulaSelector()
@@ -325,7 +325,8 @@ struct LogFeedSheet: View {
             HStack(spacing: 12) {
                 Image(systemName: "drop.fill")
                     .font(AppFont.sans(16))
-                    .foregroundStyle(Color(hex: "5A8A5A"))
+                    .foregroundStyle(Color.accentGreen)
+                    .accessibilityHidden(true)
                 
                 Text("How to prepare a bottle")
                     .font(AppFont.sans(14, weight: .medium))
@@ -335,7 +336,8 @@ struct LogFeedSheet: View {
                 
                 Image(systemName: "chevron.right")
                     .font(AppFont.sans(14, weight: .medium))
-                    .foregroundStyle(Color(hex: "5A8A5A"))
+                    .foregroundStyle(Color.accentGreen)
+                    .accessibilityHidden(true)
             }
             .padding(14)
             .background(
@@ -344,6 +346,7 @@ struct LogFeedSheet: View {
             )
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityLabel("How to prepare a bottle")
     }
     
     // MARK: - Formula Row
@@ -362,11 +365,11 @@ struct LogFeedSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(formulaDisplayName)
                         .font(AppFont.sans(15, weight: .medium))
-                        .foregroundStyle(Color(hex: "1C2421"))
+                        .foregroundStyle(Color.textPrimary)
                     
                     Text(formulaSubtitle)
                         .font(AppFont.sans(12))
-                        .foregroundStyle(Color(hex: "888780"))
+                        .foregroundStyle(Color.textSecondary)
                         .italic(formulaChangedForThisFeed)
                 }
             }
@@ -376,7 +379,7 @@ struct LogFeedSheet: View {
             Button(action: { showingFormulaSelector = true }) {
                 Text("Change")
                     .font(AppFont.sans(12, weight: .medium))
-                    .foregroundStyle(Color(hex: "5A8A5A"))
+                    .foregroundStyle(Color.accentGreen)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 4)
                     .background(
@@ -385,6 +388,7 @@ struct LogFeedSheet: View {
                     )
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Change formula")
         }
         .padding(.horizontal, 12)
         .frame(height: 56)
@@ -471,6 +475,7 @@ struct LogFeedSheet: View {
                 )
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityLabel(label == "−" ? "Decrease amount" : "Increase amount")
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.5)
                 .onEnded { _ in onLongPress() }
@@ -497,6 +502,7 @@ struct LogFeedSheet: View {
                         )
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Set amount to \(value) millilitres")
             }
         }
         .frame(maxWidth: .infinity, alignment: .center)
@@ -520,6 +526,7 @@ struct LogFeedSheet: View {
                     .background(Circle().fill(Color.backgroundCard))
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Decrease consumed amount")
             .simultaneousGesture(
                 LongPressGesture(minimumDuration: 0.5)
                     .onEnded { _ in consumedMl = max(0, current - 50) }
@@ -550,6 +557,7 @@ struct LogFeedSheet: View {
                     .background(Circle().fill(Color.backgroundCard))
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Increase consumed amount")
             .simultaneousGesture(
                 LongPressGesture(minimumDuration: 0.5)
                     .onEnded { _ in consumedMl = min(Int(amount), current + 50) }
@@ -621,9 +629,10 @@ struct LogFeedSheet: View {
             
             Spacer()
             
-            Toggle("Start bottle timer", isOn: $timerActive).labelsHidden()
+            Toggle("Track feed duration", isOn: $timerActive)
                 .toggleStyle(SwitchToggleStyle(tint: Color.inkPrimary))
                 .labelsHidden()
+                .accessibilityLabel("Track feed duration")
         }
         .padding(.horizontal, 12)
         .frame(height: 44)
@@ -644,7 +653,7 @@ struct LogFeedSheet: View {
             HStack(spacing: 8) {
                 Text(String(format: "%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60))
                     .font(AppFont.sans(32, weight: .semibold))
-                    .foregroundStyle(Color(hex: "1C2421"))
+                    .foregroundStyle(Color.textPrimary)
                     .monospacedDigit()
                 
                 if isFeedTimerRunning {
@@ -656,15 +665,15 @@ struct LogFeedSheet: View {
             if !isFeedTimerRunning && elapsedSeconds > 0 {
                 Text("Feed complete · \(String(format: "%02d:%02d", elapsedSeconds / 60, elapsedSeconds % 60)) recorded")
                     .font(AppFont.sans(12))
-                    .foregroundStyle(Color(hex: "888780"))
+                    .foregroundStyle(Color.textSecondary)
             } else if isFeedTimerRunning {
                 Text("Feed in progress")
                     .font(AppFont.sans(12))
-                    .foregroundStyle(Color(hex: "888780"))
+                    .foregroundStyle(Color.textSecondary)
             } else {
                 Text("Ready when you are")
                     .font(AppFont.sans(12))
-                    .foregroundStyle(Color(hex: "888780"))
+                    .foregroundStyle(Color.textSecondary)
             }
             
             // Buttons
@@ -676,15 +685,16 @@ struct LogFeedSheet: View {
                     }) {
                         Text("Reset")
                             .font(AppFont.sans(13, weight: .medium))
-                            .foregroundStyle(Color(hex: "1C2421"))
+                            .foregroundStyle(Color.textPrimary)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 8)
                             .background(
                                 Capsule()
-                                    .stroke(Color(hex: "1C2421"), lineWidth: 1)
+                                    .stroke(Color.textPrimary, lineWidth: 1)
                             )
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .accessibilityLabel("Reset feed timer")
                     
                     Button(action: {
                         startFeedTimer()
@@ -696,9 +706,10 @@ struct LogFeedSheet: View {
                             .padding(.vertical, 8)
                             .background(
                                 Capsule()
-                                    .fill(Color(hex: "1C2421"))
+                                    .fill(Color.textPrimary)
                             )
                     }
+                    .accessibilityLabel("Resume feed timer")
                     .buttonStyle(PlainButtonStyle())
                 } else if isFeedTimerRunning {
                     // Running state: Stop
@@ -712,10 +723,11 @@ struct LogFeedSheet: View {
                             .padding(.vertical, 8)
                             .background(
                                 Capsule()
-                                    .fill(Color(hex: "1C2421"))
+                                    .fill(Color.textPrimary)
                             )
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .accessibilityLabel("Stop feed timer")
                 } else {
                     // Idle state: Start
                     Button(action: {
@@ -728,10 +740,11 @@ struct LogFeedSheet: View {
                             .padding(.vertical, 8)
                             .background(
                                 Capsule()
-                                    .fill(Color(hex: "5A8A5A"))
+                                    .fill(Color.accentGreen)
                             )
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .accessibilityLabel("Start feed timer")
                 }
             }
         }
@@ -739,7 +752,7 @@ struct LogFeedSheet: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(hex: "F5F5F5"))
+                .fill(Color.surfaceGray)
         )
     }
     
@@ -747,6 +760,7 @@ struct LogFeedSheet: View {
     private var timeField: some View {
         HStack(spacing: 12) {
             Button(action: {
+                timePickerBaseDate = Date()
                 isTimeManuallySet = true
                 stopTimeTimer()
                 showingTimePicker = true
@@ -761,6 +775,7 @@ struct LogFeedSheet: View {
                     Image(systemName: "chevron.right")
                         .font(AppFont.sans(12, weight: .medium))
                         .foregroundStyle(Color.inkSecondary)
+                        .accessibilityHidden(true)
                 }
                 .padding(.horizontal, 12)
                 .frame(height: 44)
@@ -774,6 +789,7 @@ struct LogFeedSheet: View {
                 )
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Feed time, \(timeString)")
             
             if isTimeManuallySet {
                 Button(action: {
@@ -783,7 +799,7 @@ struct LogFeedSheet: View {
                 }) {
                     Text("Now")
                         .font(AppFont.sans(11, weight: .medium))
-                        .foregroundStyle(Color(hex: "5A8A5A"))
+                        .foregroundStyle(Color.accentGreen)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(
@@ -792,6 +808,7 @@ struct LogFeedSheet: View {
                         )
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Reset time to now")
             }
         }
     }
@@ -810,6 +827,9 @@ struct LogFeedSheet: View {
                             .fill(Color.inkPrimary)
                     )
             }
+            .disabled(amount <= 0 || isSaving)
+            .opacity(amount <= 0 ? 0.4 : 1.0)
+            .accessibilityLabel("Save feed")
             .buttonStyle(PlainButtonStyle())
             .padding(.horizontal, 20)
         }
@@ -818,7 +838,8 @@ struct LogFeedSheet: View {
     
     // MARK: - Save Action
     private func saveFeed() {
-        guard amount > 0 else { return }
+        guard amount > 0, !isSaving else { return }
+        isSaving = true
 
         if isFeedTimerRunning {
             stopFeedTimer()
@@ -853,9 +874,7 @@ struct LogFeedSheet: View {
         let content = UNMutableNotificationContent()
         content.title = "Bottle check"
         let timeString = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "h:mm a"
-            return formatter.string(from: feedTime).lowercased()
+            return AppFormatters.time.string(from: feedTime).lowercased()
         }()
         content.body = "The bottle made at \(timeString) should be used or discarded"
         content.sound = .default
@@ -873,17 +892,19 @@ private struct PulsingDot: View {
     
     var body: some View {
         Circle()
-            .fill(Color(hex: "5A8A5A"))
+            .fill(Color.accentGreen)
             .frame(width: 8, height: 8)
             .scaleEffect(isPulsing ? 1.4 : 1.0)
             .opacity(isPulsing ? 0.6 : 1.0)
             .animation(
-                Animation.easeInOut(duration: 1.0)
-                    .repeatForever(autoreverses: true),
+                UIAccessibility.isReduceMotionEnabled
+                    ? nil
+                    : Animation.easeInOut(duration: 1.0)
+                        .repeatForever(autoreverses: true),
                 value: isPulsing
             )
             .onAppear {
-                isPulsing = true
+                isPulsing = !UIAccessibility.isReduceMotionEnabled
             }
     }
 }
@@ -891,14 +912,29 @@ private struct PulsingDot: View {
 // MARK: - Time Picker Sheet
 struct TimePickerSheet: View {
     @Binding var selectedTime: Date
+    let baseDate: Date
     @Environment(\.dismiss) private var dismiss
+    
+    private var timeBinding: Binding<Date> {
+        Binding(
+            get: { selectedTime },
+            set: { newTime in
+                let calendar = Calendar.current
+                let timeComponents = calendar.dateComponents([.hour, .minute], from: newTime)
+                var baseComponents = calendar.dateComponents([.year, .month, .day], from: baseDate)
+                baseComponents.hour = timeComponents.hour
+                baseComponents.minute = timeComponents.minute
+                selectedTime = calendar.date(from: baseComponents) ?? newTime
+            }
+        )
+    }
     
     var body: some View {
         NavigationStack {
             VStack {
                 DatePicker(
                     "Time",
-                    selection: $selectedTime,
+                    selection: timeBinding,
                     displayedComponents: .hourAndMinute
                 )
                 .datePickerStyle(.wheel)

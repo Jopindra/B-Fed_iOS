@@ -46,6 +46,9 @@ struct B_FedApp: App {
                 ContentView()
                     .environment(feedStore)
                     .environment(selectedFormulaStore)
+                    .onReceive(NotificationCenter.default.publisher(for: .returnToOnboarding)) { _ in
+                        showOnboarding = true
+                    }
             }
         }
         .modelContainer(sharedModelContainer)

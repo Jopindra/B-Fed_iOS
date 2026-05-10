@@ -30,7 +30,7 @@ final class ReassuranceEngineTests: XCTestCase {
     func testImprovementEncouragement() {
         let message = ReassuranceEngine.improvementEncouragement()
         let expected = [
-            "Great growth happening",
+            "Intake is changing",
             "Baby is thriving",
             "Wonderful progress together",
             "You're both doing beautifully"
@@ -41,10 +41,10 @@ final class ReassuranceEngineTests: XCTestCase {
     func testPostFeedEncouragement() {
         let message = ReassuranceEngine.postFeedEncouragement()
         let expected = [
-            "Nice one",
+            "Noted",
             "That feed counts",
-            "Keep it up",
-            "Well done",
+            "One feed at a time",
+            "That counts",
             "Perfect"
         ]
         XCTAssertTrue(expected.contains(message))

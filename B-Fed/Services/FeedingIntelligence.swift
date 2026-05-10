@@ -13,8 +13,8 @@ enum FeedingIntelligence {
             return DailyGuide(typical: (500, 750), display: "500–750")
         }
         
-        // Priority 1: Weight-based calculation (if available)
-        if let weightGrams = profile.currentWeight ?? profile.birthWeight {
+        // Priority 1: Weight-based calculation (if available and positive)
+        if let weightGrams = profile.currentWeight ?? profile.birthWeight, weightGrams > 0 {
             let weightKg = Double(weightGrams) / 1000.0
             let baseIntake = Int(weightKg * 150) // 150ml per kg
             

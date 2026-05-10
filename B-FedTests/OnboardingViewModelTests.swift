@@ -165,7 +165,7 @@ final class OnboardingViewModelTests: XCTestCase {
         XCTAssertEqual(profile.parentEmail, "sarah@example.com")
         XCTAssertEqual(profile.country, "Australia")
         XCTAssertEqual(profile.babyName, "Lily")
-        XCTAssertEqual(profile.feedingType, .breast)
+        XCTAssertEqual(profile.feedingType, .formula)
         XCTAssertEqual(profile.birthWeight, 3400)
         XCTAssertEqual(profile.currentWeight, 4200)
     }
@@ -194,12 +194,15 @@ final class OnboardingViewModelTests: XCTestCase {
         XCTAssertEqual(profile.feedingType, .formula)
     }
 
-    func testCreateProfileWithNonKgUnitIgnoresWeights() {
+    func testCreateProfileWithNonKgUnitConvertsWeights() {
         viewModel.prefillWithSampleData()
         viewModel.weightUnit = "lb_oz"
         let profile = viewModel.createProfile()
-        XCTAssertNil(profile.birthWeight)
-        XCTAssertNil(profile.currentWeight)
+        // 3.4 lb -> ~1542g, 4.2 lb -> ~1905g
+        XCTAssertNotNil(profile.birthWeight)
+        XCTAssertNotNil(profile.currentWeight)
+        XCTAssertEqual(profile.birthWeight!, 1542.2128, accuracy: 0.001)
+        XCTAssertEqual(profile.currentWeight!, 1905.0864, accuracy: 0.001)
     }
 
     func testCreateProfileWithInvalidWeightStrings() {
@@ -219,7 +222,7 @@ final class OnboardingViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.parentEmail, "sarah@example.com")
         XCTAssertEqual(viewModel.country, "Australia")
         XCTAssertEqual(viewModel.babyName, "Lily")
-        XCTAssertEqual(viewModel.feedingType, "breast")
+        XCTAssertEqual(viewModel.feedingType, "formula")
         XCTAssertEqual(viewModel.birthWeight, "3.4")
         XCTAssertEqual(viewModel.currentWeight, "4.2")
         XCTAssertEqual(viewModel.weightUnit, "kg")

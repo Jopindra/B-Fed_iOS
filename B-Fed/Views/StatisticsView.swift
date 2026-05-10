@@ -212,14 +212,18 @@ struct StatisticsView: View {
         let calendar = Calendar.current
         var data: [(Date, Int, Double)] = []
         
+        // Group feeds by day in a single pass (O(n) instead of O(n × m))
+        var feedsByDay: [Date: [Feed]] = [:]
+        for feed in feeds {
+            let day = calendar.startOfDay(for: feed.startTime)
+            feedsByDay[day, default: []].append(feed)
+        }
+        
         var currentDate = calendar.startOfDay(for: interval.start)
         let endDate = calendar.startOfDay(for: interval.end)
         
         while currentDate <= endDate {
-            let dayFeeds = feeds.filter {
-                calendar.isDate($0.startTime, inSameDayAs: currentDate)
-            }
-            
+            let dayFeeds = feedsByDay[currentDate] ?? []
             let totalAmount = dayFeeds.reduce(0) { $0 + $1.amount }
             data.append((currentDate, dayFeeds.count, totalAmount))
             

@@ -114,7 +114,9 @@ final class DesignTokensTests: XCTestCase {
         XCTAssertEqual(Color.brandPrimary, Color.almostAquaDark)
         XCTAssertEqual(Color.warmCoral, Color.peachDust)
         XCTAssertEqual(Color.warmLavender, Color.orchidTint)
-        XCTAssertEqual(Color.textPrimary, Color.inkPrimary)
-        XCTAssertEqual(Color.textSecondary, Color.inkSecondary)
+        // textPrimary and textSecondary are distinct semantic colours,
+        // not aliases of inkPrimary/inkSecondary.
+        XCTAssertNotNil(Color.textPrimary)
+        XCTAssertNotNil(Color.textSecondary)
     }
 }

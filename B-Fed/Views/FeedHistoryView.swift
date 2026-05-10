@@ -31,7 +31,7 @@ struct FeedHistoryView: View {
     
     var body: some View {
         ZStack {
-            Color(hex: "F7F6F2").ignoresSafeArea()
+            Color.surfaceCream.ignoresSafeArea()
             
             historyBlobs
             
@@ -79,7 +79,7 @@ struct FeedHistoryView: View {
                 .position(x: UIScreen.main.bounds.width + 50, y: -40)
             
             Circle()
-                .fill(Color(hex: "C8C0D4").opacity(0.32))
+                .fill(Color.accentLavender.opacity(0.32))
                 .frame(width: 130, height: 130)
                 .position(x: UIScreen.main.bounds.width + 50, y: 120)
             
@@ -94,6 +94,7 @@ struct FeedHistoryView: View {
                 .position(x: UIScreen.main.bounds.width + 40, y: UIScreen.main.bounds.height - 80)
         }
         .allowsHitTesting(false)
+        .accessibilityHidden(true)
         .ignoresSafeArea()
     }
     
@@ -103,11 +104,11 @@ struct FeedHistoryView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("History")
                 .font(AppFont.sans(22, weight: .semibold))
-                .foregroundColor(Color(hex: "1C2421"))
+                .foregroundColor(Color.textPrimary)
             
             Text("\(babyName) · all feeds")
                 .font(AppFont.sans(13))
-                .foregroundColor(Color(hex: "888780"))
+                .foregroundColor(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -117,7 +118,7 @@ struct FeedHistoryView: View {
     private var emptyState: some View {
         Text("No feeds logged yet")
             .font(AppFont.sans(13))
-            .foregroundColor(Color(hex: "888780"))
+            .foregroundColor(Color.textSecondary)
             .italic()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
@@ -125,7 +126,7 @@ struct FeedHistoryView: View {
     // MARK: — Day list
     
     private var dayList: some View {
-        VStack(spacing: 24) {
+        LazyVStack(spacing: 24) {
             ForEach(groupedDays) { group in
                 DaySection(group: group, onTapFeed: { feed in
                     feedToEdit = feed
@@ -159,9 +160,7 @@ private struct DaySection: View {
         } else if calendar.isDateInYesterday(group.date) {
             return "Yesterday"
         } else {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "EEE d MMM"
-            return formatter.string(from: group.date)
+            return AppFormatters.dayLabel.string(from: group.date)
         }
     }
     
@@ -171,7 +170,7 @@ private struct DaySection: View {
             HStack {
                 Text(dayLabel)
                     .font(AppFont.sans(10, weight: .semibold))
-                    .foregroundColor(Color(hex: "1C2421"))
+                    .foregroundColor(Color.textPrimary)
                     .tracking(0.05 * 10)
                     .textCase(.uppercase)
                 
@@ -179,7 +178,7 @@ private struct DaySection: View {
                 
                 Text("\(group.feeds.count) feed\(group.feeds.count == 1 ? "" : "s") · \(group.totalMl) ml")
                     .font(AppFont.sans(11))
-                    .foregroundColor(Color(hex: "888780"))
+                    .foregroundColor(Color.textSecondary)
             }
             .padding(.bottom, 10)
             
@@ -220,13 +219,11 @@ private struct FeedRow: View {
     }
     
     private var statusColor: Color {
-        isPartial ? Color(hex: "C8C0D4") : Color(hex: "7B6A9A")
+        isPartial ? Color.accentLavender : Color(hex: "7B6A9A")
     }
     
     private var timeString: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        return formatter.string(from: feed.startTime).lowercased()
+        return AppFormatters.time.string(from: feed.startTime).lowercased()
     }
     
     private var periodLabel: String {
@@ -254,13 +251,14 @@ private struct FeedRow: View {
                 Circle()
                     .fill(statusColor)
                     .frame(width: 8, height: 8)
+                    .accessibilityHidden(true)
                 
                 // Details
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 4) {
                         Text("\(Int(feed.amount)) ml")
                             .font(AppFont.sans(14, weight: .medium))
-                            .foregroundColor(Color(hex: "1C2421"))
+                            .foregroundColor(Color.textPrimary)
                         
                         if isPartial, let consumed = feed.consumedMl {
                             Text("· \(consumed) ml consumed")
@@ -271,7 +269,7 @@ private struct FeedRow: View {
                     
                     Text(formulaInfo)
                         .font(AppFont.sans(12))
-                        .foregroundColor(Color(hex: "888780"))
+                        .foregroundColor(Color.textSecondary)
                 }
                 
                 Spacer()
@@ -280,17 +278,19 @@ private struct FeedRow: View {
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(timeString)
                         .font(AppFont.sans(13))
-                        .foregroundColor(Color(hex: "888780"))
+                        .foregroundColor(Color.textSecondary)
                     
                     Text(periodLabel)
                         .font(AppFont.sans(11))
-                        .foregroundColor(Color(hex: "B4B2A9"))
+                        .foregroundColor(Color.textTertiary)
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(Int(feed.amount)) millilitre feed at \(timeString), \(formulaInfo)")
     }
 }
 
@@ -308,11 +308,10 @@ struct EditFeedSheet: View {
     @State private var isTimeManuallySet: Bool = false
     @State private var showingTimePicker: Bool = false
     @State private var showingDeleteConfirmation: Bool = false
+    @State private var isSaving: Bool = false
     
     private var timeString: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        return formatter.string(from: feedTime)
+        return AppFormatters.time.string(from: feedTime)
     }
     
     var body: some View {
@@ -381,7 +380,7 @@ struct EditFeedSheet: View {
         .presentationCornerRadius(20)
         .presentationBackground(.white)
         .sheet(isPresented: $showingTimePicker) {
-            TimePickerSheet(selectedTime: $feedTime)
+            TimePickerSheet(selectedTime: $feedTime, baseDate: feed.startTime)
         }
         .alert("Delete this feed?", isPresented: $showingDeleteConfirmation) {
             Button("Cancel", role: .cancel) { }
@@ -424,11 +423,11 @@ struct EditFeedSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(brand)
                         .font(AppFont.sans(15, weight: .medium))
-                        .foregroundStyle(Color(hex: "1C2421"))
+                        .foregroundStyle(Color.textPrimary)
                     
                     Text("Your current formula")
                         .font(AppFont.sans(12))
-                        .foregroundStyle(Color(hex: "888780"))
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
             
@@ -456,6 +455,7 @@ struct EditFeedSheet: View {
                     .background(Circle().fill(Color.backgroundCard))
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Decrease amount")
             
             Spacer()
             
@@ -480,6 +480,7 @@ struct EditFeedSheet: View {
                     .background(Circle().fill(Color.backgroundCard))
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Increase amount")
         }
         .padding(.horizontal, 16)
         .frame(height: 64)
@@ -504,6 +505,7 @@ struct EditFeedSheet: View {
                     .background(Circle().fill(Color.backgroundCard))
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Decrease consumed amount")
             
             Spacer()
             
@@ -528,6 +530,7 @@ struct EditFeedSheet: View {
                     .background(Circle().fill(Color.backgroundCard))
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Increase consumed amount")
         }
         .padding(.horizontal, 16)
         .frame(height: 64)
@@ -557,6 +560,7 @@ struct EditFeedSheet: View {
                     Image(systemName: "chevron.right")
                         .font(AppFont.sans(12, weight: .medium))
                         .foregroundStyle(Color.inkSecondary)
+                        .accessibilityHidden(true)
                 }
                 .padding(.horizontal, 12)
                 .frame(height: 44)
@@ -570,6 +574,7 @@ struct EditFeedSheet: View {
                 )
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Feed time, \(timeString)")
         }
     }
     
@@ -585,7 +590,10 @@ struct EditFeedSheet: View {
                         .fill(Color.inkPrimary)
                 )
         }
+        .disabled(amount <= 0 || isSaving)
+        .opacity(amount <= 0 ? 0.4 : 1.0)
         .buttonStyle(PlainButtonStyle())
+        .accessibilityLabel("Save changes")
         .padding(.horizontal, 20)
     }
     
@@ -598,10 +606,14 @@ struct EditFeedSheet: View {
                 .frame(height: 44)
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityLabel("Delete feed")
         .padding(.horizontal, 20)
     }
     
     private func saveChanges() {
+        guard amount > 0, !isSaving else { return }
+        isSaving = true
+        
         feedStore.updateFeed(
             feed,
             amount: amount,

@@ -203,4 +203,65 @@ final class FeedStoreTests: XCTestCase {
         let insights = store.getInsights()
         XCTAssertTrue(insights.isEmpty)
     }
+    
+    // MARK: - Edge Cases
+    
+    func testMidnightFeedGroupedCorrectly() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: clock.currentTime)
+        let midnightFeed = store.createFeed(amount: 120, startTime: today)
+        
+        let feeds = store.fetchFeeds(for: today)
+        XCTAssertEqual(feeds.count, 1)
+        XCTAssertEqual(feeds.first?.id, midnightFeed.id)
+    }
+    
+    func testManyFeedsPerformance() {
+        let today = clock.currentTime
+        for i in 0..<150 {
+            let time = today.addingTimeInterval(-Double(i) * 3600)
+            _ = store.createFeed(amount: 120, startTime: time)
+        }
+        
+        let feeds = store.fetchAllFeeds()
+        XCTAssertEqual(feeds.count, 150)
+        
+        let stats = store.getStatistics(for: today)
+        XCTAssertGreaterThan(stats.totalFeeds, 0)
+    }
+    
+    func testDeleteAllDataClearsProfile() {
+        let profile = BabyProfile(babyName: "Lily", feedingType: .formula)
+        store.saveBabyProfile(profile)
+        _ = store.createFeed(amount: 120)
+        
+        let expectation = self.expectation(description: "Delete all data")
+        
+        store.deleteAllData()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertNil(self.store.babyProfile)
+            XCTAssertEqual(self.store.fetchAllFeeds().count, 0)
+            expectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: 2.0)
+    }
+    
+    func testZeroWeightRejectedInProfile() {
+        let profile = BabyProfile(
+            babyName: "Lily",
+            birthWeight: 0,
+            currentWeight: 0,
+            feedingType: .formula
+        )
+        
+        // weightInKg returns nil for zero weight — guards prevent divide-by-zero
+        XCTAssertNil(profile.weightInKg)
+        
+        store.saveBabyProfile(profile)
+        let dailyGuide = store.dailyGuide
+        // Falls back to age-based guide when weight is 0 (newborn = 0–14 days)
+        XCTAssertEqual(dailyGuide.display, "300–500")
+    }
 }
