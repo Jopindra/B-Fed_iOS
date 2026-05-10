@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Widget Data Store
 /// Syncs key metrics to shared UserDefaults for widget access.
 enum WidgetDataStore {
-    private static let suiteName = "group.com.gentletitan.b-fed"
+    private static let suiteName = "group.com.bfed.B-Fed"
     
     private static var defaults: UserDefaults? {
         UserDefaults(suiteName: suiteName)

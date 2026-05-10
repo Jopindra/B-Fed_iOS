@@ -123,11 +123,7 @@ struct WatchLogFeedView: View {
     private func saveFeed() {
         let feed = Feed(amount: amount)
         modelContext.insert(feed)
-        do {
-            try modelContext.save()
-        } catch {
-            // Could show a brief error indication
-        }
+        try? modelContext.save()
         dismiss()
     }
 }

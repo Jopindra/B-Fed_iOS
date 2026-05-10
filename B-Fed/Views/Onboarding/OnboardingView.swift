@@ -5,7 +5,6 @@ import SwiftData
 struct OnboardingView: View {
     @Environment(FeedStore.self) private var feedStore
     @Environment(\.modelContext) private var modelContext
-    @AppStorage("onboarding.currentStep") private var savedStep: Int = 0
 
     var onComplete: (() -> Void)?
 
@@ -28,62 +27,58 @@ struct OnboardingView: View {
                     )
 
                 case 2:
-                    CountryScreen(
-                        country: $viewModel.country,
-                        countryCode: $viewModel.countryCode,
+                    ParentEmailScreen(
+                        parentEmail: $viewModel.parentEmail,
                         onBack: { viewModel.goBackToStep(1) },
-                        onContinue: {
-                            viewModel.formulaSetupViewModel.countryCode = viewModel.countryCode
-                            viewModel.advanceToStep(3)
-                        }
+                        onContinue: { viewModel.advanceToStep(3) }
                     )
 
                 case 3:
-                    BabyNameScreen(
-                        babyName: $viewModel.babyName,
+                    CountryScreen(
+                        country: $viewModel.country,
+                        countryCode: $viewModel.countryCode,
                         onBack: { viewModel.goBackToStep(2) },
-                        onContinue: { viewModel.advanceToStep(4) }
+                        onContinue: {
+                            viewModel.formulaSetupViewModel.countryCode = viewModel.countryCode
+                            viewModel.advanceToStep(4)
+                        }
                     )
 
                 case 4:
-                    BabyDOBScreen(
-                        babyDOB: $viewModel.babyDOB,
+                    BabyNameScreen(
+                        babyName: $viewModel.babyName,
                         onBack: { viewModel.goBackToStep(3) },
                         onContinue: { viewModel.advanceToStep(5) }
                     )
 
                 case 5:
+                    BabyDOBScreen(
+                        babyDOB: $viewModel.babyDOB,
+                        onBack: { viewModel.goBackToStep(4) },
+                        onContinue: { viewModel.advanceToStep(6) }
+                    )
+
+                case 6:
                     FeedingTypeSelectionScreen(
                         feedingType: mappedFeedingTypeBinding,
-                        stepNumber: 5,
+                        stepNumber: 6,
                         totalSteps: viewModel.totalSteps,
-                        onBack: { viewModel.goBackToStep(4) },
+                        onBack: { viewModel.goBackToStep(5) },
                         onContinue: {
                             if let type = mappedFeedingType {
                                 viewModel.formulaSetupViewModel.feedingType = type
                             }
                             if viewModel.showsFormulaSetup {
-                                viewModel.advanceToStep(6)
+                                viewModel.advanceToStep(7)
                             } else {
-                                viewModel.advanceToStep(9)
+                                viewModel.advanceToStep(10)
                             }
                         }
                     )
 
-                case 6:
+                case 7:
                     BrandSelectionScreen(
                         viewModel: viewModel.formulaSetupViewModel,
-                        stepNumber: 6,
-                        totalSteps: viewModel.totalSteps,
-                        onBack: { viewModel.goBackToStep(5) },
-                        onContinue: { viewModel.advanceToStep(7) }
-                    )
-
-                case 7:
-                    ProductStageSelectionScreen(
-                        viewModel: viewModel.formulaSetupViewModel,
-                        babyDOB: viewModel.babyDOB,
-                        babyName: viewModel.babyName.isEmpty ? "your baby" : viewModel.babyName,
                         stepNumber: 7,
                         totalSteps: viewModel.totalSteps,
                         onBack: { viewModel.goBackToStep(6) },
@@ -91,13 +86,24 @@ struct OnboardingView: View {
                     )
 
                 case 8:
+                    ProductStageSelectionScreen(
+                        viewModel: viewModel.formulaSetupViewModel,
+                        babyDOB: viewModel.babyDOB,
+                        babyName: viewModel.babyName.isEmpty ? "your baby" : viewModel.babyName,
+                        stepNumber: 8,
+                        totalSteps: viewModel.totalSteps,
+                        onBack: { viewModel.goBackToStep(7) },
+                        onContinue: { viewModel.advanceToStep(9) }
+                    )
+
+                case 9:
                     GentleGuideScreen(
                         babyProfile: previewProfile,
                         viewModel: viewModel.formulaSetupViewModel,
                         onContinue: completeOnboarding
                     )
 
-                case 9:
+                case 10:
                     BabyWeightScreen(
                         birthWeight: $viewModel.birthWeight,
                         currentWeight: $viewModel.currentWeight,
@@ -107,9 +113,9 @@ struct OnboardingView: View {
                         onContinue: completeOnboarding,
                         onBack: {
                             if viewModel.showsFormulaSetup {
-                                viewModel.goBackToStep(8)
+                                viewModel.goBackToStep(9)
                             } else {
-                                viewModel.goBackToStep(5)
+                                viewModel.goBackToStep(6)
                             }
                         }
                     )
@@ -122,10 +128,6 @@ struct OnboardingView: View {
         }
         .onAppear {
             feedStore.setModelContext(modelContext)
-            viewModel.currentStep = savedStep
-        }
-        .onChange(of: viewModel.currentStep) { _, newStep in
-            savedStep = newStep
         }
     }
     
@@ -154,7 +156,7 @@ struct OnboardingView: View {
     
     /// Temporary profile for guidance preview during onboarding
     private var previewProfile: BabyProfile {
-        let weightGrams = Double(viewModel.currentWeight).flatMap {
+        let weightGrams = Double(viewModel.currentWeight).map {
             viewModel.isKg ? $0 * 1000 : $0 * 453.592
         }
         

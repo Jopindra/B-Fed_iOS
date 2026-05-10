@@ -52,12 +52,6 @@ class Feed {
         }
     }
     
-    /// Convenience init with amount clamped to safe range (0–1000ml)
-    convenience init(feedingType: FeedUnit = .milliliters, amount: Double, notes: String = "") {
-        let safeAmount = max(0, min(amount, 1000)) // Clamp between 0-1000ml
-        self.init(amount: safeAmount, unit: feedingType, notes: notes)
-    }
-
     /// Returns true if the feed is currently active (no end time)
     var isActive: Bool {
         return endTime == nil
