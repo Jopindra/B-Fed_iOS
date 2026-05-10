@@ -15,11 +15,8 @@ final class SharedModelContainer {
             do {
                 return try ModelContainer(for: schema, configurations: [fallbackConfig])
             } catch {
-                // If even in-memory fails (should never happen with valid schema), log and provide last resort
-                print("CRITICAL: Could not create any ModelContainer. Error: \(error)")
-                // Return a minimal in-memory container as absolute last resort
-                let lastResortConfig = ModelConfiguration(isStoredInMemoryOnly: true)
-                return try! ModelContainer(for: schema, configurations: [lastResortConfig])
+                // If even in-memory fails (should never happen with valid schema), the app cannot function
+                preconditionFailure("Cannot create ModelContainer even with in-memory fallback: \(error)")
             }
         }
     }

@@ -60,6 +60,6 @@ struct B_FedApp: App {
                 MedicalDisclaimerView()
             }
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(SharedModelContainer.shared)
     }
 }

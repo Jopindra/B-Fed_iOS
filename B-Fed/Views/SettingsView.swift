@@ -42,6 +42,9 @@ struct SettingsView: View {
 
                         guidesCard
                             .padding(.top, 20)
+
+                        aboutCard
+                            .padding(.top, 20)
                     } else {
                         noProfileCard
                             .padding(.top, 40)
@@ -325,6 +328,62 @@ struct SettingsView: View {
             }
             .accessibilityLabel("Bottle prep guide")
             .buttonStyle(PlainButtonStyle())
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+            )
+        }
+    }
+    
+    // MARK: — About Card
+    
+    private var aboutCard: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sectionLabel("About")
+            
+            VStack(spacing: 0) {
+                NavigationLink {
+                    PrivacyPolicyView()
+                } label: {
+                    HStack {
+                        Text("Privacy Policy")
+                            .font(AppFont.sans(14))
+                            .foregroundColor(Color.textPrimary)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(AppFont.sans(12, weight: .medium))
+                            .foregroundColor(Color.textTertiary)
+                            .accessibilityHidden(true)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 13)
+                }
+                .accessibilityLabel("Privacy Policy")
+                .buttonStyle(PlainButtonStyle())
+                
+                rowDivider
+                
+                let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+                let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+                
+                HStack {
+                    Text("Version")
+                        .font(AppFont.sans(14))
+                        .foregroundColor(Color.textSecondary)
+                    
+                    Spacer()
+                    
+                    Text("\(version) (\(build))")
+                        .font(AppFont.sans(13))
+                        .foregroundColor(Color.textTertiary)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 13)
+            }
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay(

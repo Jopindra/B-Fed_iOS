@@ -36,7 +36,7 @@ struct ContentView: View {
         }
         .ignoresSafeArea(.keyboard)
         .sheet(isPresented: $showingLogFeedSheet) {
-            LogFeedView()
+            LogFeedSheet()
         }
         .onAppear {
             feedStore.setModelContext(modelContext)
